@@ -1,0 +1,547 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" content="edc8cd42-0c33-418c-bd1d-0c921c48e763"/>
+    <!-- default header name is X-CSRF-TOKEN -->
+    <meta name="_csrf_header" content="X-CSRF-TOKEN"/>
+    <title>结算日志</title>
+
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href="__CSS__/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="__CSS__/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="__CSS__/footable.core.css" rel="stylesheet">
+    <link href="__CSS__/datepicker3.css" rel="stylesheet"/>
+    <link href="__CSS__/animate.css" rel="stylesheet">
+    <link href="__CSS__/style.css?v=4.1.0" rel="stylesheet">
+    <link href="__CSS__/bootstrap-table.css" type="text/css" rel="stylesheet">
+    <link href="__CSS__/sweetalert.css" rel="stylesheet">
+    <link href="__CSS__/toastr.min.css" rel="stylesheet">
+
+    <style type="text/css">
+        td {
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        th {
+            vertical-align: middle;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content  fadeInRight">
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <form class="form-inline" id="myForm" action="settlePayment" method="post">
+
+                    <div class="ibox-content">
+
+                        <div class="col-md-2">
+                            <span class="form-group-btn ">
+                                         <button type="submit" class="btn btn-primary "><i
+                                                 class="fa fa-refresh"></i> 刷新</button>
+                                     </span>
+
+                        </div>
+                        时间
+                        <div class="input-group date" data-provide="datepicker">
+                            <input type="text" class="form-control" name="startTime" value="{$starttime}">
+                            <div class="input-group-addon">
+                                <span class="glyphicon glyphicon-th"></span>
+                            </div>
+                        </div>
+                        <div class="input-group date" data-provide="datepicker">
+                            <input type="text" class="form-control" name="endTime" value="{$endtime}">
+                            <div class="input-group-addon">
+                                <span class="glyphicon glyphicon-th"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="alipayAccount">支付宝账户</label>
+                            <input type="text" class="form-control" id="alipayAccount" name="alipayAccount" value="{$alipay}"
+                                   placeholder="请输入支付宝账户">
+                        </div>
+                        <div class="form-group">
+                            <label for="realName">支付宝姓名</label>
+                            <input type="text" class="form-control" id="realName" name="realName" value="{$alipayname}"
+                                   placeholder="请输入支付宝真实姓名">
+                        </div>
+                        <div class="form-group">
+                            <label for="agentId">代理ID</label>
+                            <input type="text" class="form-control" id="agentId" name="agentId"
+                                   placeholder="请输入代理ID" value="{$agentid}">
+                        </div>
+
+                        <div class="form-group">
+                                    <span class="form-group-btn ">
+                                         <button type="submit" class="btn btn-primary">搜索</button>
+                                     </span>
+                        </div>
+
+                        <div class="row m-b-sm m-t-sm">
+                        </div>
+
+                    </div>
+                    <div class="ibox-title">
+                        <h5>结算日志</h5>                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                <i class="fa fa-wrench"></i>
+                            </a>
+                            <a class="close-link">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+
+                        <div class="">
+                            <a onclick="refuse(this.parentNode);" href="javascript:void(0);" class="btn btn-primary ">设为已打款</a>
+                            <a onclick="location.href='{:url("settle/outputexcel")}'" href="javascript:void(0);" class="btn btn-primary ">导出Excel</a>
+
+                        </div>
+
+                        <table class=" table table-stripped toggle-arrow-tiny"  >
+                            <thead>
+                            <tr>
+                                <th></th>
+
+                                <th data-toggle="true">结算单id</th>
+                                <th>代理ID</th>
+                                <th>类型</th>
+                                <th>结算金额</th>
+                                <th>账号</th>
+                                <th>姓名</th>
+                                <th>时间 &nbsp;<p class="glyphicon glyphicon-menu-up" data-d='desc'
+                                                data-type="time"
+                                                onclick="orderByTime(this)">
+
+                                </th>
+                                <th>备注</th>
+                                <th>信息</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {volist name="list" id="vo"}
+                            <tr>
+                                <td>
+                                    <label>
+                                        <input type="checkbox"  value="{$vo.id}" {if condition="$vo.status eq 4"}disabled="readonly"{/if}>
+                                    </label>
+                                </td>
+                                <td>{$vo.orderid}</td>
+                                <td>{$vo.proxy_id}</td>
+                                <td>
+                                    {if condition='$vo.checktype eq 1'}
+                                    支付宝
+                                    {else/}
+                                    银行卡
+                                    {/if}
+                                <td>{$vo.amount-$vo.tax}</td>
+                                <td>
+                                    {if condition='$vo.checktype eq 1'}
+                                    {$vo.alipay}
+                                    {else/}
+                                    {$vo.bank}-{$vo.cardaccount}
+                                    {/if}
+                                </td>
+                                <td>
+                                    {if condition='$vo.checktype eq 1'}
+                                        {$vo.alipay_name}
+                                    {else/}
+                                        {$vo.name}
+                                    {/if}
+                                    </td>
+                                <td>{$vo.createtime|date="Y-m-d H:i:s",###}</td>
+                                <td>{$vo.descript}</td>
+                                <td>{$vo.info}</td>
+                                <td><a href="javascript:;" onclick="getDetail(this)" data="{$vo.proxy_id}" data-order="{$vo.orderid}" data-money="{$vo.amount}">
+                                    打款账户详情</a></td>
+                            </tr>
+                            {/volist}
+                            </tbody>
+                            <tfoot>
+                            <div>
+                                {$list->render()}
+                            </div>
+                            </tfoot>
+                        </table>
+
+                        <input type="hidden" name="o" id="o" value=""/>
+                        <input type="hidden" name="d" id="d" value=""/>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">打款账户详情</h4>
+            </div>
+            <div class="modal-body">
+                <table class="table ">
+                    <tbody id="detail">
+
+                    </tbody>
+
+                </table>
+                <span class="form-group-btn ">
+                </span>
+            </div>
+            <div class="modal-footer">
+
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="myModal2" tabindex="-2" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="text" name="msg" style="width:400px;" id="msg" placeholder="请输入备注"/>
+                <input type="hidden" name="orderId" id="orderId"/>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="refuseOrder()" data-dismiss="modal">确认</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="__JS__/jquery.min.js?v=2.1.4"></script>
+<script src="__JS__/bootstrap.min.js?v=3.3.6"></script>
+<script src="__JS__/bootstrap-datepicker.js"></script>
+<script src="__JS__/bootstrap-table.js"></script>
+<script src="__JS__/common.js?v=1.1"></script>
+<script src="__JS__/sweetalert.min.js"></script>
+<script src="__JS__/toastr.min.js"></script>
+
+<!-- 自定义js -->
+<script>
+    $(document).ready(function () {
+
+        $('#pageTd').attr('colspan', 11);
+        $('.option').click(function () {
+            $('#msg').val($(this).text());
+        })
+
+    });
+
+
+
+
+    function resubmit(dom) {
+        if (confirm("确认提交？") === false) {
+            return false;
+        }
+        $.ajax({
+            url: dom.attributes['data'].value,
+            method: 'get',
+            success: function (response) {
+                if (response === true && response.code !== 0) {
+                    swal({
+                            title: "提交成功!",
+                            type: "success"
+                        },
+                        function () {
+                            location.reload();
+                        }
+                    );
+                } else {
+                    swal({
+                            title: response.msg === undefined ? response : response.msg,
+                            text: '失败',
+                            type: "error"
+                        },
+                        function () {
+                            location.reload();
+                        }
+                    );
+                }
+            }
+        })
+    }
+
+
+    //审核通过
+    function permitOrder(dom) {
+        if ($("input[type='checkbox']:checkbox:checked").length < 1) {
+            swal({
+                    title: "请选择一项进行操作!",
+                    type: "error"
+                }
+            );
+            return false
+        }
+        swal({
+            title: "确认通过?",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: '#DD6B55',
+            confirmButtonText: '确定!',
+            cancelButtonText: "取消!",
+            closeOnConfirm: true,
+            closeOnCancel: false
+        }, function (isConfirm) {
+
+            if (isConfirm) {
+                permit()
+
+            } else {
+                swal("已取消");
+            }
+        })
+        ;
+
+    }
+
+    function Order(key, value) {
+        this.id = key;
+        this.type = value;
+    }
+
+    function permit() {
+        var args = [];
+
+        $("input[type='checkbox']:checkbox:checked").each(function () {
+            var id = $(this).val();
+            var type = $(this).attr("data-type");
+            var order = new Order(id, type);
+            args.push(order)
+        });
+        if (args.length === 0) {
+            swal({
+                    title: "请选择一项进行操作!",
+                    type: "error"
+                }
+            );
+            return false;
+        }
+        args = JSON.stringify(args);
+        $.ajax({
+                url: "permitOrder",
+                method: "post",
+                beforeSend: function (request) {
+                    // request.setRequestHeader(header, token);
+                },
+                data: {args: args},
+                success: function (response) {
+                    if (response === true && response.code !== 0) {
+                        location.reload();
+                    }
+                    else {
+                        if (response.code === 0) {
+                            toastr["error"](" ", response.msg)
+
+                        } else {
+                            toastr["error"](" ", "失败");
+
+                            toastr.options = {
+                                "closeButton": false,
+                                "debug": true,
+                                "newestOnTop": false,
+                                "progressBar": false,
+                                "positionClass": "toast-top-right",
+                                "preventDuplicates": false,
+                                "showDuration": "300",
+                                "hideDuration": "1000",
+                                "timeOut": "5000",
+                                "extendedTimeOut": "1000",
+                                "showEasing": "swing",
+                                "hideEasing": "linear",
+                                "showMethod": "fadeIn",
+                                "hideMethod": "fadeOut"
+                            }
+                        }
+                    }
+                }
+            }
+        )
+        ;
+
+    }
+
+
+    //拒绝审核
+    function refuse() {
+        if ($("input[type='checkbox']:checkbox:checked").length < 1) {
+            swal({
+                    title: "请选择一项进行操作!",
+                    type: "error"
+                }
+            );
+            return false
+        }
+
+        $('#myModal2').modal('toggle');
+
+    }
+
+
+
+
+    function refuseOrder() {
+        var id;
+        var type;
+        var args = [];
+        $("input[type='checkbox']:checkbox:checked").each(function () {
+            id = $(this).val();
+            type = $(this).attr("data-type");
+            var order = new Order(id, type);
+            args.push(order)
+        });
+        args = JSON.stringify(args);
+        $.ajax({
+            url: "finishorder",
+            method: "Post",
+            beforeSend: function (request) {
+                //request.setRequestHeader(header, token);
+            },
+            data: {args: args, msg: $('#msg').val()},
+            success: function (response) {
+                if (response === true && response.code !== 0) {
+                    swal({
+                            title: '已更改状态',
+                            type: "success"
+                        },
+                        function () {
+                            location.reload();
+                        }
+                    );
+                } else {
+                    if (response.code === 0) {
+                        toastr["error"](" ", response.msg)
+
+                    } else {
+                        toastr["error"](" ", "失败");
+
+                        toastr.options = {
+                            "closeButton": false,
+                            "debug": true,
+                            "newestOnTop": false,
+                            "progressBar": false,
+                            "positionClass": "toast-top-right",
+                            "preventDuplicates": false,
+                            "showDuration": "300",
+                            "hideDuration": "1000",
+                            "timeOut": "5000",
+                            "extendedTimeOut": "1000",
+                            "showEasing": "swing",
+                            "hideEasing": "linear",
+                            "showMethod": "fadeIn",
+                            "hideMethod": "fadeOut"
+                        }
+                    }
+                }
+            }
+        })
+    }
+
+    function getDetail(dom) {
+        var id = dom.attributes['data'].value;
+        $.ajax({
+            url: "{:url('settle/getbankinfo')}",
+            data: {id: id},
+            success: function (response) {
+                var orderId = dom.attributes['data-order'].value;
+                var money = dom.attributes['data-money'].value;
+                if (response.code !== 0 || response !== true) {
+                    var result = response.data;
+                    var str = "<tr>";
+                    str += "<th >代理id</th>";
+                    str += "<th >" + result.proxy_id + "</th>";
+                    str += "<th></th>";
+                    str += "<th></th>";
+                    str += "</tr><tr>";
+
+                    str += "<th class='success'>支付宝账户</th>";
+                    str += "<th class='success'></th>";
+                    str += "<th class='success'></th>";
+                    str += "<th class='success'></th>";
+                    str += "</tr><tr>";
+                    str += "<th >姓名</th>";
+                    str += "<th>" + result.alipay_name + "</th>";
+
+
+                    str += "</tr><tr>";
+                    str += "<th>账户</th>";
+                    str += "<th>" + result.alipay + "</th>";
+
+                    str += "</tr><tr>";
+                    str += "<th class='success'>银行账户</th>";
+                    str += "<th class='success'></th>";
+                    str += "<th class='success'></th>";
+                    str += "<th class='success'></th>";
+                    str += "</tr><tr >";
+                    str += "<th>开户名</th>";
+                    str += "<th>" + result.name  + "</th>";
+                    str += "<th ></th>";
+                    str += "<th></th>";
+
+
+                    str += "</tr><tr>";
+                    str += "<th >开户行</th>";
+                    str += "<th>" + result.bank + "</th>";
+                    str += "</tr>";
+
+                    str += "</tr><tr>";
+                    str += "<th >银行账号</th>";
+                    str += "<th>" + result.cardaccount + "</th>";
+                    str += "</tr>";
+
+                    $('#detail').html(str);
+                    id = dom.attributes['data-order'].value;
+                    $("[data-order='" + id + "']").prop('checked', true);
+                    $("#getChannel").attr("href", "getChannel?agentId=" + result.agentId);
+
+                } else {
+                    swal({
+                            title: response.msg === undefined ? response : response.msg,
+                            text: '失败',
+                            type: "error"
+                        },
+                        function () {
+                            location.reload();
+                        }
+                    );
+                }
+            }
+        });
+        $('#myModal').modal('toggle');
+    }
+
+</script>
+
+</body>
+
+</html>

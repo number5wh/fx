@@ -1,0 +1,434 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>推广配置</title>
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href="__CSS__/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="__CSS__/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="__CSS__/footable.core.css" rel="stylesheet">
+    <link href="__CSS__/datepicker3.css" rel="stylesheet"/>
+    <link href="__CSS__/animate.css" rel="stylesheet">
+    <link href="__CSS__/style.css?v=4.1.0" rel="stylesheet">
+    <link href="__CSS__/bootstrap-table.css" type="text/css" rel="stylesheet">
+    <style type="text/css">
+        .row {
+            display: table-cell;
+            vertical-align: middle;
+        }
+
+        .table > tbody > tr > td {
+            line-height: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            word-break: keep-all;
+            word-wrap: break-word;
+        }
+
+        .wrapper-content {
+            padding: 0px;
+        }
+    </style>
+</head>
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content  fadeInRight">
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <form class="form-inline" action="promotionConfig" id="myForm">
+                    <div class="ibox-title">
+                        <h5>推广配置</h5>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <button type="button" class="btn btn-primary btn-sm" aria-label="Left Align"
+                                data-toggle="modal"
+                                data-target="#exampleModal" data-whatever="@mdo" onclick="addMessage()">
+                            下载二维码
+                        </button>
+
+                        <button type="button" class="btn btn-danger btn-sm" aria-label="Left Align"
+                                data-toggle="modal"
+                                data-target="#exampleModal" data-whatever="@mdo" onclick="resetPromotionSetting()">
+                            重新生成
+                        </button>
+
+
+                        <!--<button type="button" class="btn btn-primary btn-sm" aria-label="Left Align" data-toggle="modal"
+                                    data-target="#exampleModal" data-whatever="@mdo" onclick="resetPromotionSetting()">重新生成
+                            </button>-->
+
+                        <!--<button type="button" class="btn btn-primary btn-sm" aria-label="Left Align"
+                                onclick="editMessage()">
+                            <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+                        </button>-->
+                        <div class="ibox-tools">
+
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                <i class="fa fa-wrench"></i>
+                            </a>
+                            <a class="close-link">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="ibox-content">
+                        <h5 style="color: red">提示：
+                            请复制列表中推广宣传地址或二维码分享他人！</h5>
+
+                        <table class="table table-stripped toggle-arrow-tiny table-hover" data-page-size="8"
+                               width="100%"
+                               cellpadding="2" cellspacing="1"
+                               style="table-layout:fixed;font-size:11px;padding: 1px;">
+                            <thead>
+                            <tr>
+                                <th>配置名称</th>
+                                <th>推广模板</th>
+                                <!-- <th>宣传页下载</th>-->
+                                <th>推广二维码</th>
+                                <th>推广宣传地址</th>
+                                <th>备注</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+
+                            {volist name="list" id="vo"}
+                            <tr>
+                                <td>{$vo.config_name}</td>
+                                <td>{$vo.template_name}</td>
+                                <td>
+                                    <img style="width: 160px;" class="img-responsive img-thumbnail" src="{$vo.qrcode}"/>
+                                    <a href="{$vo.image_url}"  target="_blank">查看大图</a>
+                                </td>
+                                <td><a href="{$vo.down_url}" target="_blank">{$vo.down_url}</a></td>
+
+                                <td>{$vo.descript}</td>
+                            </tr>
+                            {/volist}
+
+                            </tbody>
+                            <tfoot>
+                            <div >
+                                <td id="pageTd" rowspan="5" align="center">
+                                    <nav aria-label="Page navigation ">
+                                        {$list->render()}
+                                    </nav>
+                                </td>
+                            </div>
+                            </tfoot>
+                        </table>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<div class="modal fade" id="exampleModal1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="exampleModalLabel1">下载图片</h4>
+            </div>
+            <form action="addPromotionSetting" method="post" id="addPromotionSetting">
+                <div class="modal-body">
+                    <span class="form-group-btn ">
+                                         <button type="button" class="btn btn-primary btn-sm"
+                                                 onclick="qrCodeTemplate()" id="qrcodeTemplate">二维码模板</button>
+                                     </span>
+                    <input type="hidden" name="templateId" id="templateId"/>
+                    <input type="hidden" name="name" id="templateName"/>
+
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" onclick="submitEdit()" class="btn btn-primary">添加</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="exampleModalLabel2">推广模板</h4>
+            </div>
+            <div class="wrapper wrapper-content  fadeInRight">
+
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="ibox float-e-margins">
+                            <div class="ibox-content">
+
+                                <table class="footable table table-stripped toggle-arrow-tiny" data-page-size="8"
+                                       width="95%"
+                                       cellpadding="2" cellspacing="1" style="table-layout:fixed;" id="templateTable"
+                                       data-card-view="false">
+                                    <thead>
+                                    <tr>
+                                        <th data-toggle="true">模板ID</th>
+                                        <th>选择</th>
+                                        <th>预览</th>
+                                        <th>标题</th>
+                                        <th>主题介绍</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="templateContent">
+
+
+                                    </tbody>
+                                    <tfoot>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="exampleModal3" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="exampleModalLabel3">二维码模板</h4>
+            </div>
+            <div class="wrapper wrapper-content  fadeInRight">
+
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="ibox float-e-margins">
+                            <div class="ibox-content">
+
+                                <table class="footable table table-stripped toggle-arrow-tiny" data-page-size="8"
+                                       width="95%"
+                                       cellpadding="2" cellspacing="1" style="table-layout:fixed;">
+                                    <thead>
+                                    <tr>
+                                        <th data-toggle="true">模板ID</th>
+                                        <th>选择</th>
+                                        <th>编号</th>
+                                        <th>模板图片</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="qrcodeContent">
+
+
+                                    </tbody>
+                                    <tfoot>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+</body>
+<script src="__JS__/jquery.min.js?v=2.1.4"></script>
+<script src="__JS__/bootstrap.min.js?v=3.3.6"></script>
+<script src="__JS__/bootstrap-datepicker.js"></script>
+<script src="__JS__/bootstrap-table.js"></script>
+<!-- 自定义js -->
+<script src="__JS__/content.js?v=1.0.0"></script>
+<script src="__JS__/common.js?v=1.0"></script>
+<script>
+    $(document).ready(function () {
+        refresh();
+    });
+
+    function randomQRCode() {
+        $.ajax({
+            url: 'randomQRCode',
+            type: 'post',
+            success: function (data) {
+                if (data) {
+                    window.location.href = 'promotionConfig'
+                } else {
+                    alert('生成失败，请稍后重试')
+                }
+            }
+        })
+    }
+
+
+    function addMessage() {
+        var text;
+        $.ajax({
+            url: "{:url('template/getTemplate')}",
+            success: function (data) {
+
+                $(data).each(function (index, t) {
+                    text += "<tr><td>" + t.id + "</td>" +
+                        "<td><input type='checkbox' value='" + t.id + "'name='" + t.num + "'  onclick='selectThisQRCode(this)'></td>" +
+                        "<td>" + t.num + "</td>" +
+                        "<td><img src='" + t.path + "' class='img-responsive img-thumbnail'/></td></tr>"
+                })
+                $("#qrcodeContent").html(text)
+            }
+
+        })
+        $('#exampleModal3').modal('toggle');
+    }
+
+
+    function qrCodeTemplate() {
+        var text;
+        $.ajax({
+            url: "{:url('template/getTemplate')}",
+            success: function (data) {
+
+                $(data).each(function (index, t) {
+                    text += "<tr><td>" + t.id + "</td>" +
+                        "<td><input type='checkbox' value='" + t.id + "'name='" + t.num + "'  onclick='selectThisQRCode(this)'></td>" +
+                        "<td>" + t.num + "</td>" +
+                        "<td><img src='" + t.path + "' class='img-responsive img-thumbnail'/></td></tr>"
+                })
+                $("#qrcodeContent").html(text)
+            }
+
+        })
+        $('#exampleModal3').modal('toggle');
+
+    }
+
+    function selectThisQRCode(t) {
+        $("input[type='checkbox]").attr("checked", false);
+        $("#templateId").val(t.value)
+        $('#exampleModal3').modal('hide');
+        $.ajax({
+            url: "{:url('template/checkDownload')}",
+            type: 'get',
+            success: function (response) {
+                if (response.code !== 0 || response === true) {
+                    window.location.href = "download/id/" + t.value
+                } else {
+                    alert(response.msg)
+                }
+            }
+
+        })
+    }
+
+    function submitEdit() {
+        if ($('#settingName').val() === '') {
+            alert('请填写配置名称')
+            return false
+        }
+        if ($('#templateId').val() === '') {
+            alert('请选择二维码模板')
+            return false
+        }
+        if ($('#flyerId').val() === '') {
+            alert('请选择推广模板')
+            return false
+        }
+
+
+        $.ajax({
+            url: "{:url('proxy/addProxy')}",
+            type: 'post',
+            data: $("#addPromotionSetting").serialize(),
+            success: function (response) {
+                if (response.code !== 0 || response === true) {
+                    alert("添加成功")
+                    window.location.href = 'promotionConfig'
+                } else {
+                    alert(response.msg)
+                }
+            }
+
+        })
+
+    }
+
+    function randomPromotionSetting() {
+        $.ajax({
+            url: 'randomPromotionSetting',
+            type: 'post',
+            data: $("#addPromotionSetting").serialize(),
+            success: function (response) {
+                if (response.code !== 0 || response === true) {
+                    alert("生成成功")
+                    window.location.href = "{:url('template/index')}";
+                } else {
+                    alert(response.msg)
+                }
+            }
+
+        })
+    }
+
+    function resetPromotionSetting() {
+        if (confirm("确认重新生成？此操作将会使所有的已经在用的二维码失效。") === false) {
+            return false;
+        }
+        $.ajax({
+            url: 'resetPromotionSetting',
+            type: 'post',
+            async: false,
+            data: $("#addPromotionSetting").serialize(),
+            success: function (response) {
+                if (response.code !== 0 || response === true) {
+                    alert("生成成功")
+                    $('#exampleModal1').modal('hide');
+                    window.location.href = "{:url('template/index')}";
+                } else {
+                    alert(response.msg)
+                }
+            }
+
+        })
+    }
+
+
+    function refresh() {
+        $.ajax({
+            url: 'autoResetPromotionSetting',
+            type: 'get',
+            async: false,
+            cache: false,
+            success: function (response) {
+                if (response === false) {
+
+                } else if (response === true) {
+                    window.location.href = 'promotionConfig?random=' + Math.random();
+                } else if (response.code !== 0) {
+                    alert(response.msg)
+
+                }
+            }
+
+        })
+    }
+
+   // window.setInterval(function () {refresh(); }, 1000 * 300);
+
+
+</script>
+
+
+</html>

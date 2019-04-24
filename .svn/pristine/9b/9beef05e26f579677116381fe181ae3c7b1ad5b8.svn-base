@@ -1,0 +1,183 @@
+{extend name="common/base" /}
+
+{block name="title"}{/block}
+{block name="content"}
+<div class="layui-card">
+    <div class="layui-card-header layuiadmin-card-header-auto">
+        <h2>代理公告</h2>
+    </div>
+
+    <div class="layui-card-body">
+        <div class="search-proxy" style="margin-bottom: 10px;">
+            <div class="layui-inline">
+                <input type="text" id="title" name="title" placeholder="请输入标题" autocomplete="off" class="layui-input">
+            </div>
+            <a class="layui-btn" data-type="reload" id="search_proxy">搜索</a>
+        </div>
+        <div  style="margin-bottom: 10px;">
+            <a class="layui-btn" data-type="reload" id="add_proxy">新增公告</a>
+        </div>
+        <table id="msglist" lay-filter="msglist"></table>
+    </div>
+</div>
+<div class="layui-row" id="popAdd" style="display:none;">
+    <div class="layui-col-md12">
+        <form class="layui-form" action="{:url('message/addNotice')}" method="post" id="addNotice" style="margin-top:20px;margin-right: 20px;" >
+            <div class="layui-form-item">
+                <label class="layui-form-label">公告标题:</label>
+                <div class="layui-input-block">
+                    <input type="text" id="titleForAdd" name="titleForAdd" placeholder="请输入公告标题" lay-verify="required" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">公告内容:</label>
+                <div class="layui-input-block">
+                    <textarea class="layui-textarea" id="contentForAdd" name="contentForAdd"></textarea>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label"></label>
+                <div class="layui-input-block">
+                    <button type="submit" class="layui-btn layui-btn-radius" id="addit" >新增</button>
+                    <button type="reset" class="layui-btn layui-btn-primary layui-btn-radius">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{/block}
+
+{block name="script"}
+<script type="text/html" id="msg-bar">
+    <button class="layui-btn layui-btn-xs" lay-event="detail">查看详情</button>
+    <button class="layui-btn layui-btn-xs" lay-event="delete">删除</button>
+</script>
+<script>
+    layui.config({
+        base: '/src/layuiadmin/' //静态资源所在路径
+    }).extend({
+        index: 'lib/index' //主入口模块
+
+    }).use(['index', 'table', 'layer'], function() {
+        var table = layui.table
+            ,layer = layui.layer
+            ,$ = layui.$;
+        $('#addit').on('click', function(e) {
+            e.preventDefault();
+            submitForm();
+        });
+        $('#add_proxy').on('click', function(e) {
+            e.preventDefault();
+            showAdd();
+        });
+        function showAdd() {
+            layer.open({
+                type: 1,
+                title: '新增公告',
+                shadeClose: true,
+                shade: 0.8,
+                area:['400px'],
+
+                content: $('#popAdd')
+            });
+        }
+        var dataTable = table.render({
+            elem: '#msglist'
+            , height: 500
+            , url: "{:url('message/getIndex')}" //数据接口
+            , where: {}
+            , page: true //开启分页
+            , cols: [[ //表头
+                {field: 'title', title: '标题'}
+                , {field: 'addtime', title: '时间'}
+                , {fixed: 'right', title:'操作', align:'center', toolbar: '#msg-bar'}
+            ]]
+        });
+
+        //搜索
+        var search = function() {
+            var title = $.trim($('#title').val());
+            //执行重载
+            table.reload('msglist', {
+                page: {
+                    curr: 1 //重新从第 1 页开始
+                },
+                where: {'title':title}
+            });
+        };
+        $('#search_proxy').on('click', function() {
+            search();
+        });
+
+        table.on('tool(msglist)', function(obj) {
+            var data = obj.data //获得当前行数据
+                , layEvent = obj.event; //获得 lay-event 对应的值
+            tr = obj.tr; //获得当前行 tr 的DOM对象
+            if (layEvent === 'detail') {
+                $.ajax({
+                    url: "{:url('message/getMsgDetail')}",
+                    data: {id: data.id},
+                    success: function (data) {
+                        // $('#titleDetail').html(data.title)
+                        // $('#contentDetail').html(data.content)
+                        // $('#myModal').modal('toggle');
+                        layer.alert(data.content, {
+                            shadeClose: true,
+                            title: data.title
+                        });
+                    }
+                })
+            } else if (layEvent === 'delete') {
+                layer.confirm('您真的确定要删除吗？',{btn:['确定','取消']}, function() {
+                    $.ajax({
+                        url: 'delNotice',
+                        data: {id: data.id},
+                        success: function (data) {
+                            if (data) {
+                                window.location.href = "{:url('message/index')}"
+                            }
+                        }
+                    })
+                });
+            }
+        });
+        function submitForm() {
+
+            var title = document.getElementById("titleForAdd");
+            if( title.value.length === 0 ){
+                layer.msg('标题不能为空');
+                return false;
+            }
+
+            var contentForAdd = document.getElementById("contentForAdd");
+            if( contentForAdd.value.length === 0 ){
+                layer.msg('内容不能为空');
+                return false;
+            }
+
+            $.ajax({
+                url: "{:url('Message/addNotice')}",
+                data: $("#addNotice").serialize(),
+                method: 'post',
+                beforeSend: function (request) {
+                    //request.setRequestHeader(header, token);
+                },
+                success: function (data) {
+                    if (data) {
+                        layer.msg('添加成功')
+                        window.setTimeout(function() {
+                            window.location.href = "{:url('Message/index')}";
+                        }, 1000);
+
+                        return;
+                    } else {
+                        layer.msg('添加失败,请稍后重试')
+                    }
+                }
+            })
+        }
+    });
+</script>
+{/block}

@@ -1,0 +1,76 @@
+<?php
+namespace app\manage\model;
+use think\Model;
+use think\log;
+
+class Company extends Model{
+
+public function getPlayer($proxy_id){
+    vendor('Hprose.Hprose');
+    $ServiceUrl = config("ServiceUrl");
+    $client = \Hprose\Client::create($ServiceUrl,false);
+    try {
+        $timestamp =getservertime();
+        $appkey =config('appkey');
+        $token =md5($appkey.$proxy_id.$timestamp);		
+        //$client->addFilter(new \Hprose\SizeFilter('Non compressed'))
+        //    ->addFilter(new \Hprose\CompressFilter())
+        //    ->addFilter(new \Hprose\SizeFilter('Compressed'));
+        $ret = $client->getFxPlayerList($proxy_id,$timestamp,$token);
+        //
+        return  $ret;
+    }catch (Exception $e) {
+		Log::write($e->getMessage(),'debug');
+        return  null;
+    }
+}
+
+
+public function getBillList($proxy_id,$curPage,$pagesize){
+    vendor('Hprose.Hprose');
+     $ServiceUrl = config("ServiceUrl");
+    $client = \Hprose\Client::create($ServiceUrl,false);
+    try {
+        $timestamp =getservertime();
+        $appkey =config('appkey');
+        $token =md5($appkey.$proxy_id.$timestamp);
+        //$client->addFilter(new \Hprose\SizeFilter('Non compressed'))
+        //    ->addFilter(new \Hprose\CompressFilter())
+        //    ->addFilter(new \Hprose\SizeFilter('Compressed'));
+        $Time = date('Ymd');
+        $ret = $client->getFxBillList($proxy_id,$timestamp,$token,new \Hprose\InvokeSettings(array('timeout'=>30000)));
+        //Log::write($ret,'debug');
+        return  $ret;
+    }catch (Exception $e) {
+        echo $e->getMessage();
+        return  null;
+    }
+}
+
+
+
+    /*
+     *   获取充值记录
+     */
+    public function getPayTime($proxy_id){
+        vendor('Hprose.Hprose');
+        $ServiceUrl = config("ServiceUrl");
+		$client = \Hprose\Client::create($ServiceUrl,false);
+        try {
+            $timestamp =getservertime();
+            $appkey =config('appkey');
+            $token =md5($appkey.$proxy_id.$timestamp);
+            //$client->addFilter(new \Hprose\SizeFilter('Non compressed'))
+            //    ->addFilter(new \Hprose\CompressFilter())
+            //    ->addFilter(new \Hprose\SizeFilter('Compressed'));
+            $Time = date('Ymd');
+            $ret = $client->getFxRechargeInfo($proxy_id,$Time,$timestamp,$token,new \Hprose\InvokeSettings(array('timeout'=>30000)));
+            //Log::write($ret,'debug');
+            return  $ret;
+        }catch (Exception $e) {
+            return  null;
+        }
+    }
+
+
+}

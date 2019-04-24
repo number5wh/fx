@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>绑定手机号</title>
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href="__CSS__/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="__CSS__/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="__CSS__/animate.css" rel="stylesheet">
+    <link href="__CSS__/style.css?v=4.1.0" rel="stylesheet">
+
+</head>
+<body class="gray-bg">
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="wrapper wrapper-content">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5>绑定手机号</h5>
+                        </div>
+                        <div class="ibox-content">
+                            <form id="myForm">
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="input-group">
+                                            <input type="number" class="form-control phoneNumForFind" name="phone" id="phone"
+                                                   placeholder="请输入手机号...">
+                                            <span class="input-group-btn">
+                                          <button class="btn btn-primary sendCode" type="button" id="sendCode"
+                                                  onclick="sendCodeBefore('phone')"
+                                          >获取验证码</button>
+                                        </span>
+                                        </div><!-- /input-group -->
+                                    </div><!-- /.col-lg-6 -->
+
+
+                                </div>
+                                <div class="form-group">
+                                    <label for="code">验证码</label>
+                                    <input type="number" class="form-control " id="code" name="code"
+                                           placeholder="请输入验证码..."/>
+                                </div>
+                                <button class="btn btn-primary " type="button" onclick="submitForm()">确认绑定</button>
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="myModal3" tabindex="1000" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">输入验证码</h4>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <span class="input-group-addon" id="captcha-addon21">验证码</span>
+                    <input type="text" class="form-control captcha" id="captcha2" name="captcha"
+                           placeholder="请输入图片验证码" required="required" aria-describedby="basic-addon31">
+                    <span class="input-group-addon" id="basic-addon31">
+                        {:captcha_img('bindphone')}
+                    </span>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" type="button" onclick="addCaptcha()">确认</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="__JS__/jquery.min.js?v=2.1.4"></script>
+<script src="__JS__/cache.js"></script>
+<script src="__JS__/bootstrap.min.js?v=3.3.6"></script>
+<script src="__JS__/common.js?v=1.0"></script>
+
+
+<script type="text/javascript">
+    $(function () {
+        cache.initCode('bindphoneCode');
+    })
+    var phonePattern = new RegExp('^(13[0-9]|14[0-9]|15[0-9]|166|17[0-9]|18[0-9]|19[8|9])\\d{8}$');
+
+    function sendCode1(captcha) {
+        if ($('#phone').val() === null || $('#phone').val() === '') {
+            alert('请填写手机号')
+            return false
+        }
+        if (!phonePattern.test($('#phone').val())) {
+            alert('请填写正确的手机号格式');
+            return false
+        }
+        $.ajax({
+            url: "{:url('proxy/checkmobile')}",
+            data: {phone: $('#phone').val(),
+                captcha: captcha
+            },
+            async: false,
+            success: function (data) {
+                if (data && data.code!=0) {
+                    alert('手机号已被其他账号绑定')
+                    return false;
+                } else if(data.code == 0){
+                    alert(data.msg);
+                    return false;
+                }else{
+                    $.ajax({
+                        url: "{:url('sms/sendcode4')}",
+                        type: 'get',
+                        data: {mobile: $('#phone').val()},
+                        success: function (response) {
+                            if (response.code !== 0 || response === true) {
+                                alert('发送成功')
+                                cache.setItem('bindphoneCode',$('#phone').val());
+                                cache.createTimeOut()
+                            } else {
+                                alert(response.msg)
+                            }
+
+                        }
+                    })
+                }
+            }
+        });
+
+    }
+
+
+    function submitForm() {
+        if ($('#phone').val() === '') {
+            alert('手机号不能为空')
+            return false;
+        }
+
+        if ($('#code').val() === '') {
+            alert('验证码不能为空')
+            return false;
+        }
+        if ($('#code').val().length < 4) {
+            alert('验证码不正确')
+            return false;
+        }
+        $.ajax({
+            url: "{:url('proxy/bindMobileSave')}",
+            data: $('#myForm').serialize(),
+            type: 'post',
+            beforeSend: function (request) {
+               // request.setRequestHeader(header, token);
+            },
+            success: function (response) {
+                if (response.code !== 0 || response === true) {
+                    alert('绑定成功');
+                    cache.removeItem('bindphoneCode');
+                    window.location.href = "{:url('index/main')}";
+
+                } else {
+                    alert(response.msg)
+                }
+            }
+        })
+    }
+
+
+
+    function sendCodeBefore() {
+        $('#myModal3').modal('toggle');
+
+    }
+    function addCaptcha() {
+        $('#myModal3').modal('hide');
+        sendCode1($('#captcha2').val())
+    }
+
+
+    // 点击验证码图片
+    function changeCode() {
+        $('.imgCaptcha').attr('src', "/public/index.php/captcha.html?random=" + Math.random());
+        $(".captcha").val("")
+    }
+
+    $(function () {
+        changeCode()
+    })
+</script>
+</body>
+</html>
+

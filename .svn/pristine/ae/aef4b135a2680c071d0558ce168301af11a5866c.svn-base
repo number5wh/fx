@@ -1,0 +1,123 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>推广代理后台 - 后台首页</title>
+    <meta name="keywords" content="推广代理后台">
+    <meta name="description" content="推广代理后台">
+
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href="__CSS__/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="__CSS__/font-awesome.min.css?v=4.4.0" rel="stylesheet">
+    <link href="__CSS__/animate.css" rel="stylesheet">
+    <link href="__CSS__/style.css?v=4.1.0" rel="stylesheet">
+    <style type="text/css">
+
+    </style>
+</head>
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content">
+    <div class="col-sm-4">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <span class="label label-info pull-right">全部</span>
+                <h5>总注册量</h5>
+            </div>
+            <div class="ibox-content">
+                <h1 class="no-margins">{$regtotal}</h1>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-4">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <span class="label label-info pull-right">昨日</span>
+                <h5>昨日注册</h5>
+            </div>
+            <div class="ibox-content">
+                <h1 class="no-margins">{$regzt}</h1>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-sm-4">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <span class="label label-info pull-right">今日</span>
+                <h5>今日注册</h5>
+            </div>
+            <div class="ibox-content">
+                <h1 class="no-margins">{$regtoday}</h1>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-4">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <span class="label label-info pull-right">全部</span>
+                <h5>总税收</h5>
+            </div>
+            <div class="ibox-content">
+                <h1 class="no-margins">{$totaltax}</h1>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-sm-4">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <span class="label label-info pull-right">昨日</span>
+                <h5>昨日税收</h5>
+            </div>
+            <div class="ibox-content">
+                <h1 class="no-margins">{$taxyestoday}</h1>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-4">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <span class="label label-info pull-right">今日</span>
+                <h5>今日税收</h5>
+            </div>
+            <div class="ibox-content">
+                <h1 class="no-margins">{$taxtoday}</h1>
+            </div>
+        </div>
+    </div>
+    <div class="row col-sm-12">
+        <div class="ibox-content timeline">
+            <div class="timeline-item">
+                {volist name="list" id="vo"}
+                <div class="row">
+                    <div class="col-xs-1 date">{$vo.addtime|date='Y-m-d H:i:s',###}</div>
+                    <div class="col-xs-11 content">
+                        <p class="m-b-xs"><strong>{$vo.title}</strong>
+                        </p>
+                        <p>{$vo.content}</p>
+                    </div>
+                </div>
+                {/volist}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="__JS__/jquery.min.js?v=2.1.4"></script>
+<script src="__JS__/bootstrap.min.js?v=3.3.6"></script>
+
+</body>
+
+</html>

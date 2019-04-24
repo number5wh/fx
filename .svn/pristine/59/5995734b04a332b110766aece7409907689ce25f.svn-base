@@ -1,0 +1,216 @@
+
+
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>收入统计</title>
+
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href="__CSS__/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="__CSS__/font-awesome.min.css?v=4.4.0" rel="stylesheet">
+    <link href="__CSS__/footable.core.css" rel="stylesheet">
+    <link href="__CSS__/datepicker3.css" rel="stylesheet"/>
+    <link href="__CSS__/animate.css" rel="stylesheet">
+    <link href="__CSS__/style.css?v=4.1.0" rel="stylesheet">
+    <link href="__CSS__/bootstrap-table.css" type="text/css" rel="stylesheet">
+
+    <style type="text/css">
+        .row {
+            display: table-cell;
+            vertical-align: middle;
+        }
+
+        .table > tbody > tr > td {
+            line-height: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            word-break: keep-all;
+        }
+
+        .wrapper-content {
+            padding: 0px;
+        }
+
+    </style>
+</head>
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content  fadeInRight">
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <form class="form-inline" action="incomeSum" id="myForm">
+
+                    <div class="ibox-content">
+
+                        <div class="row ">
+                            <span class="form-group-btn ">
+                                         <button type="submit" class="btn btn-primary btn-sm"><i
+                                                 class="fa fa-refresh"></i> 刷新</button>
+                                     </span>
+                            <!-- Single button -->
+
+                            <div class="form-group input-group-sm">
+                                <label for="agentId">代理ID</label>
+                                <input type="number" class="form-control" id="agentId" name="agentId"
+                                       placeholder="请输入代理ID"
+                                       value="{$agentid}">
+                            </div>
+
+                            <label class="checkbox-inline">
+                                <input type="checkbox" id="inlineCheckbox2" name="month" value="1"> 按月
+                            </label>
+                            <label for="timePicker">时&nbsp;间</label>
+                            <div class="input-group date input-group-sm" data-provide="datepicker" id="timePicker">
+                                <input type="text" class="form-control" name="startTime" value="{$starttime}">
+                                <div class="input-group-addon">
+                                    <span class="glyphicon glyphicon-th"></span>
+                                </div>
+                            </div>
+                            <div class="input-group date input-group-sm" data-provide="datepicker">
+                                <input type="text" class="form-control" name="endTime" value="{$endtime}">
+                                <div class="input-group-addon">
+                                    <span class="glyphicon glyphicon-th"></span>
+                                </div>
+                            </div>
+                            <div class="form-group input-group">
+                                    <span class="form-group-btn ">
+                                         <button type="submit" class="btn btn-primary btn-sm">搜索</button>
+                                     </span>
+                                <span>&nbsp;&nbsp;&nbsp;</span>
+                                <span class="form-group-btn ">
+                                         <button type="reset" class="btn btn-primary btn-sm">清空</button>
+                                     </span>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ibox-title">
+                        <h5>收入统计</h5>
+
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                <i class="fa fa-wrench"></i>
+                            </a>
+                            <a class="close-link">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+
+                        <table class="footable table table-stripped toggle-arrow-tiny " data-page-size="12" width="95%"
+                               style="table-layout:fixed;">
+                            <thead>
+                            <tr>
+
+                                <th data-toggle="true">时间</th>
+                                <th>代理ID</th>
+                                <th>结算比例</th>
+                                <th>收入明细</th>
+                                <th>产生税收</th>
+                                <th>下级分成比例</th>
+                                <th>您的收入</th>
+                                <th>代理收入</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+
+                            <div>
+                                {volist name="list" id="vo"}
+                                <tr>
+                                    <td rowspan="{$vo.rows}">{$vo.dt}</td>
+                                    <td rowspan="{$vo.rows}">{$proxy["code"]}</td>
+                                    <td rowspan="{$vo.rows}">{$proxy["percent"]}%</td>
+                                    <td>总和：</td>
+                                    <td>{$vo.totaltax}</td>
+                                    <td></td>
+                                    <td>{$vo.mytax}</td>
+                                    <td>{$vo.ttax}</td>
+                                </tr>
+                                    {volist name="$vo.child" id="v"}
+                                    <tr>
+                                        <td>({$v.proxy_id}){$v.nickname}</td>
+                                        <td>{$v.total}</td>
+                                        <td>
+                                            {if condition='$v.proxy_id eq $proxy["code"] '}
+                                                0
+                                            {else /}
+                                                {$v.percent}%
+                                            {/if}
+                                        </td>
+                                        <td>
+                                            {if condition='$v.proxy_id eq $proxy["code"] '}
+                                                {$v.total} *{$proxy["percent"]}% = {$v.total*$proxy["percent"]/100}
+                                            {else /}
+                                                {$v.total} *({$proxy["percent"]}%-{$v.percent}%) = {$v.total*($proxy["percent"]-$v.percent)/100}
+                                            {/if}
+
+                                        </td>
+                                        <td>
+                                            {if condition='$v.proxy_id eq $proxy["code"] '}
+                                                0
+                                            {else /}
+                                                {$v.total*($proxy["percent"]-$v.percent)/100}
+                                            {/if}
+
+
+                                        </td>
+                                    </tr>
+                                    {/volist}
+                                {/volist}
+                            </div>
+
+                            </tbody>
+                            <tfoot>
+                            <div>
+                                <td id="pageTd" rowspan="5">
+                                    <nav aria-label="Page navigation ">
+                                    {$list->render()}
+                                    </nav>
+                                </td>
+                            </div>
+                            </tfoot>
+                        </table>
+                        <input type="hidden" name="pageNum" id="pageNum"/>
+                        <input type="hidden" name="pageSize" id="pageSize" value="20"/>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<script src="__JS__/jquery.min.js?v=2.1.4"></script>
+<script src="__JS__/bootstrap.min.js?v=3.3.6"></script>
+<script src="__JS__/footable.all.min.js"></script>
+<script src="__JS__/bootstrap-datepicker.js"></script>
+<script src="__JS__/bootstrap-table.js"></script>
+<script src="__JS__/common.js?v=1.0"></script>
+
+<!-- 自定义js -->
+<script src="__JS__/content.js?v=1.0.0"></script>
+<script>
+
+
+    $(document).ready(function () {
+        $('#pageTd').attr('colspan', 8);
+    });
+
+
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,150 @@
+---------------------------------------------------------------
+[ 2019-04-09T14:26:25+08:00 ] 127.0.0.1 POST /admin/login/auth.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.046467s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `proxy` [ RunTime:0.152621s ]
+[ sql ] [ SQL ] SELECT `salt` FROM `proxy` WHERE  `username` = 'yunying' LIMIT 1 [ RunTime:0.015898s ]
+[ sql ] [ SQL ] SELECT * FROM `proxy` WHERE  `username` = 'yunying'  AND `password` = '24f00c967b5a6a7f0c6c7d35295e880e' LIMIT 1 [ RunTime:0.001582s ]
+[ sql ] [ SQL ] UPDATE `proxy`  SET `last_login`=now(),`logtimes`=logtimes+1,`last_ip`='127.0.0.1'  WHERE  `id` = 2 [ RunTime:0.094629s ]
+---------------------------------------------------------------
+[ 2019-04-09T14:26:25+08:00 ] 127.0.0.1 GET /admin/index/index.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.011326s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `proxy` [ RunTime:0.001185s ]
+[ sql ] [ SQL ] SELECT `bind_mobile` FROM `proxy` WHERE  `code` = 'WZ0000002' LIMIT 1 [ RunTime:0.000680s ]
+---------------------------------------------------------------
+[ 2019-04-09T14:26:25+08:00 ] 127.0.0.1 GET /admin/index/main.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.001543s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `message` [ RunTime:0.032913s ]
+[ sql ] [ SQL ] SELECT * FROM `message` ORDER BY `id` DESC [ RunTime:0.000507s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `player` [ RunTime:0.012378s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `player` WHERE  `proxy_id` = 'WZ0000002' OR `parent_id` = 'WZ0000002' LIMIT 1 [ RunTime:0.013578s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `player` WHERE  (  proxy_id='WZ0000002' and datediff(`regtime`,NOW())=0  ) OR (  parent_id='WZ0000002' and datediff(`regtime`,NOW())=0  ) LIMIT 1 [ RunTime:0.014680s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `player` WHERE  (  proxy_id='WZ0000002' and datediff(`regtime`,NOW())=-1  ) OR (  parent_id='WZ0000002' and datediff(`regtime`,NOW())=-1  ) LIMIT 1 [ RunTime:0.001134s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `playerorder` [ RunTime:0.012936s ]
+[ sql ] [ SQL ] SELECT SUM(a.total_tax) AS tp_sum FROM `playerorder` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (  a.proxy_id='WZ0000002'   ) OR (  a.parent_id='WZ0000002'  ) LIMIT 1 [ RunTime:0.067462s ]
+[ sql ] [ SQL ] SELECT `a`.`total_tax`,`b`.`percent`,`b`.`code` FROM `playerorder` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (  a.proxy_id='WZ0000002' ) OR (  a.parent_id='WZ0000002' ) [ RunTime:0.050010s ]
+[ sql ] [ SQL ] SELECT * FROM `playerorder` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (  a.proxy_id='WZ0000002' and datediff(`createtime`,NOW())=-1  ) OR (  a.parent_id='WZ0000002' and datediff(`createtime`,NOW())=-1  ) [ RunTime:0.014049s ]
+[ sql ] [ SQL ] SELECT * FROM `playerorder` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (  a.proxy_id='WZ0000002' and datediff(`createtime`,NOW())=0  ) OR (  a.parent_id='WZ0000002' and datediff(`createtime`,NOW())=0  ) [ RunTime:0.010055s ]
+---------------------------------------------------------------
+[ 2019-04-09T15:06:11+08:00 ] 127.0.0.1 GET /admin/index/index.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.002267s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `proxy` [ RunTime:0.001655s ]
+[ sql ] [ SQL ] SELECT `bind_mobile` FROM `proxy` WHERE  `code` = 'WZ0000002' LIMIT 1 [ RunTime:0.000480s ]
+---------------------------------------------------------------
+[ 2019-04-09T15:06:11+08:00 ] 127.0.0.1 GET /admin/index/main.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.001663s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `message` [ RunTime:0.001588s ]
+[ sql ] [ SQL ] SELECT * FROM `message` ORDER BY `id` DESC [ RunTime:0.000391s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `player` [ RunTime:0.001259s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `player` WHERE  `proxy_id` = 'WZ0000002' OR `parent_id` = 'WZ0000002' LIMIT 1 [ RunTime:0.000996s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `player` WHERE  (  proxy_id='WZ0000002' and datediff(`regtime`,NOW())=0  ) OR (  parent_id='WZ0000002' and datediff(`regtime`,NOW())=0  ) LIMIT 1 [ RunTime:0.001205s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `player` WHERE  (  proxy_id='WZ0000002' and datediff(`regtime`,NOW())=-1  ) OR (  parent_id='WZ0000002' and datediff(`regtime`,NOW())=-1  ) LIMIT 1 [ RunTime:0.001424s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `playerorder` [ RunTime:0.001687s ]
+[ sql ] [ SQL ] SELECT SUM(a.total_tax) AS tp_sum FROM `playerorder` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (  a.proxy_id='WZ0000002'   ) OR (  a.parent_id='WZ0000002'  ) LIMIT 1 [ RunTime:0.040097s ]
+[ sql ] [ SQL ] SELECT `a`.`total_tax`,`b`.`percent`,`b`.`code` FROM `playerorder` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (  a.proxy_id='WZ0000002' ) OR (  a.parent_id='WZ0000002' ) [ RunTime:0.052287s ]
+[ sql ] [ SQL ] SELECT * FROM `playerorder` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (  a.proxy_id='WZ0000002' and datediff(`createtime`,NOW())=-1  ) OR (  a.parent_id='WZ0000002' and datediff(`createtime`,NOW())=-1  ) [ RunTime:0.013490s ]
+[ sql ] [ SQL ] SELECT * FROM `playerorder` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (  a.proxy_id='WZ0000002' and datediff(`createtime`,NOW())=0  ) OR (  a.parent_id='WZ0000002' and datediff(`createtime`,NOW())=0  ) [ RunTime:0.011185s ]
+---------------------------------------------------------------
+[ 2019-04-09T15:06:15+08:00 ] 127.0.0.1 GET /admin/index/index.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.010853s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `proxy` [ RunTime:0.001296s ]
+[ sql ] [ SQL ] SELECT `bind_mobile` FROM `proxy` WHERE  `code` = 'WZ0000002' LIMIT 1 [ RunTime:0.000367s ]
+---------------------------------------------------------------
+[ 2019-04-09T15:06:15+08:00 ] 127.0.0.1 GET /admin/index/main.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.001568s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `message` [ RunTime:0.001363s ]
+[ sql ] [ SQL ] SELECT * FROM `message` ORDER BY `id` DESC [ RunTime:0.000410s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `player` [ RunTime:0.001329s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `player` WHERE  `proxy_id` = 'WZ0000002' OR `parent_id` = 'WZ0000002' LIMIT 1 [ RunTime:0.000851s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `player` WHERE  (  proxy_id='WZ0000002' and datediff(`regtime`,NOW())=0  ) OR (  parent_id='WZ0000002' and datediff(`regtime`,NOW())=0  ) LIMIT 1 [ RunTime:0.001085s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `player` WHERE  (  proxy_id='WZ0000002' and datediff(`regtime`,NOW())=-1  ) OR (  parent_id='WZ0000002' and datediff(`regtime`,NOW())=-1  ) LIMIT 1 [ RunTime:0.001210s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `playerorder` [ RunTime:0.001344s ]
+[ sql ] [ SQL ] SELECT SUM(a.total_tax) AS tp_sum FROM `playerorder` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (  a.proxy_id='WZ0000002'   ) OR (  a.parent_id='WZ0000002'  ) LIMIT 1 [ RunTime:0.041272s ]
+[ sql ] [ SQL ] SELECT `a`.`total_tax`,`b`.`percent`,`b`.`code` FROM `playerorder` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (  a.proxy_id='WZ0000002' ) OR (  a.parent_id='WZ0000002' ) [ RunTime:0.047430s ]
+[ sql ] [ SQL ] SELECT * FROM `playerorder` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (  a.proxy_id='WZ0000002' and datediff(`createtime`,NOW())=-1  ) OR (  a.parent_id='WZ0000002' and datediff(`createtime`,NOW())=-1  ) [ RunTime:0.012530s ]
+[ sql ] [ SQL ] SELECT * FROM `playerorder` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (  a.proxy_id='WZ0000002' and datediff(`createtime`,NOW())=0  ) OR (  a.parent_id='WZ0000002' and datediff(`createtime`,NOW())=0  ) [ RunTime:0.010367s ]
+---------------------------------------------------------------
+[ 2019-04-09T15:06:15+08:00 ] 127.0.0.1 GET /admin/index/index.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.001387s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `proxy` [ RunTime:0.001374s ]
+[ sql ] [ SQL ] SELECT `bind_mobile` FROM `proxy` WHERE  `code` = 'WZ0000002' LIMIT 1 [ RunTime:0.000551s ]
+---------------------------------------------------------------
+[ 2019-04-09T15:06:15+08:00 ] 127.0.0.1 GET /admin/index/index.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.000981s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `proxy` [ RunTime:0.001305s ]
+[ sql ] [ SQL ] SELECT `bind_mobile` FROM `proxy` WHERE  `code` = 'WZ0000002' LIMIT 1 [ RunTime:0.000326s ]
+---------------------------------------------------------------
+[ 2019-04-09T15:06:15+08:00 ] 127.0.0.1 GET /admin/index/main.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.000927s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `message` [ RunTime:0.001291s ]
+[ sql ] [ SQL ] SELECT * FROM `message` ORDER BY `id` DESC [ RunTime:0.000244s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `player` [ RunTime:0.000940s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `player` WHERE  `proxy_id` = 'WZ0000002' OR `parent_id` = 'WZ0000002' LIMIT 1 [ RunTime:0.000671s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `player` WHERE  (  proxy_id='WZ0000002' and datediff(`regtime`,NOW())=0  ) OR (  parent_id='WZ0000002' and datediff(`regtime`,NOW())=0  ) LIMIT 1 [ RunTime:0.000855s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `player` WHERE  (  proxy_id='WZ0000002' and datediff(`regtime`,NOW())=-1  ) OR (  parent_id='WZ0000002' and datediff(`regtime`,NOW())=-1  ) LIMIT 1 [ RunTime:0.001070s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `playerorder` [ RunTime:0.001479s ]
+[ sql ] [ SQL ] SELECT SUM(a.total_tax) AS tp_sum FROM `playerorder` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (  a.proxy_id='WZ0000002'   ) OR (  a.parent_id='WZ0000002'  ) LIMIT 1 [ RunTime:0.037825s ]
+[ sql ] [ SQL ] SELECT `a`.`total_tax`,`b`.`percent`,`b`.`code` FROM `playerorder` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (  a.proxy_id='WZ0000002' ) OR (  a.parent_id='WZ0000002' ) [ RunTime:0.047492s ]
+[ sql ] [ SQL ] SELECT * FROM `playerorder` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (  a.proxy_id='WZ0000002' and datediff(`createtime`,NOW())=-1  ) OR (  a.parent_id='WZ0000002' and datediff(`createtime`,NOW())=-1  ) [ RunTime:0.013331s ]
+[ sql ] [ SQL ] SELECT * FROM `playerorder` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (  a.proxy_id='WZ0000002' and datediff(`createtime`,NOW())=0  ) OR (  a.parent_id='WZ0000002' and datediff(`createtime`,NOW())=0  ) [ RunTime:0.010028s ]
+---------------------------------------------------------------
+[ 2019-04-09T15:06:15+08:00 ] 127.0.0.1 GET /admin/index/index.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.001514s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `proxy` [ RunTime:0.001518s ]
+[ sql ] [ SQL ] SELECT `bind_mobile` FROM `proxy` WHERE  `code` = 'WZ0000002' LIMIT 1 [ RunTime:0.000333s ]
+---------------------------------------------------------------
+[ 2019-04-09T15:06:15+08:00 ] 127.0.0.1 GET /admin/index/index.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.001112s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `proxy` [ RunTime:0.001304s ]
+[ sql ] [ SQL ] SELECT `bind_mobile` FROM `proxy` WHERE  `code` = 'WZ0000002' LIMIT 1 [ RunTime:0.000343s ]
+---------------------------------------------------------------
+[ 2019-04-09T15:06:16+08:00 ] 127.0.0.1 GET /admin/index/main.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.001264s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `message` [ RunTime:0.001318s ]
+[ sql ] [ SQL ] SELECT * FROM `message` ORDER BY `id` DESC [ RunTime:0.000375s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `player` [ RunTime:0.001245s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `player` WHERE  `proxy_id` = 'WZ0000002' OR `parent_id` = 'WZ0000002' LIMIT 1 [ RunTime:0.000764s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `player` WHERE  (  proxy_id='WZ0000002' and datediff(`regtime`,NOW())=0  ) OR (  parent_id='WZ0000002' and datediff(`regtime`,NOW())=0  ) LIMIT 1 [ RunTime:0.001048s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `player` WHERE  (  proxy_id='WZ0000002' and datediff(`regtime`,NOW())=-1  ) OR (  parent_id='WZ0000002' and datediff(`regtime`,NOW())=-1  ) LIMIT 1 [ RunTime:0.001064s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `playerorder` [ RunTime:0.001185s ]
+[ sql ] [ SQL ] SELECT SUM(a.total_tax) AS tp_sum FROM `playerorder` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (  a.proxy_id='WZ0000002'   ) OR (  a.parent_id='WZ0000002'  ) LIMIT 1 [ RunTime:0.038178s ]
+[ sql ] [ SQL ] SELECT `a`.`total_tax`,`b`.`percent`,`b`.`code` FROM `playerorder` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (  a.proxy_id='WZ0000002' ) OR (  a.parent_id='WZ0000002' ) [ RunTime:0.049167s ]
+[ sql ] [ SQL ] SELECT * FROM `playerorder` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (  a.proxy_id='WZ0000002' and datediff(`createtime`,NOW())=-1  ) OR (  a.parent_id='WZ0000002' and datediff(`createtime`,NOW())=-1  ) [ RunTime:0.013288s ]
+[ sql ] [ SQL ] SELECT * FROM `playerorder` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (  a.proxy_id='WZ0000002' and datediff(`createtime`,NOW())=0  ) OR (  a.parent_id='WZ0000002' and datediff(`createtime`,NOW())=0  ) [ RunTime:0.009841s ]
+---------------------------------------------------------------
+[ 2019-04-09T15:06:16+08:00 ] 127.0.0.1 GET /admin/index/main.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.010853s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `message` [ RunTime:0.001274s ]
+[ sql ] [ SQL ] SELECT * FROM `message` ORDER BY `id` DESC [ RunTime:0.000299s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `player` [ RunTime:0.000834s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `player` WHERE  `proxy_id` = 'WZ0000002' OR `parent_id` = 'WZ0000002' LIMIT 1 [ RunTime:0.000698s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `player` WHERE  (  proxy_id='WZ0000002' and datediff(`regtime`,NOW())=0  ) OR (  parent_id='WZ0000002' and datediff(`regtime`,NOW())=0  ) LIMIT 1 [ RunTime:0.000899s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `player` WHERE  (  proxy_id='WZ0000002' and datediff(`regtime`,NOW())=-1  ) OR (  parent_id='WZ0000002' and datediff(`regtime`,NOW())=-1  ) LIMIT 1 [ RunTime:0.000874s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `playerorder` [ RunTime:0.000828s ]
+[ sql ] [ SQL ] SELECT SUM(a.total_tax) AS tp_sum FROM `playerorder` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (  a.proxy_id='WZ0000002'   ) OR (  a.parent_id='WZ0000002'  ) LIMIT 1 [ RunTime:0.033571s ]
+[ sql ] [ SQL ] SELECT `a`.`total_tax`,`b`.`percent`,`b`.`code` FROM `playerorder` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (  a.proxy_id='WZ0000002' ) OR (  a.parent_id='WZ0000002' ) [ RunTime:0.047875s ]
+[ sql ] [ SQL ] SELECT * FROM `playerorder` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (  a.proxy_id='WZ0000002' and datediff(`createtime`,NOW())=-1  ) OR (  a.parent_id='WZ0000002' and datediff(`createtime`,NOW())=-1  ) [ RunTime:0.012955s ]
+[ sql ] [ SQL ] SELECT * FROM `playerorder` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (  a.proxy_id='WZ0000002' and datediff(`createtime`,NOW())=0  ) OR (  a.parent_id='WZ0000002' and datediff(`createtime`,NOW())=0  ) [ RunTime:0.009774s ]
+---------------------------------------------------------------
+[ 2019-04-09T15:06:16+08:00 ] 127.0.0.1 GET /admin/index/index.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.000920s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `proxy` [ RunTime:0.001301s ]
+[ sql ] [ SQL ] SELECT `bind_mobile` FROM `proxy` WHERE  `code` = 'WZ0000002' LIMIT 1 [ RunTime:0.000324s ]
+---------------------------------------------------------------
+[ 2019-04-09T15:06:16+08:00 ] 127.0.0.1 GET /admin/index/index.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.010570s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `proxy` [ RunTime:0.001013s ]
+[ sql ] [ SQL ] SELECT `bind_mobile` FROM `proxy` WHERE  `code` = 'WZ0000002' LIMIT 1 [ RunTime:0.000268s ]
+---------------------------------------------------------------
+[ 2019-04-09T15:06:16+08:00 ] 127.0.0.1 GET /admin/index/main.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.010939s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `message` [ RunTime:0.001342s ]
+[ sql ] [ SQL ] SELECT * FROM `message` ORDER BY `id` DESC [ RunTime:0.000389s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `player` [ RunTime:0.000882s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `player` WHERE  `proxy_id` = 'WZ0000002' OR `parent_id` = 'WZ0000002' LIMIT 1 [ RunTime:0.000700s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `player` WHERE  (  proxy_id='WZ0000002' and datediff(`regtime`,NOW())=0  ) OR (  parent_id='WZ0000002' and datediff(`regtime`,NOW())=0  ) LIMIT 1 [ RunTime:0.001022s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `player` WHERE  (  proxy_id='WZ0000002' and datediff(`regtime`,NOW())=-1  ) OR (  parent_id='WZ0000002' and datediff(`regtime`,NOW())=-1  ) LIMIT 1 [ RunTime:0.001311s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `playerorder` [ RunTime:0.001309s ]
+[ sql ] [ SQL ] SELECT SUM(a.total_tax) AS tp_sum FROM `playerorder` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (  a.proxy_id='WZ0000002'   ) OR (  a.parent_id='WZ0000002'  ) LIMIT 1 [ RunTime:0.038069s ]
+[ sql ] [ SQL ] SELECT `a`.`total_tax`,`b`.`percent`,`b`.`code` FROM `playerorder` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (  a.proxy_id='WZ0000002' ) OR (  a.parent_id='WZ0000002' ) [ RunTime:0.047020s ]
+[ sql ] [ SQL ] SELECT * FROM `playerorder` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (  a.proxy_id='WZ0000002' and datediff(`createtime`,NOW())=-1  ) OR (  a.parent_id='WZ0000002' and datediff(`createtime`,NOW())=-1  ) [ RunTime:0.012364s ]
+[ sql ] [ SQL ] SELECT * FROM `playerorder` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (  a.proxy_id='WZ0000002' and datediff(`createtime`,NOW())=0  ) OR (  a.parent_id='WZ0000002' and datediff(`createtime`,NOW())=0  ) [ RunTime:0.010390s ]

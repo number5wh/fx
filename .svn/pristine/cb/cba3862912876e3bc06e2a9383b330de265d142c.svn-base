@@ -1,0 +1,6 @@
+pace.min.js						页面加载条
+contabs.js							管理系统通讯录
+cache.js							数据缓存
+layer.min.js						弹窗弹层插件
+jquery.slimscroll.min.js		滚动条插件
+jquery.metisMenu.js			导航侧边栏插件

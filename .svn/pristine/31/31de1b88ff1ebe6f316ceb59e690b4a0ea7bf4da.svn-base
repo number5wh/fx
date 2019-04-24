@@ -1,0 +1,120 @@
+<?php if (!defined('THINK_PATH')) exit(); /*a:2:{s:79:"C:\Users\Administrator\Desktop\fx/./application/admin\view\proxy\changepwd.html";i:1553590179;s:73:"C:\Users\Administrator\Desktop\fx\application\admin\view\common\base.html";i:1553670084;}*/ ?>
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>修改密码</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="/src/layuiadmin/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="/src/layuiadmin/style/admin.css" media="all">
+    
+</head>
+<body>
+
+<div class="layui-fluid">
+    
+<div class="layui-card">
+    <div class="layui-card-header layuiadmin-card-header-auto">
+        <h2>修改密码</h2>
+    </div>
+
+    <div class="layui-card-body">
+        <form class="layui-form" id="myForm" action="<?php echo url('proxy/savepwd'); ?>" method="post">
+            <div class="layui-form-item">
+                <label class="layui-form-label">原始密码：</label>
+                <div class="layui-input-inline">
+                    <input type="password" id="oldPassword" name="oldPassword" lay-verify="required" placeholder="请输入原始密码" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">新密码：</label>
+                <div class="layui-input-inline">
+                    <input type="password" id="password" name="password" lay-verify="required" placeholder="请输入新密码" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">确认密码：</label>
+                <div class="layui-input-inline">
+                    <input type="password" id="passwordConfirm" name="password_confirm" lay-verify="required" placeholder="请确认新密码" autocomplete="off" class="layui-input">
+                    <input type="hidden" name="_csrf"     value="463e94e8-17cb-457a-ab05-e77612b82cd7"/>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label"></label>
+                <div class="layui-input-inline">
+                    <button id="sure" class="layui-btn" >确认修改</button>
+                    <button class="layui-btn layui-btn-primary" type="reset">清空</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+</div>
+
+<script src="/src/layuiadmin/layui/layui.js?t=1"></script>
+<script src="/public/static/js/jquery.min.js?v=2.1.4"></script>
+
+<script>
+    layui.use(['layer','table','form', 'jquery'],function () {
+        var layer = layui.layer
+            ,form = layui.form
+            ,table = layui.table
+            ,$    = layui.$;
+        //用户表格初始化
+        $('#sure').on('click', function(e) {
+            e.preventDefault();
+            toSubmit();
+        });
+        function toSubmit() {
+            if ($('#password').val() !== $('#passwordConfirm').val()) {
+                layer.msg('两次输入密码不一致');
+                return false;
+            }
+            if ($('#password').val().length < 6) {
+                layer.msg('密码至少六位')
+                return false;
+            }
+            if ($('#password').val().length > 15) {
+                layer.msg('密码小于十五位')
+                return false;
+            }
+            $.ajax({
+                url: "<?php echo url('proxy/modifierPassword'); ?>",
+                type: 'post',
+                data: $('#myForm').serialize(),
+                success: function (data) {
+                    if (data) {
+                        layer.msg('修改成功');
+                        window.setTimeout(function() {
+                            window.location.href = "<?php echo url('proxy/Changepwd'); ?>";
+                        }, 1000);
+
+                    } else {
+                        layer.msg('原始密码不正确');
+                    }
+                }
+            })
+        }
+
+        function checkPassword() {
+            if ($('#passwordConfirm').val() === '') {
+                return;
+            }
+            if ($('#password').val() !== $('#passwordConfirm').val()) {
+                layer.msg('两次输入密码不一致');
+            }
+        }
+    });
+</script>
+
+</body>
+</html>
+

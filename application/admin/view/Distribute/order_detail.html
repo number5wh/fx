@@ -1,0 +1,180 @@
+
+
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>收入详情</title>
+
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href="__CSS__/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="__CSS__/font-awesome.min.css?v=4.4.0" rel="stylesheet">
+    <link href="__CSS__/footable.core.css" rel="stylesheet">
+    <link href="__CSS__/datepicker3.css" rel="stylesheet"/>
+    <link href="__CSS__/animate.css" rel="stylesheet">
+    <link href="__CSS__/style.css?v=4.1.0" rel="stylesheet">
+    <link href="__CSS__/bootstrap-table.css" type="text/css" rel="stylesheet">
+
+    <style type="text/css">
+        .row {
+            display: table-cell;
+            vertical-align: middle;
+        }
+
+        .table > tbody > tr > td {
+            line-height: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            word-break: keep-all;
+            word-wrap: break-word;
+        }
+
+        .wrapper-content {
+            padding: 0px;
+        }
+    </style>
+</head>
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content  fadeInRight">
+
+    <div class="col-sm-12">
+        <div class="ibox float-e-margins">
+            <form class="form-inline" action="OrderDetail" id="myForm" method="post">
+                <div class="ibox-content">
+                    <div class="row ">
+                            <span class="form-group-btn ">
+                                         <button type="submit" class="btn btn-primary btn-sm"><i
+                                                 class="fa fa-refresh"></i> 刷新</button>
+                                     </span>
+
+                        <div class="form-group input-group-sm">
+                            <label for="gamerID">玩家ID</label>
+                            <input type="text" class="form-control" id="gamerID" name="gamerId"
+                                   placeholder="请输入玩家ID" value="{$gamerid}">
+                        </div>
+
+                        <label for="timePicker">税收时间</label>
+                        <div class="input-group date input-group-sm" data-provide="datepicker" id="timePicker">
+                            <input type="text" class="form-control" name="startTime" value="{$starttime}" readonly="readonly">
+                            <div class="input-group-addon">
+                                <span class="glyphicon glyphicon-th"></span>
+                            </div>
+                        </div>
+                        <div class="input-group date input-group-sm" data-provide="datepicker">
+                            <input type="text" class="form-control" name="endTime" value="{$endTime}"  readonly="readonly">
+                            <div class="input-group-addon">
+                                <span class="glyphicon glyphicon-th"></span>
+                            </div>
+                        </div>
+                        <div class="form-group input-group">
+                                    <span class="form-group-btn ">
+                                         <button type="submit" class="btn btn-primary btn-sm">搜索</button>
+                                     </span>
+                            <span>&nbsp;&nbsp;&nbsp;</span>
+                            <span class="form-group-btn ">
+                                         <button type="reset" class="btn btn-primary btn-sm">清空</button>
+                                     </span>
+
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="ibox-title">
+
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content table-responsive">
+
+                    <table class="footable table table-condensed table-stripped toggle-arrow-tiny "
+                           data-page-size="12"
+                           width="95%"
+                           cellpadding="2" cellspacing="1" >
+                        <thead>
+                        <tr>
+
+                            <th data-toggle="true">代理Id</th>
+                            <th>代理名称</th>
+                            <th>玩家ID</th>
+                            <th>游戏</th>
+                            <th>总税收</th>
+                            <th>订单时间</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <div>
+                            {volist name="list" id="vo"}
+                            <tr>
+                                <td >{$vo.proxy_id}</td>
+                                <td >{$vo.nickname}</td>
+                                <td >{$vo.userid}</td>
+                                <td>{$vo.game}</td>
+                                <td>
+                                    {$vo.total_tax}
+                                </td>
+                                <td>{$vo.createtime}</td>
+                            </tr>
+                            {/volist}
+                        </div>
+
+
+                        </tbody>
+                        <tfoot>
+                        <div>
+                            <td id="pageTd" rowspan="5">
+                                <nav aria-label="Page navigation ">
+                                    {$list->render()}
+                                </nav>
+                            </td>
+                        </div>
+                        </tfoot>
+                    </table>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="__JS__/jquery.min.js?v=2.1.4"></script>
+<script src="__JS__/bootstrap.min.js?v=3.3.6"></script>
+<script src="__JS__/footable.all.min.js"></script>
+<script src="__JS__/bootstrap-datepicker.js"></script>
+
+<!-- 自定义js -->
+<script src="__JS__/content.js?v=1.0.0"></script>
+<script src="__JS__/bootstrap-table.js"></script>
+<script src="__JS__/common.js?v=1.0"></script>
+<script>
+
+    $(document).ready(function () {
+        $('#pageTd').attr('colspan', 8)
+
+    });
+
+
+    function changeGameType(url) {
+        window.location.href = "incomeDetail?gameType=" + url.value;
+
+    }
+
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,259 @@
+<?php
+
+namespace app\admin\controller;
+
+use app\admin\controller\Base;
+use think\Db;
+use think\captcha\Captcha;
+use app\admin\model;
+
+class Index extends Base {
+
+    public function index() {
+        if ($this->verify()) {
+            $proxy = session("proxy");
+            $bind_mobile = Db::name("proxy")->where("code",$proxy["code"])->value("bind_mobile");
+            //$bind_mobile = $proxy["bind_mobile"];
+            if($bind_mobile=='' || empty($bind_mobile)){
+                $bind_mobile = "false";
+            }
+            $this->assign("proxy",$proxy);
+            $this->assign("bind_mobile",$bind_mobile);
+            return $this->fetch();
+        } else {
+            $this->redirect('login/index');
+        }
+    }
+
+    public function main(){
+        $message =Db::name("message")->order( 'id desc ')->select();
+
+        $today=strtotime(date('Y-m-d 00:00:00'));
+
+        $proxy_id =session("proxy_id");
+        $proxy = session("proxy");
+       // $now =
+        $data['addtime'] = array('egt',$today);
+
+        //总注册
+        $regtotal = Db::name("player")
+            ->where(['proxy_id'=>session("proxy_id")])
+            ->whereor("parent_id",session("proxy_id"))
+            ->count();
+
+        $regtoday = Db::name("player")
+            ->where("proxy_id='".session("proxy_id")."' and datediff(`regtime`,NOW())=0 ")
+            ->whereor("parent_id='".session("proxy_id")."' and datediff(`regtime`,NOW())=0 ")
+            ->count();
+
+
+        $regyestday = Db::name("player")
+            ->where("proxy_id='".session("proxy_id")."' and datediff(`regtime`,NOW())=-1 ")
+            ->whereor("parent_id='".session("proxy_id")."' and datediff(`regtime`,NOW())=-1 ")
+            ->count();
+
+
+        //总税收
+        $totaltax = Db::name("playerorder")
+            ->alias("a")
+            ->join("proxy b","a.proxy_id=b.code","LEFT")
+            ->where("a.proxy_id='".session("proxy_id")."'  ")
+            ->whereor("a.parent_id='".session("proxy_id")."' ")
+            ->sum("a.total_tax");
+
+
+        $allmoney = Db::name("playerorder")
+            ->alias("a")
+            ->field('a.total_tax,b.percent,b.code')
+            ->join("proxy b","a.proxy_id=b.code","LEFT")
+            ->where("a.proxy_id='".session("proxy_id")."'")
+            ->whereor("a.parent_id='".session("proxy_id")."'")
+            ->select();
+
+
+        //print_r($allmoney);
+       // exit();
+//
+//
+//
+        $totalmoney = Db::name("playerorder")
+            ->alias("a")
+            ->join("proxy b","a.proxy_id=b.code","LEFT")
+            ->where("a.proxy_id='".session("proxy_id")."' and datediff(`createtime`,NOW())=-1 ")
+            ->whereor("a.parent_id='".session("proxy_id")."' and datediff(`createtime`,NOW())=-1 ")
+            ->select();
+//
+//
+//
+//
+//
+//
+        $todaytotal = Db::name("playerorder")
+            ->alias("a")
+            ->join("proxy b","a.proxy_id=b.code","LEFT")
+            ->where("a.proxy_id='".session("proxy_id")."' and datediff(`createtime`,NOW())=0 ")
+            ->whereor("a.parent_id='".session("proxy_id")."' and datediff(`createtime`,NOW())=0 ")
+            ->select();
+
+
+        $yesterdaytt = 0;
+        foreach($totalmoney as $key=>$v){
+            if($v["code"]==$proxy_id){
+                $yesterdaytt += $v["total_tax"] * $v["percent"]/100;
+            }
+            else
+            {
+                $yesterdaytt += $v["total_tax"] * ($proxy["percent"]-$v["percent"])/100;
+            }
+        }
+//
+//
+//
+        $todaytt = 0;
+        foreach($todaytotal as $key=>$v){
+            if($v["code"]==$proxy_id){
+                $todaytt += $v["total_tax"] * $v["percent"]/100;
+            }
+            else
+            {
+                $todaytt += $v["total_tax"] * ($proxy["percent"]-$v["percent"])/100;
+            }
+        }
+//
+//
+        $alltt = 0;
+        foreach($allmoney as $key=>$v){
+            if($v["code"]==$proxy_id){
+                $alltt += $v["total_tax"] * $v["percent"]/100;
+            }
+            else
+            {
+                $alltt += $v["total_tax"] * ($proxy["percent"]-$v["percent"])/100;
+            }
+        }
+
+        //print($alltt);
+        
+
+        $this->assign('regtotal',$regtotal);
+        $this->assign('regtoday',$regtoday);
+        $this->assign("regzt",$regyestday);
+        $this->assign("totaltax",$totaltax);
+        $this->assign("zrsy",$yesterdaytt);
+        $this->assign("jrsy",$todaytt);
+        $this->assign("alltt",$alltt);
+        $this->assign("list",$message);
+        return $this->fetch();
+    }
+
+    public function notice(){
+        return $this->fetch();
+    }
+
+
+
+    public function test(){
+
+//
+//        $list =Db::name("proxy")->field("code")->select();
+//        foreach ($list as $key=>$v){
+//            $proxy =new \app\admin\model\Proxy();
+//            $status1 = $proxy->sendToDwj($v["code"]);
+//            if($status1->code!=0){
+//                //Log::write($proxy_code.'发送到第三方未成功',"ERROR");
+//                echo $v["code"]."失败<br />";
+//            }
+//            else
+//            {
+//                echo $v["code"]."成功<br/>";
+//            }
+//
+//        }
+      // file_get_contents("./public/upload/1.png");
+/*        $xml = "﻿<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><dinpay><response><interface_version>V3.1</interface_version><merchant_code>100002006001</merchant_code><order_amount>0.1</order_amount><order_no>11234</order_no><order_time>2016-12-10 12:36:25</order_time><qrcode>https://qr.alipay.com/fkx02336f8v0eqrjkzefz4d</qrcode><resp_code>SUCCESS</resp_code><resp_desc>通讯成功</resp_desc><result_code>0</result_code><sign>b5eJ4LwNe6Yyqzdqv+6/DTXDVbmQFZwIQHXrHiWem3KKddF4v66uBrtmeGqeXXiNkTUxHtxuNCejXVe8SRQgpEGBQX5PDxirX28mpeJPVTBUEZqrJkXEi3y3herKVtTuQ4mM6clVzHn4YEM19/NeDXcTBSnXchNbPs8IK2qV6uU=</sign><sign_type>RSA-S</sign_type><trade_no>FF158F1000072142</trade_no><trade_time>2018-10-09 09:25:54</trade_time></response></dinpay>";*/
+//
+//        $ob = simplexml_load_string($xml);
+//        //dump($ob);
+//        print_r($ob->response);
+//        $url="http://182.254.136.167:8009/sys_port/gateway/index.asp?";
+//        $data = "id=%s&pwd=%s&to=%s&Content=%s&time=";
+//        $id = urlencode(iconv("utf-8","gb2312","itaiyang"));
+//        $pwd = '';
+//        $to = '';
+//        $content = urlencode(iconv("UTF-8","GB2312","您好，您的验证码是884192"));
+//        $rdata = sprintf($data, $id, $pwd, $to, $content);
+//        $ch = curl_init();
+//        curl_setopt($ch, CURLOPT_POST,1);
+//        curl_setopt($ch, CURLOPT_POSTFIELDS,$rdata);
+//        curl_setopt($ch, CURLOPT_URL,$url);
+//        curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
+        //$result = curl_exec($ch);
+        //curl_close($ch);
+//        $code = substr("000/Send:1/Consumption:.05/Tmoney:999.9/sid:1008153915798852",0,3);
+//        if($code==='000'){
+//            return "success";
+//        }
+//
+//        try {
+//            $bigImgPath = "./upload/1.png";
+//            $qCodePath = "./upload/Qrcode/20123.gif";
+//            $bigImg = imagecreatefromstring(file_get_contents($bigImgPath));
+//            $qCodeImg = imagecreatefromstring(file_get_contents($qCodePath));
+//
+//            list($qCodeWidth, $qCodeHight, $qCodeType) = getimagesize($qCodePath);
+//            imagecopymerge($bigImg, $qCodeImg, 205, 800, 0, 0, $qCodeWidth, $qCodeHight, 100);
+//            list($bigWidth, $bigHight, $bigType) = getimagesize($bigImgPath);
+//
+//            $ret = imagejpeg($bigImg, './'.date("His").'.png');
+//            echo $ret;
+//        }catch(Exception $e){
+//            print($e->getMessage());
+//        }
+
+        //$company = new model\Company();
+        //var_dump($company->getPlayer('20120'));
+
+//        $proxy_code = "1";
+//
+//        $proxy_code = $proxy_code +1;
+//        echo "HFH000000".$proxy_code;
+        //$var=sprintf("HFH%07d", 2222);//生成4位数，不足前面补0
+       // echo $var;//结果为0002
+
+        $usertemp = new \app\admin\model\UserTemplate();
+        $usertemp->Qrcode('123456');
+
+//        $proxy =new \app\admin\model\Proxy();
+//        $ret = $proxy->sendToDwj('20120');
+//        print_r($ret);
+//        print($ret->message);
+        //$data =json_encode($ret,false);
+       //return   $data->code.$data->message;
+//        $mobile ="13405963356";
+//        if(!$mobile){
+//            return $this->showmsg(0, "参数错误", "", false, null);
+//        }
+//
+//        $sms =new model\Sms();
+//        $smsmodel = config('smsmodel');
+//        if($smsmodel=='self') {
+//            $code = rand(1000, 9999);
+//            $ret = $sms->checkandsend($mobile, $code, 'checkout', get_ip());
+//            if (!$ret) {
+//                return $this->showmsg(0, "短信发送频率过快", "", false, null);
+//            }
+//        }
+//        else if($smsmodel=='hff'){
+//            $ret = $sms->send_sms($mobile);
+//            print_r($ret);exit();
+//            if($ret->code!=0){
+//                return $this->showmsg(0, $ret->message, "", false, null);
+//            }
+//        }
+        //return $this->showmsg(1, "短信发送成功", "", false, null);
+    }
+
+
+
+
+}

@@ -1,0 +1,330 @@
+<?php if (!defined('THINK_PATH')) exit(); /*a:2:{s:79:"C:\Users\Administrator\Desktop\fx/./application/manage\view\index\sysadmin.html";i:1553827579;s:74:"C:\Users\Administrator\Desktop\fx\application\manage\view\common\base.html";i:1553670084;}*/ ?>
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>推广统计</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="/src/layuiadmin/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="/src/layuiadmin/style/admin.css" media="all">
+    
+<link href="/public/static/css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+<link href="/public/static/css/font-awesome.min.css?v=4.4.0" rel="stylesheet">
+<link href="/public/static/css/datepicker3.css" rel="stylesheet"/>
+<link href="/public/static/css/animate.css" rel="stylesheet">
+<link href="/public/static/css/style.css?v=4.1.0" rel="stylesheet">
+<link href="/public/static/css/footable.core.css" rel="stylesheet">
+<link href="/public/static/css/bootstrap-table.css" type="text/css" rel="stylesheet">
+
+</head>
+<body>
+
+<div class="layui-fluid">
+    
+<div class="layui-card">
+    <div class="layui-card-header layuiadmin-card-header-auto">
+        <form class="layui-form" action="<?php echo url('index/sysadmin'); ?>" id="searchForm" >
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">账号名</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="username" name="username"  placeholder="请输入账号名"  autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline" style="text-align: center">
+                    <button class="layui-btn" type="submit" id="search_tg">搜索</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="layui-card-body">
+        <div  style="margin-bottom: 10px;">
+            <a class="layui-btn" data-type="reload" id="add">新增用户</a>
+        </div>
+        <table id="msglist" lay-filter="msglist">
+            <thead>
+            <tr>
+
+                <th data-toggle="true">序号</th>
+                <th>账号</th>
+                <th>姓名</th>
+                <th>权限</th>
+                <th>状态</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <?php if(is_array($list) || $list instanceof \think\Collection || $list instanceof \think\Paginator): $i = 0; $__LIST__ = $list;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?>
+            <tr>
+                <td>
+                    <?php echo $vo['id']; ?>
+                </td>
+                <td><?php echo $vo['username']; ?></td>
+                <td><?php echo $vo['realname']; ?></td>
+                <td>
+                    <?php switch($vo['roleid']): case "1": ?>管理员<?php break; case "2": ?>运营<?php break; case "3": ?>财务<?php break; endswitch; ?>
+                </td>
+                <td><?php if($vo['isdel'] == 1): ?>已禁用<?php else: ?>正常<?php endif; ?></td>
+                <td>
+                    <?php if($vo['isdel'] == 0): ?>
+                    <a href="#" class="ban"  data="<?php echo $vo['id']; ?>" >禁用账号</a>
+                    <?php else: ?>
+                    <a href="#"  data="<?php echo $vo['id']; ?>" >启用账号</a>
+                    <?php endif; ?>
+                    <a href="#" class="del" data="<?php echo $vo['id']; ?>" >删除</a>
+                </td>
+            </tr>
+            <?php endforeach; endif; else: echo "" ;endif; ?>
+
+            </tbody>
+            <tfoot>
+            <tr>
+                <td id="pageTd" rowspan="5">
+                    <nav aria-label="Page navigation ">
+                        <?php echo $list->render(); ?>
+                    </nav>
+                </td>
+            </tr>
+
+            </tfoot>
+
+        </table>
+        <form class="form-inline" action="notice" id="myForm">
+            <input type="hidden" name="pageNum" id="pageNum"/>
+            <input type="hidden" name="pageSize" id="pageSize" value="10"/>
+        </form>
+    </div>
+</div>
+
+<div class="layui-row" id="popAdd" style="display:none;">
+    <div class="layui-col-md12">
+        <form class="layui-form" id="addNotice" method="post"  style="margin-top:20px;margin-right: 20px;" >
+            <div class="layui-form-item">
+                <label class="layui-form-label">账号：</label>
+                <div class="layui-input-inline">
+                    <input  type="text" id="usernameForAdd" name="usernameForAdd" placeholder="请输入账号" lay-verify="required" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">密码：</label>
+                <div class="layui-input-inline">
+                    <input type="password" id="passwordForAdd" name="passwordForAdd" lay-verify="required" placeholder="请输入密码" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">重复密码：</label>
+                <div class="layui-input-inline">
+                    <input type="password" id="repasswordForAdd" name="repasswordForAdd" lay-verify="required" placeholder="请输入密码" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <!--<div class="layui-form-item">-->
+                <!--<label class="layui-form-label">代理昵称：</label>-->
+                <!--<div class="layui-input-inline">-->
+                    <!--<input type="text" id="nickNameForReg" name="nickNameForReg" lay-verify="required" placeholder="请输入昵称" autocomplete="off" class="layui-input">-->
+                <!--</div>-->
+            <!--</div>-->
+            <div class="layui-form-item">
+                <label class="layui-form-label">真实姓名：</label>
+
+                    <div class="layui-input-inline">
+                        <input type="text" id="realnameForAdd" name="realnameForAdd" lay-verify="required" placeholder="请输入姓名" autocomplete="off" class="layui-input">
+                    </div>
+            </div>
+            <div class="layui-form-item" >
+                <label class="layui-form-label">角色：</label>
+                <div class="layui-input-inline">
+                <select name="roleid" id="roleid">
+                    <option value="">选择角色</option>
+                    <option value="1">管理员</option>
+                    <option value="2">运营</option>
+                    <option value="3">财务</option>
+                </select>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label"></label>
+                <div class="layui-input-block">
+                    <button type="submit" class="layui-btn layui-btn-radius" id="addit" >新增</button>
+                    <button type="reset" class="layui-btn layui-btn-primary layui-btn-radius">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+</div>
+
+<script src="/src/layuiadmin/layui/layui.js?t=1"></script>
+<script src="/public/static/js/jquery.min.js?v=2.1.4"></script>
+
+<script src="/public/static/js/jquery.min.js?v=2.1.4"></script>
+<script src="/public/static/js/bootstrap.min.js?v=3.3.6"></script>
+<script src="/public/static/js/footable.all.min.js"></script>
+<script src="/public/static/js/bootstrap-table.js"></script>
+<script src="/public/static/js/bootstrap-datepicker.js"></script>
+<script src="/public/static/js/common.js?v=1.0"></script>
+<script>
+
+    layui.config({
+        base: '/src/layuiadmin/' //静态资源所在路径
+    }).extend({
+        index: 'lib/index' //主入口模块
+    }).use(['index', 'jquery','layer', 'form'], function() {
+        var $ = layui.$;
+        var layer = layui.layer;
+        var form = layui.form;
+        // form.render('select');
+        $('#addit').on('click', function(e) {
+            e.preventDefault();
+            submitForm();
+        });
+        $('#add').on('click', function(e) {
+            e.preventDefault();
+            showAdd();
+        });
+        $('.del').on('click', function(e) {
+            e.preventDefault();
+            delNotice(this);
+        });
+        $('.ban').on('click', function(e) {
+            e.preventDefault();
+            banAdmin(this);
+        });
+        function delNotice(data) {
+            layer.confirm('您真的确定要删除吗？', {
+                btn: ['确认','取消'] //按钮
+            }, function(){
+                $.ajax({
+                    url: "<?php echo url('index/deladmin'); ?>",
+                    data: {id: data.attributes['data'].value},
+                    success: function (data) {
+                        if (data.code==1) {
+                            layer.msg(data.msg);
+                            window.setTimeout(function () {
+                                window.location.href = "<?php echo url('index/sysadmin'); ?>";
+                            }, 1000);
+
+                        }
+                        else
+                        {
+                            layer.msg(data.msg);
+                        }
+
+                    }
+                })
+            });
+                //return true;
+        }
+        function banAdmin(data) {
+            layer.confirm('您真的确定要禁用该账号吗？', {
+                btn: ['确认','取消'] //按钮
+            }, function(){
+                $.ajax({
+                    url: "<?php echo url('index/banAdmin'); ?>",
+                    data: {id: data.attributes['data'].value},
+                    success: function (data) {
+                        if (data.code==1) {
+                            layer.msg(data.msg);
+                            window.setTimeout(function () {
+                                window.location.href = "<?php echo url('index/sysadmin'); ?>"
+                            }, 1000);
+                        }
+                        else
+                        {
+                            layer.msg(data.msg);
+                        }
+
+                    }
+                })
+                //return true;
+            });
+        }
+
+        function showAdd() {
+            index = layer.open({
+                type: 1,
+                title: '新增用户',
+                shadeClose: true,
+                shade: 0.8,
+                content: $('#popAdd')
+            });
+        }
+        function submitForm() {
+
+            var username = document.getElementById("usernameForAdd");
+            if( username.value.length === 0 ){
+                layer.msg('管理员账号不能为空');
+                return false;
+            }
+
+            var passwordForAdd = document.getElementById("passwordForAdd");
+            if( passwordForAdd.value.length === 0 ){
+                layer.msg('密码不能为空');
+                return false;
+            }
+
+            var repasswordForAdd = document.getElementById("repasswordForAdd");
+            if( repasswordForAdd.value.length === 0 ){
+                layer.msg('重复密码不能为空');
+                return false;
+            }
+            var realnameForAdd = document.getElementById("realnameForAdd");
+            if( realnameForAdd.value.length === 0 ){
+                layer.msg('请输入昵称');
+                return false;
+            }
+
+            if(repasswordForAdd.value!=passwordForAdd.value){
+                layer.msg('两次输入密码不一致');
+                return false;
+            }
+
+
+            var RoleId = document.getElementById("roleid");
+            if( RoleId.value.length === 0 ){
+                layer.msg('请选择角色');
+                return false;
+            }
+
+            $.ajax({
+                url: "<?php echo url('index/addAdmin'); ?>",
+                data: $("#addNotice").serialize(),
+                method: 'post',
+                beforeSend: function (request) {
+                    //request.setRequestHeader(header, token);
+                },
+                success: function (data) {
+                    if (data.code==1) {
+                        layer.msg('添加成功');
+                        window.setTimeout(function(){
+                            window.location.href = "<?php echo url('index/sysadmin'); ?>"
+                        },1000);
+
+
+                        return
+                    } else {
+                        layer.msg(data.msg)
+                    }
+                }
+            })
+        }
+
+    });
+
+</script>
+
+
+<script src="/public/static/js/laydate.js"></script>
+
+</body>
+</html>
+

@@ -1,0 +1,249 @@
+---------------------------------------------------------------
+[ 2019-04-11T16:40:50+08:00 ] 127.0.0.1 POST /admin/login/auth.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.010287s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `proxy` [ RunTime:0.057511s ]
+[ sql ] [ SQL ] SELECT `salt` FROM `proxy` WHERE  `username` = '13215045605' LIMIT 1 [ RunTime:0.000661s ]
+[ sql ] [ SQL ] SELECT * FROM `proxy` WHERE  `username` = '13215045605'  AND `password` = '96e79218965eb72c92a549dd5a330112' LIMIT 1 [ RunTime:0.000525s ]
+---------------------------------------------------------------
+[ 2019-04-11T16:41:36+08:00 ] 127.0.0.1 POST /admin/login/auth.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.001348s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `proxy` [ RunTime:0.001136s ]
+[ sql ] [ SQL ] SELECT `salt` FROM `proxy` WHERE  `username` = 'admin' LIMIT 1 [ RunTime:0.000329s ]
+[ sql ] [ SQL ] SELECT * FROM `proxy` WHERE  `username` = 'admin'  AND `password` = '72d1ad20e681c6d07f9e9188a084e183' LIMIT 1 [ RunTime:0.000454s ]
+[ sql ] [ SQL ] UPDATE `proxy`  SET `last_login`=now(),`logtimes`=logtimes+1,`last_ip`='127.0.0.1'  WHERE  `id` = 1 [ RunTime:0.085994s ]
+---------------------------------------------------------------
+[ 2019-04-11T16:41:36+08:00 ] 127.0.0.1 GET /admin/index/index.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.010956s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `proxy` [ RunTime:0.001167s ]
+[ sql ] [ SQL ] SELECT `bind_mobile` FROM `proxy` WHERE  `code` = '1' LIMIT 1 [ RunTime:0.017400s ]
+---------------------------------------------------------------
+[ 2019-04-11T16:41:36+08:00 ] 127.0.0.1 GET /admin/index/main.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.001174s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `message` [ RunTime:0.035326s ]
+[ sql ] [ SQL ] SELECT * FROM `message` ORDER BY `id` DESC [ RunTime:0.000360s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `player` [ RunTime:0.023642s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `player` WHERE  `proxy_id` = '1' OR `parent_id` = '1' LIMIT 1 [ RunTime:0.001962s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `player` WHERE  (  proxy_id='1' and datediff(`regtime`,NOW())=0  ) OR (  parent_id='1' and datediff(`regtime`,NOW())=0  ) LIMIT 1 [ RunTime:0.014555s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `player` WHERE  (  proxy_id='1' and datediff(`regtime`,NOW())=-1  ) OR (  parent_id='1' and datediff(`regtime`,NOW())=-1  ) LIMIT 1 [ RunTime:0.000572s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `playerorder` [ RunTime:0.014371s ]
+[ sql ] [ SQL ] SELECT SUM(a.total_tax) AS tp_sum FROM `playerorder` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (  a.proxy_id='1'   ) OR (  a.parent_id='1'  ) LIMIT 1 [ RunTime:0.049923s ]
+[ sql ] [ SQL ] SELECT `a`.`total_tax`,`b`.`percent`,`b`.`code` FROM `playerorder` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (  a.proxy_id='1' ) OR (  a.parent_id='1' ) [ RunTime:0.006143s ]
+[ sql ] [ SQL ] SELECT * FROM `playerorder` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (  a.proxy_id='1' and datediff(`createtime`,NOW())=-1  ) OR (  a.parent_id='1' and datediff(`createtime`,NOW())=-1  ) [ RunTime:0.007713s ]
+[ sql ] [ SQL ] SELECT * FROM `playerorder` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (  a.proxy_id='1' and datediff(`createtime`,NOW())=0  ) OR (  a.parent_id='1' and datediff(`createtime`,NOW())=0  ) [ RunTime:0.008798s ]
+---------------------------------------------------------------
+[ 2019-04-11T16:41:39+08:00 ] 127.0.0.1 GET /admin/message/getindex.html?page=1&limit=10
+[ sql ] [ DB ] CONNECT:[ UseTime:0.009893s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `message` [ RunTime:0.001635s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `message` WHERE  `isDel` = 0 LIMIT 1 [ RunTime:0.000306s ]
+[ sql ] [ SQL ] SELECT * FROM `message` WHERE  `isDel` = 0 ORDER BY `addtime` DESC LIMIT 0,10 [ RunTime:0.000329s ]
+---------------------------------------------------------------
+[ 2019-04-11T16:41:40+08:00 ] 127.0.0.1 GET /admin/proxy/getindex.html?page=1&limit=10
+[ sql ] [ DB ] CONNECT:[ UseTime:0.009864s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `proxy` [ RunTime:0.001388s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `proxy` WHERE  `parent_id` = '1' LIMIT 1 [ RunTime:0.000481s ]
+[ sql ] [ SQL ] SELECT * FROM `proxy` WHERE  `parent_id` = '1' ORDER BY `id` DESC LIMIT 0,10 [ RunTime:0.000684s ]
+---------------------------------------------------------------
+[ 2019-04-11T17:27:54+08:00 ] 127.0.0.1 GET /
+[ sql ] [ DB ] CONNECT:[ UseTime:0.010275s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `proxy` [ RunTime:0.001056s ]
+[ sql ] [ SQL ] SELECT `bind_mobile` FROM `proxy` WHERE  `code` = '1' LIMIT 1 [ RunTime:0.000463s ]
+---------------------------------------------------------------
+[ 2019-04-11T17:27:54+08:00 ] 127.0.0.1 GET /admin/index/main.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.001133s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `message` [ RunTime:0.001221s ]
+[ sql ] [ SQL ] SELECT * FROM `message` ORDER BY `id` DESC [ RunTime:0.000333s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `player` [ RunTime:0.001061s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `player` WHERE  `proxy_id` = '1' OR `parent_id` = '1' LIMIT 1 [ RunTime:0.000634s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `player` WHERE  (  proxy_id='1' and datediff(`regtime`,NOW())=0  ) OR (  parent_id='1' and datediff(`regtime`,NOW())=0  ) LIMIT 1 [ RunTime:0.000660s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `player` WHERE  (  proxy_id='1' and datediff(`regtime`,NOW())=-1  ) OR (  parent_id='1' and datediff(`regtime`,NOW())=-1  ) LIMIT 1 [ RunTime:0.000681s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `playerorder` [ RunTime:0.001066s ]
+[ sql ] [ SQL ] SELECT SUM(a.total_tax) AS tp_sum FROM `playerorder` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (  a.proxy_id='1'   ) OR (  a.parent_id='1'  ) LIMIT 1 [ RunTime:0.005946s ]
+[ sql ] [ SQL ] SELECT `a`.`total_tax`,`b`.`percent`,`b`.`code` FROM `playerorder` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (  a.proxy_id='1' ) OR (  a.parent_id='1' ) [ RunTime:0.005811s ]
+[ sql ] [ SQL ] SELECT * FROM `playerorder` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (  a.proxy_id='1' and datediff(`createtime`,NOW())=-1  ) OR (  a.parent_id='1' and datediff(`createtime`,NOW())=-1  ) [ RunTime:0.007966s ]
+[ sql ] [ SQL ] SELECT * FROM `playerorder` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (  a.proxy_id='1' and datediff(`createtime`,NOW())=0  ) OR (  a.parent_id='1' and datediff(`createtime`,NOW())=0  ) [ RunTime:0.008511s ]
+---------------------------------------------------------------
+[ 2019-04-11T17:27:58+08:00 ] 127.0.0.1 GET /admin/template/getindex.html?page=1&limit=10
+[ sql ] [ DB ] CONNECT:[ UseTime:0.010368s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `user_template` [ RunTime:0.052258s ]
+[ sql ] [ SQL ] SELECT * FROM `user_template` WHERE  `proxy_id` = '1' ORDER BY `id` DESC LIMIT 0,10 [ RunTime:0.002782s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `user_template` WHERE  `proxy_id` = '1' LIMIT 1 [ RunTime:0.000425s ]
+---------------------------------------------------------------
+[ 2019-04-11T17:27:58+08:00 ] 127.0.0.1 GET /admin/distribute/index.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.010582s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `player` [ RunTime:0.001244s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM ( SELECT count(*) FROM `player` WHERE  `proxy_id` = '1' OR (   1=1  and parent_id='1' ) GROUP BY date_format(`addtime`,'%Y-%m-%d') ) `_group_count_` LIMIT 1 [ RunTime:0.007324s ]
+[ sql ] [ SQL ] SELECT  date_format(`addtime`,'%Y-%m-%d') as dt,count(id) as total,parent_id  FROM `player` WHERE  `proxy_id` = '1' OR (   1=1  and parent_id='1' ) GROUP BY date_format(`addtime`,'%Y-%m-%d') ORDER BY `dt` DESC LIMIT 0,10 [ RunTime:0.000792s ]
+[ sql ] [ SQL ] SELECT date_format(`addtime`,'%Y-%m-%d') as cdate,count(*) as total, a.proxy_id,b.nickname FROM `player` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-20' and a.proxy_id='1' ) GROUP BY `a`.`proxy_id` [ RunTime:0.001272s ]
+[ sql ] [ SQL ] SELECT date_format(`addtime`,'%Y-%m-%d') as cdate,count(*) as total, a.proxy_id,b.nickname FROM `player` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-20' and a.parent_id='1'  ) GROUP BY `a`.`proxy_id` [ RunTime:0.000946s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `player` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-20' and parent_id='WZ0000002' and ismobile=1  ) LIMIT 1 [ RunTime:0.000648s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `playerorder` [ RunTime:0.000976s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `playerorder` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-20' and proxy_id='WZ0000002' ) LIMIT 1 [ RunTime:0.062960s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `checklog` [ RunTime:0.030593s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `checklog` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-20' and proxy_id='WZ0000002' ) LIMIT 1 [ RunTime:0.000396s ]
+[ sql ] [ SQL ] SELECT SUM(total_tax) AS tp_sum FROM `playerorder` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-20' and proxy_id='WZ0000002' ) LIMIT 1 [ RunTime:0.006969s ]
+[ sql ] [ SQL ] SELECT date_format(`addtime`,'%Y-%m-%d') as cdate,count(*) as total, a.proxy_id,b.nickname FROM `player` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-19' and a.proxy_id='1' ) GROUP BY `a`.`proxy_id` [ RunTime:0.001015s ]
+[ sql ] [ SQL ] SELECT date_format(`addtime`,'%Y-%m-%d') as cdate,count(*) as total, a.proxy_id,b.nickname FROM `player` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-19' and a.parent_id='1'  ) GROUP BY `a`.`proxy_id` [ RunTime:0.001160s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `player` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-19' and parent_id='WZ0000002' and ismobile=1  ) LIMIT 1 [ RunTime:0.000798s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `playerorder` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-19' and proxy_id='WZ0000002' ) LIMIT 1 [ RunTime:0.006316s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `checklog` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-19' and proxy_id='WZ0000002' ) LIMIT 1 [ RunTime:0.000311s ]
+[ sql ] [ SQL ] SELECT SUM(total_tax) AS tp_sum FROM `playerorder` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-19' and proxy_id='WZ0000002' ) LIMIT 1 [ RunTime:0.007046s ]
+[ sql ] [ SQL ] SELECT date_format(`addtime`,'%Y-%m-%d') as cdate,count(*) as total, a.proxy_id,b.nickname FROM `player` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-18' and a.proxy_id='1' ) GROUP BY `a`.`proxy_id` [ RunTime:0.001070s ]
+[ sql ] [ SQL ] SELECT date_format(`addtime`,'%Y-%m-%d') as cdate,count(*) as total, a.proxy_id,b.nickname FROM `player` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-18' and a.parent_id='1'  ) GROUP BY `a`.`proxy_id` [ RunTime:0.001043s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `player` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-18' and parent_id='WZ0000002' and ismobile=1  ) LIMIT 1 [ RunTime:0.000686s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `playerorder` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-18' and proxy_id='WZ0000002' ) LIMIT 1 [ RunTime:0.005870s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `checklog` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-18' and proxy_id='WZ0000002' ) LIMIT 1 [ RunTime:0.000302s ]
+[ sql ] [ SQL ] SELECT SUM(total_tax) AS tp_sum FROM `playerorder` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-18' and proxy_id='WZ0000002' ) LIMIT 1 [ RunTime:0.007358s ]
+[ sql ] [ SQL ] SELECT date_format(`addtime`,'%Y-%m-%d') as cdate,count(*) as total, a.proxy_id,b.nickname FROM `player` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-17' and a.proxy_id='1' ) GROUP BY `a`.`proxy_id` [ RunTime:0.000904s ]
+[ sql ] [ SQL ] SELECT date_format(`addtime`,'%Y-%m-%d') as cdate,count(*) as total, a.proxy_id,b.nickname FROM `player` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-17' and a.parent_id='1'  ) GROUP BY `a`.`proxy_id` [ RunTime:0.000962s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `player` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-17' and parent_id='WZ0000002' and ismobile=1  ) LIMIT 1 [ RunTime:0.000737s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `playerorder` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-17' and proxy_id='WZ0000002' ) LIMIT 1 [ RunTime:0.005889s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `checklog` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-17' and proxy_id='WZ0000002' ) LIMIT 1 [ RunTime:0.000304s ]
+[ sql ] [ SQL ] SELECT SUM(total_tax) AS tp_sum FROM `playerorder` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-17' and proxy_id='WZ0000002' ) LIMIT 1 [ RunTime:0.007128s ]
+[ sql ] [ SQL ] SELECT date_format(`addtime`,'%Y-%m-%d') as cdate,count(*) as total, a.proxy_id,b.nickname FROM `player` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-16' and a.proxy_id='1' ) GROUP BY `a`.`proxy_id` [ RunTime:0.000918s ]
+[ sql ] [ SQL ] SELECT date_format(`addtime`,'%Y-%m-%d') as cdate,count(*) as total, a.proxy_id,b.nickname FROM `player` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-16' and a.parent_id='1'  ) GROUP BY `a`.`proxy_id` [ RunTime:0.000972s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `player` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-16' and parent_id='WZ0000002' and ismobile=1  ) LIMIT 1 [ RunTime:0.000674s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `playerorder` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-16' and proxy_id='WZ0000002' ) LIMIT 1 [ RunTime:0.005804s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `checklog` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-16' and proxy_id='WZ0000002' ) LIMIT 1 [ RunTime:0.000302s ]
+[ sql ] [ SQL ] SELECT SUM(total_tax) AS tp_sum FROM `playerorder` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-16' and proxy_id='WZ0000002' ) LIMIT 1 [ RunTime:0.007128s ]
+[ sql ] [ SQL ] SELECT date_format(`addtime`,'%Y-%m-%d') as cdate,count(*) as total, a.proxy_id,b.nickname FROM `player` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-15' and a.proxy_id='1' ) GROUP BY `a`.`proxy_id` [ RunTime:0.000894s ]
+[ sql ] [ SQL ] SELECT date_format(`addtime`,'%Y-%m-%d') as cdate,count(*) as total, a.proxy_id,b.nickname FROM `player` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-15' and a.parent_id='1'  ) GROUP BY `a`.`proxy_id` [ RunTime:0.000970s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `player` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-15' and parent_id='WZ0000002' and ismobile=1  ) LIMIT 1 [ RunTime:0.000678s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `playerorder` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-15' and proxy_id='WZ0000002' ) LIMIT 1 [ RunTime:0.005884s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `checklog` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-15' and proxy_id='WZ0000002' ) LIMIT 1 [ RunTime:0.000299s ]
+[ sql ] [ SQL ] SELECT SUM(total_tax) AS tp_sum FROM `playerorder` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-15' and proxy_id='WZ0000002' ) LIMIT 1 [ RunTime:0.007375s ]
+[ sql ] [ SQL ] SELECT date_format(`addtime`,'%Y-%m-%d') as cdate,count(*) as total, a.proxy_id,b.nickname FROM `player` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-14' and a.proxy_id='1' ) GROUP BY `a`.`proxy_id` [ RunTime:0.000834s ]
+[ sql ] [ SQL ] SELECT date_format(`addtime`,'%Y-%m-%d') as cdate,count(*) as total, a.proxy_id,b.nickname FROM `player` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-14' and a.parent_id='1'  ) GROUP BY `a`.`proxy_id` [ RunTime:0.000902s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `player` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-14' and parent_id='WZ0000002' and ismobile=1  ) LIMIT 1 [ RunTime:0.000643s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `playerorder` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-14' and proxy_id='WZ0000002' ) LIMIT 1 [ RunTime:0.005791s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `checklog` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-14' and proxy_id='WZ0000002' ) LIMIT 1 [ RunTime:0.000226s ]
+[ sql ] [ SQL ] SELECT SUM(total_tax) AS tp_sum FROM `playerorder` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-14' and proxy_id='WZ0000002' ) LIMIT 1 [ RunTime:0.007535s ]
+[ sql ] [ SQL ] SELECT date_format(`addtime`,'%Y-%m-%d') as cdate,count(*) as total, a.proxy_id,b.nickname FROM `player` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-10' and a.proxy_id='1' ) GROUP BY `a`.`proxy_id` [ RunTime:0.000858s ]
+[ sql ] [ SQL ] SELECT date_format(`addtime`,'%Y-%m-%d') as cdate,count(*) as total, a.proxy_id,b.nickname FROM `player` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-10' and a.parent_id='1'  ) GROUP BY `a`.`proxy_id` [ RunTime:0.000871s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `player` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-10' and parent_id='WZ0000002' and ismobile=1  ) LIMIT 1 [ RunTime:0.000577s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `playerorder` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-10' and proxy_id='WZ0000002' ) LIMIT 1 [ RunTime:0.005769s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `checklog` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-10' and proxy_id='WZ0000002' ) LIMIT 1 [ RunTime:0.000226s ]
+[ sql ] [ SQL ] SELECT SUM(total_tax) AS tp_sum FROM `playerorder` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-10' and proxy_id='WZ0000002' ) LIMIT 1 [ RunTime:0.007011s ]
+[ sql ] [ SQL ] SELECT date_format(`addtime`,'%Y-%m-%d') as cdate,count(*) as total, a.proxy_id,b.nickname FROM `player` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-08' and a.proxy_id='1' ) GROUP BY `a`.`proxy_id` [ RunTime:0.000820s ]
+[ sql ] [ SQL ] SELECT date_format(`addtime`,'%Y-%m-%d') as cdate,count(*) as total, a.proxy_id,b.nickname FROM `player` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-08' and a.parent_id='1'  ) GROUP BY `a`.`proxy_id` [ RunTime:0.000914s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `player` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-08' and parent_id='WZ0000002' and ismobile=1  ) LIMIT 1 [ RunTime:0.000610s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `playerorder` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-08' and proxy_id='WZ0000002' ) LIMIT 1 [ RunTime:0.005768s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `checklog` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-08' and proxy_id='WZ0000002' ) LIMIT 1 [ RunTime:0.000183s ]
+[ sql ] [ SQL ] SELECT SUM(total_tax) AS tp_sum FROM `playerorder` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-08' and proxy_id='WZ0000002' ) LIMIT 1 [ RunTime:0.007163s ]
+[ sql ] [ SQL ] SELECT date_format(`addtime`,'%Y-%m-%d') as cdate,count(*) as total, a.proxy_id,b.nickname FROM `player` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-04' and a.proxy_id='1' ) GROUP BY `a`.`proxy_id` [ RunTime:0.000838s ]
+[ sql ] [ SQL ] SELECT date_format(`addtime`,'%Y-%m-%d') as cdate,count(*) as total, a.proxy_id,b.nickname FROM `player` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-04' and a.parent_id='1'  ) GROUP BY `a`.`proxy_id` [ RunTime:0.000962s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `player` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-04' and parent_id='WZ0000002' and ismobile=1  ) LIMIT 1 [ RunTime:0.000611s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `playerorder` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-04' and proxy_id='WZ0000002' ) LIMIT 1 [ RunTime:0.005989s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `checklog` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-04' and proxy_id='WZ0000002' ) LIMIT 1 [ RunTime:0.000233s ]
+[ sql ] [ SQL ] SELECT SUM(total_tax) AS tp_sum FROM `playerorder` WHERE  (   date_format(`addtime`,'%Y-%m-%d')='2018-12-04' and proxy_id='WZ0000002' ) LIMIT 1 [ RunTime:0.006885s ]
+---------------------------------------------------------------
+[ 2019-04-11T17:28:05+08:00 ] 127.0.0.1 GET /admin/proxy/getindex.html?page=1&limit=10
+[ sql ] [ DB ] CONNECT:[ UseTime:0.001043s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `proxy` [ RunTime:0.001110s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `proxy` WHERE  `parent_id` = '1' LIMIT 1 [ RunTime:0.000335s ]
+[ sql ] [ SQL ] SELECT * FROM `proxy` WHERE  `parent_id` = '1' ORDER BY `id` DESC LIMIT 0,10 [ RunTime:0.000498s ]
+---------------------------------------------------------------
+[ 2019-04-11T18:06:10+08:00 ] 127.0.0.1 GET /
+[ sql ] [ DB ] CONNECT:[ UseTime:0.001627s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `proxy` [ RunTime:0.000962s ]
+[ sql ] [ SQL ] SELECT `bind_mobile` FROM `proxy` WHERE  `code` = '1' LIMIT 1 [ RunTime:0.000563s ]
+---------------------------------------------------------------
+[ 2019-04-11T18:06:10+08:00 ] 127.0.0.1 GET /
+[ sql ] [ DB ] CONNECT:[ UseTime:0.010429s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `proxy` [ RunTime:0.000817s ]
+[ sql ] [ SQL ] SELECT `bind_mobile` FROM `proxy` WHERE  `code` = '1' LIMIT 1 [ RunTime:0.000476s ]
+---------------------------------------------------------------
+[ 2019-04-11T18:06:10+08:00 ] 127.0.0.1 GET /admin/index/main.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.001351s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `message` [ RunTime:0.001357s ]
+[ sql ] [ SQL ] SELECT * FROM `message` ORDER BY `id` DESC [ RunTime:0.000417s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `player` [ RunTime:0.001153s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `player` WHERE  `proxy_id` = '1' OR `parent_id` = '1' LIMIT 1 [ RunTime:0.000973s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `player` WHERE  (  proxy_id='1' and datediff(`regtime`,NOW())=0  ) OR (  parent_id='1' and datediff(`regtime`,NOW())=0  ) LIMIT 1 [ RunTime:0.000794s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `player` WHERE  (  proxy_id='1' and datediff(`regtime`,NOW())=-1  ) OR (  parent_id='1' and datediff(`regtime`,NOW())=-1  ) LIMIT 1 [ RunTime:0.000745s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `playerorder` [ RunTime:0.001023s ]
+[ sql ] [ SQL ] SELECT SUM(a.total_tax) AS tp_sum FROM `playerorder` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (  a.proxy_id='1'   ) OR (  a.parent_id='1'  ) LIMIT 1 [ RunTime:0.007878s ]
+[ sql ] [ SQL ] SELECT `a`.`total_tax`,`b`.`percent`,`b`.`code` FROM `playerorder` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (  a.proxy_id='1' ) OR (  a.parent_id='1' ) [ RunTime:0.005356s ]
+[ sql ] [ SQL ] SELECT * FROM `playerorder` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (  a.proxy_id='1' and datediff(`createtime`,NOW())=-1  ) OR (  a.parent_id='1' and datediff(`createtime`,NOW())=-1  ) [ RunTime:0.008331s ]
+[ sql ] [ SQL ] SELECT * FROM `playerorder` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (  a.proxy_id='1' and datediff(`createtime`,NOW())=0  ) OR (  a.parent_id='1' and datediff(`createtime`,NOW())=0  ) [ RunTime:0.008957s ]
+---------------------------------------------------------------
+[ 2019-04-11T18:06:13+08:00 ] 127.0.0.1 GET /admin/proxy/bindmobile.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.010138s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `proxy` [ RunTime:0.001290s ]
+[ sql ] [ SQL ] SELECT `code`,`bind_mobile` FROM `proxy` WHERE  `code` = '1' LIMIT 1 [ RunTime:0.000269s ]
+---------------------------------------------------------------
+[ 2019-04-11T18:06:13+08:00 ] 127.0.0.1 GET /admin/proxy/retrievepassword.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.011515s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `proxy` [ RunTime:0.001182s ]
+[ sql ] [ SQL ] SELECT * FROM `proxy` WHERE  `code` = '1' LIMIT 1 [ RunTime:0.000444s ]
+---------------------------------------------------------------
+[ 2019-04-11T18:06:17+08:00 ] 127.0.0.1 GET /admin/settle/settlementlog.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.011269s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `checklog` [ RunTime:0.001174s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`proxy_id` = '1' OR (   a.proxy_id in (select `code` from proxy where parent_id='1') ) LIMIT 1 [ RunTime:0.010029s ]
+[ sql ] [ SQL ] SELECT `a`.`id`,`a`.`orderid`,`a`.`proxy_id`,`a`.`tax`,`a`.`amount`,`a`.`alipay`,`a`.`name`,`a`.`bank`,`a`.`cardaccount`,`a`.`alipay_name`,`a`.`checktype`,`a`.`status`,`a`.`addtime`,`a`.`createtime`,`a`.`descript`,`c`.`nickname`,`c`.`username` FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`proxy_id` = '1' OR (   a.proxy_id in (select `code` from proxy where parent_id='1') ) LIMIT 0,10 [ RunTime:0.000779s ]
+---------------------------------------------------------------
+[ 2019-04-11T18:07:18+08:00 ] 127.0.0.1 GET /admin/settle/settlementlog.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.009903s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `checklog` [ RunTime:0.001239s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`proxy_id` = '1' OR (   a.proxy_id in (select `code` from proxy where parent_id='1') ) LIMIT 1 [ RunTime:0.000893s ]
+[ sql ] [ SQL ] SELECT `a`.`id`,`a`.`orderid`,`a`.`proxy_id`,`a`.`tax`,`a`.`amount`,`a`.`alipay`,`a`.`name`,`a`.`bank`,`a`.`cardaccount`,`a`.`alipay_name`,`a`.`checktype`,`a`.`status`,`a`.`addtime`,`a`.`createtime`,`a`.`descript`,`c`.`nickname`,`c`.`username` FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`proxy_id` = '1' OR (   a.proxy_id in (select `code` from proxy where parent_id='1') ) LIMIT 0,1 [ RunTime:0.000471s ]
+---------------------------------------------------------------
+[ 2019-04-11T18:07:19+08:00 ] 127.0.0.1 GET /admin/settle/settlementlog.html?page=2
+[ sql ] [ DB ] CONNECT:[ UseTime:0.010100s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `checklog` [ RunTime:0.001319s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`proxy_id` = '1' OR (   a.proxy_id in (select `code` from proxy where parent_id='1') ) LIMIT 1 [ RunTime:0.001024s ]
+[ sql ] [ SQL ] SELECT `a`.`id`,`a`.`orderid`,`a`.`proxy_id`,`a`.`tax`,`a`.`amount`,`a`.`alipay`,`a`.`name`,`a`.`bank`,`a`.`cardaccount`,`a`.`alipay_name`,`a`.`checktype`,`a`.`status`,`a`.`addtime`,`a`.`createtime`,`a`.`descript`,`c`.`nickname`,`c`.`username` FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`proxy_id` = '1' OR (   a.proxy_id in (select `code` from proxy where parent_id='1') ) LIMIT 1,1 [ RunTime:0.000512s ]
+---------------------------------------------------------------
+[ 2019-04-11T18:07:20+08:00 ] 127.0.0.1 GET /admin/settle/settlementlog.html?page=1
+[ sql ] [ DB ] CONNECT:[ UseTime:0.010287s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `checklog` [ RunTime:0.001128s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`proxy_id` = '1' OR (   a.proxy_id in (select `code` from proxy where parent_id='1') ) LIMIT 1 [ RunTime:0.000874s ]
+[ sql ] [ SQL ] SELECT `a`.`id`,`a`.`orderid`,`a`.`proxy_id`,`a`.`tax`,`a`.`amount`,`a`.`alipay`,`a`.`name`,`a`.`bank`,`a`.`cardaccount`,`a`.`alipay_name`,`a`.`checktype`,`a`.`status`,`a`.`addtime`,`a`.`createtime`,`a`.`descript`,`c`.`nickname`,`c`.`username` FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`proxy_id` = '1' OR (   a.proxy_id in (select `code` from proxy where parent_id='1') ) LIMIT 0,1 [ RunTime:0.000432s ]
+---------------------------------------------------------------
+[ 2019-04-11T18:07:30+08:00 ] 127.0.0.1 GET /admin/settle/settlementlog.html?page=3
+[ sql ] [ DB ] CONNECT:[ UseTime:0.010356s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `checklog` [ RunTime:0.001228s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`proxy_id` = '1' OR (   a.proxy_id in (select `code` from proxy where parent_id='1') ) LIMIT 1 [ RunTime:0.001185s ]
+[ sql ] [ SQL ] SELECT `a`.`id`,`a`.`orderid`,`a`.`proxy_id`,`a`.`tax`,`a`.`amount`,`a`.`alipay`,`a`.`name`,`a`.`bank`,`a`.`cardaccount`,`a`.`alipay_name`,`a`.`checktype`,`a`.`status`,`a`.`addtime`,`a`.`createtime`,`a`.`descript`,`c`.`nickname`,`c`.`username` FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`proxy_id` = '1' OR (   a.proxy_id in (select `code` from proxy where parent_id='1') ) LIMIT 2,1 [ RunTime:0.000471s ]
+---------------------------------------------------------------
+[ 2019-04-11T18:07:31+08:00 ] 127.0.0.1 GET /admin/settle/settlementlog.html?page=4
+[ sql ] [ DB ] CONNECT:[ UseTime:0.010720s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `checklog` [ RunTime:0.001202s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`proxy_id` = '1' OR (   a.proxy_id in (select `code` from proxy where parent_id='1') ) LIMIT 1 [ RunTime:0.000944s ]
+[ sql ] [ SQL ] SELECT `a`.`id`,`a`.`orderid`,`a`.`proxy_id`,`a`.`tax`,`a`.`amount`,`a`.`alipay`,`a`.`name`,`a`.`bank`,`a`.`cardaccount`,`a`.`alipay_name`,`a`.`checktype`,`a`.`status`,`a`.`addtime`,`a`.`createtime`,`a`.`descript`,`c`.`nickname`,`c`.`username` FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`proxy_id` = '1' OR (   a.proxy_id in (select `code` from proxy where parent_id='1') ) LIMIT 3,1 [ RunTime:0.000383s ]
+---------------------------------------------------------------
+[ 2019-04-11T18:07:32+08:00 ] 127.0.0.1 GET /admin/settle/settlementlog.html?page=6
+[ sql ] [ DB ] CONNECT:[ UseTime:0.010502s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `checklog` [ RunTime:0.001120s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`proxy_id` = '1' OR (   a.proxy_id in (select `code` from proxy where parent_id='1') ) LIMIT 1 [ RunTime:0.000830s ]
+[ sql ] [ SQL ] SELECT `a`.`id`,`a`.`orderid`,`a`.`proxy_id`,`a`.`tax`,`a`.`amount`,`a`.`alipay`,`a`.`name`,`a`.`bank`,`a`.`cardaccount`,`a`.`alipay_name`,`a`.`checktype`,`a`.`status`,`a`.`addtime`,`a`.`createtime`,`a`.`descript`,`c`.`nickname`,`c`.`username` FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`proxy_id` = '1' OR (   a.proxy_id in (select `code` from proxy where parent_id='1') ) LIMIT 5,1 [ RunTime:0.000469s ]
+---------------------------------------------------------------
+[ 2019-04-11T18:07:42+08:00 ] 127.0.0.1 POST /admin/settle/settlementLog
+[ sql ] [ DB ] CONNECT:[ UseTime:0.010440s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `checklog` [ RunTime:0.001179s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  ( `addtime` > '1551369600' AND `addtime` < '1556553600' )  AND `a`.`proxy_id` = '1' OR (   a.proxy_id in (select `code` from proxy where parent_id='1') ) LIMIT 1 [ RunTime:0.001354s ]
+[ sql ] [ SQL ] SELECT `a`.`id`,`a`.`orderid`,`a`.`proxy_id`,`a`.`tax`,`a`.`amount`,`a`.`alipay`,`a`.`name`,`a`.`bank`,`a`.`cardaccount`,`a`.`alipay_name`,`a`.`checktype`,`a`.`status`,`a`.`addtime`,`a`.`createtime`,`a`.`descript`,`c`.`nickname`,`c`.`username` FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  ( `addtime` > '1551369600' AND `addtime` < '1556553600' )  AND `a`.`proxy_id` = '1' OR (   a.proxy_id in (select `code` from proxy where parent_id='1') ) LIMIT 0,1 [ RunTime:0.000488s ]
+---------------------------------------------------------------
+[ 2019-04-11T18:07:43+08:00 ] 127.0.0.1 GET /admin/settle/settlementLog?page=2
+[ sql ] [ DB ] CONNECT:[ UseTime:0.010799s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `checklog` [ RunTime:0.000844s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`proxy_id` = '1' OR (   a.proxy_id in (select `code` from proxy where parent_id='1') ) LIMIT 1 [ RunTime:0.001048s ]
+[ sql ] [ SQL ] SELECT `a`.`id`,`a`.`orderid`,`a`.`proxy_id`,`a`.`tax`,`a`.`amount`,`a`.`alipay`,`a`.`name`,`a`.`bank`,`a`.`cardaccount`,`a`.`alipay_name`,`a`.`checktype`,`a`.`status`,`a`.`addtime`,`a`.`createtime`,`a`.`descript`,`c`.`nickname`,`c`.`username` FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`proxy_id` = '1' OR (   a.proxy_id in (select `code` from proxy where parent_id='1') ) LIMIT 1,1 [ RunTime:0.000454s ]
+---------------------------------------------------------------
+[ 2019-04-11T18:08:06+08:00 ] 127.0.0.1 GET /admin/settle/settlementLog?page=3
+[ sql ] [ DB ] CONNECT:[ UseTime:0.010254s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `checklog` [ RunTime:0.001145s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`proxy_id` = '1' OR (   a.proxy_id in (select `code` from proxy where parent_id='1') ) LIMIT 1 [ RunTime:0.000890s ]
+[ sql ] [ SQL ] SELECT `a`.`id`,`a`.`orderid`,`a`.`proxy_id`,`a`.`tax`,`a`.`amount`,`a`.`alipay`,`a`.`name`,`a`.`bank`,`a`.`cardaccount`,`a`.`alipay_name`,`a`.`checktype`,`a`.`status`,`a`.`addtime`,`a`.`createtime`,`a`.`descript`,`c`.`nickname`,`c`.`username` FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`proxy_id` = '1' OR (   a.proxy_id in (select `code` from proxy where parent_id='1') ) LIMIT 2,1 [ RunTime:0.000433s ]
+---------------------------------------------------------------
+[ 2019-04-11T18:08:07+08:00 ] 127.0.0.1 GET /admin/settle/settlementLog?page=4
+[ sql ] [ DB ] CONNECT:[ UseTime:0.010696s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `checklog` [ RunTime:0.001114s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`proxy_id` = '1' OR (   a.proxy_id in (select `code` from proxy where parent_id='1') ) LIMIT 1 [ RunTime:0.001157s ]
+[ sql ] [ SQL ] SELECT `a`.`id`,`a`.`orderid`,`a`.`proxy_id`,`a`.`tax`,`a`.`amount`,`a`.`alipay`,`a`.`name`,`a`.`bank`,`a`.`cardaccount`,`a`.`alipay_name`,`a`.`checktype`,`a`.`status`,`a`.`addtime`,`a`.`createtime`,`a`.`descript`,`c`.`nickname`,`c`.`username` FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`proxy_id` = '1' OR (   a.proxy_id in (select `code` from proxy where parent_id='1') ) LIMIT 3,1 [ RunTime:0.000436s ]
+---------------------------------------------------------------
+[ 2019-04-11T18:08:08+08:00 ] 127.0.0.1 GET /admin/settle/settlementLog?page=5
+[ sql ] [ DB ] CONNECT:[ UseTime:0.001171s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `checklog` [ RunTime:0.001353s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`proxy_id` = '1' OR (   a.proxy_id in (select `code` from proxy where parent_id='1') ) LIMIT 1 [ RunTime:0.000852s ]
+[ sql ] [ SQL ] SELECT `a`.`id`,`a`.`orderid`,`a`.`proxy_id`,`a`.`tax`,`a`.`amount`,`a`.`alipay`,`a`.`name`,`a`.`bank`,`a`.`cardaccount`,`a`.`alipay_name`,`a`.`checktype`,`a`.`status`,`a`.`addtime`,`a`.`createtime`,`a`.`descript`,`c`.`nickname`,`c`.`username` FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`proxy_id` = '1' OR (   a.proxy_id in (select `code` from proxy where parent_id='1') ) LIMIT 4,1 [ RunTime:0.000509s ]

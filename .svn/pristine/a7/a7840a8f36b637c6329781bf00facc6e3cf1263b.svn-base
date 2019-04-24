@@ -1,0 +1,43 @@
+
+<script src="../js/jquery.min.js?v=2.1.4"></script>
+<script src="../js/bootstrap.min.js?v=3.3.6"></script>
+<script src="../js/bootstrap-datepicker.js"></script>
+<script src="../js/bootstrap-table.js"></script>
+
+<!-- 自定义js -->
+<script src="../js/content.js?v=1.0.0"></script>
+<script src="../js/common.js?v=1.0"></script>
+<script>
+
+
+    $(document).ready(function () {
+
+        $('#pageTd').attr('colspan', 11)
+
+    });
+
+    function checkWidth() {
+        var windowsize = $(window).width();
+        try {
+            if (windowsize >= 440) {
+                $('table').bootstrapTable({
+                    cardView: false
+                });
+                $('table').bootstrapTable('resetView');
+
+            }
+            else {
+                $('table').bootstrapTable({
+                    cardView: true,
+                    columns: {
+                        field: 'member_id',
+                        sortable: true
+                    }
+                });
+                $('table').bootstrapTable('resetView');
+            }
+        } catch (err) {
+
+        }
+    }
+</script>

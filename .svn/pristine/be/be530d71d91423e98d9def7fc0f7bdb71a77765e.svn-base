@@ -1,0 +1,808 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>代理管理</title>
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href="__CSS__/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="__CSS__/font-awesome.min.css?v=4.4.0" rel="stylesheet">
+    <link href="__CSS__/footable.core.css" rel="stylesheet">
+    <link href="__CSS__/datepicker3.css" rel="stylesheet"/>
+    <link href="__CSS__/animate.css" rel="stylesheet">
+    <link href="__CSS__/style.css?v=4.1.0" rel="stylesheet">
+    <link href="__CSS__/bootstrap-table.css" type="text/css" rel="stylesheet">
+
+    <style type="text/css">
+        .row {
+            display: table-cell;
+            vertical-align: middle;
+        }
+
+        .table > tbody > tr > td {
+            line-height: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            word-break: keep-all;
+            word-wrap: break-word;
+        }
+
+        .wrapper-content {
+            padding: 0px;
+        }
+    </style>
+</head>
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content  fadeInRight">
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <form class="form-inline" action="{:url('Proxy/index')}" id="myForm" method="post">
+
+                    <div class="ibox-content">
+
+                        <div class="row">
+                            <span class="form-group-btn ">
+                                         <button type="submit" class="btn btn-primary btn-sm"><i
+                                                 class="fa fa-refresh"></i> 刷新</button>
+                                     </span>
+                            <label for="status">封号状态:</label>
+                            <select class="form-control m-b" name="status" id="status"
+                                    onchange="changeStatus(this)">
+                                <option value="" {if condition="$status eq ''"}selected="true" {/if} >全部：</option>
+                                <option value="1" {if condition="$status eq '1'"}selected="true" {/if} >是</option>
+                                <option value="0" {if condition="$status eq '0'"}selected="true" {/if} >否 </option>
+                            </select>
+                            <div class="form-group input-group-sm">
+                                <label for="agentId">代理ID：</label>
+                                <input type="text" class="form-control" id="agentId" name="agentId"
+                                       placeholder="请输入代理ID" value="{$agentid}">
+                            </div>
+                            <div class="form-group input-group-sm">
+                                <label for="phone">绑定手机号：</label>
+                                <input type="text" class="form-control" id="phone" name='phone'
+                                       placeholder="请输入手机号" value="{$phone}">
+                            </div>
+
+                            <div class="form-group input-group-sm">
+                                <label for="minMoney">账户余额：</label>
+                                <input type="number" class="form-control" id="minMoney" name='minMoney'
+                                       value="{$minMoney}">
+                            </div>
+                            -
+                            <div class="form-group input-group-sm">
+                                <input type="number" class="form-control" id="maxMoney" name='maxMoney'
+                                       value="{$maxMoney}">
+                            </div>
+
+                            <div class="form-group input-group-sm">
+                                <label for="nickName">昵称：</label>
+                                <input type="text" class="form-control" id="nickName" name='nickName'
+                                       placeholder="请输入代理昵称" value="{$nickName}">
+                            </div>
+                            <div class="form-group input-group-sm">
+                                <label for="account">代理账号：</label>
+                                <input type="text" class="form-control" id="account" name='account'
+                                       value="{$username}"
+                                       placeholder="请输入账号">
+                            </div>
+                            <label for="timePicker">注册时间：</label>
+
+                            <div class="input-group date input-group-sm" data-provide="datepicker" id="timePicker">
+                                <input type="text" class="form-control" name="startTime" value="{$regstart}"/>
+                                <div class="input-group-addon">
+                                    <span class="glyphicon glyphicon-th"></span>
+                                </div>
+                            </div>
+                            -
+                            <div class="input-group date input-group-sm" data-provide="datepicker">
+                                <input type="text" class="form-control" name="endTime" value="{$regend}"/>
+                                <div class="input-group-addon">
+                                    <span class="glyphicon glyphicon-th"></span>
+                                </div>
+                            </div>
+
+                            <div class="form-group input-group">
+                                    <span class="form-group-btn ">
+                                         <button type="submit" class="btn btn-primary btn-sm">搜索</button>
+                                     </span>
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="ibox-title">
+                        <h5>代理管理</h5>
+
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                <i class="fa fa-wrench"></i>
+                            </a>
+                            <a class="close-link">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+
+                        <div class="">
+                            <a onclick="editMessage();" href="javascript:void(0);" class="btn btn-primary ">修改</a>
+                            <a onclick="changeSuperior();" href="javascript:void(0);" class="btn btn-primary ">更改上级</a>
+                            <a onclick="bindMobile();" href="javascript:void(0);" class="btn btn-primary ">绑定手机</a>
+                            <button type="button" class="btn btn-primary btn-sm" aria-label="Left Align" data-toggle="modal"
+                                    data-target="#exampleModal" data-whatever="@mdo">
+                                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                            </button>
+                        </div>
+
+                        <table class=" table table-stripped toggle-arrow-tiny table-hover table-bordered"
+                               data-page-size="8"
+                               width="95%"
+                               cellpadding="2" cellspacing="1" style="table-layout:fixed;font-size:11px;padding: 1px;">
+                            <thead>
+                            <tr>
+                                <th></th>
+                                <th data-toggle="true">代理ID</th>
+                                <th>封号</th>
+                                <th>等级 &nbsp;<p
+                                        class="glyphicon glyphicon-menu-up" data-d='desc'
+                                        data-type="level"
+                                        onclick="orderByTime(this)">
+
+                                </th>
+                                <th>昵称</th>
+                                <th>代理账号</th>
+                                <th>提成比例 &nbsp;<p class="glyphicon glyphicon-menu-up" data-d='desc'
+                                                  data-type="rate"
+                                                  onclick="orderByTime(this)">
+
+                                </th>
+                                <th>绑定手机号</th>
+                                <th>绑定ip登录</th>
+
+                                <th>账户余额 &nbsp;<p class="glyphicon glyphicon-menu-up" data-d='desc'
+                                                  data-type="balance"
+                                                  onclick="orderByTime(this)">
+
+                                </th>
+                                <th>历史总收入 &nbsp;<p class="glyphicon glyphicon-menu-up" data-d='desc'
+                                                   data-type="total"
+                                                   onclick="orderByTime(this)">
+
+                                </th>
+                                <th>最后登陆 &nbsp;<p class="glyphicon glyphicon-menu-up" data-d='desc'
+                                                  data-type="login"
+                                                  onclick="orderByTime(this)">
+
+                                </th>
+                                <th>注册时间 &nbsp;<p class="glyphicon glyphicon-menu-up" data-d='desc'
+                                                  data-type="reg"
+                                                  onclick="orderByTime(this)">
+
+                                </th>
+                                <th>备注</th>
+                                <th>更多</th>
+
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {volist name="list" id="vo"}
+                            <tr>
+                                <td>
+                                    <label>
+                                        <input type="checkbox" value="{$vo.id}" data-order="{$vo.id}">
+                                    </label>
+                                </td>
+                                <td>{$vo.code}</td>
+                                <td>{$vo.lock}</td>
+                                <td>{$vo.grade}</td>
+                                <td>
+                                    <p>{$vo.nickname}</p></td>
+                                <td>{$vo.username}</td>
+                                <td>{$vo.percent}%</td>
+                                <td>{$vo.mobile}</td>
+                                <td>{$vo.bind_ip}</td>
+                                <td>{$vo.balance}</td>
+                                <td>{$vo.historyin}</td>
+                                <td>{$vo.last_login}</td>
+                                <td>{$vo.regtime}</td>
+                                <td>{$vo.descript}</td>
+                                <td>
+                                    <a href="http://www.qmfx98.com/admin/login/apilogin/mchid/{$vo.code}/token/{$sign.$vo.code.$vo.password|md5}" target="_blank" >登录</a>
+
+                               <a onclick="getDetail(this);" data="{$vo.code}"  data-order="{$vo.id}" href="javascript:void(0);" >详情</a>
+                                </td>
+                            </tr>
+                            {/volist}
+                            </tbody>
+                            <tfoot>
+                            <div >
+                                <td id="pageTd" rowspan="16" align="center">
+                                    <nav aria-label="Page navigation ">
+                                      {$list->render()}
+                                    </nav>
+                                </td>
+                            </div>
+                            </tfoot>
+                        </table>
+                        <input type="hidden" name="pageNum" id="pageNum"/>
+                        <input type="hidden" name="pageSize" id="pageSize" value="10"/>
+                        <input type="hidden" name="o" id="o" value=""/>
+                        <input type="hidden" name="d" id="d" value=""/>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="exampleModalLabel">添加代理</h4>
+            </div>
+            <form action="{:url('proxy/addProxy')}" method="post" id="addProxy">
+                <div class="modal-body">
+
+                    <div class="form-group">
+                        <label for="accountForReg" class="control-label">代理账号:</label>
+                        <input type="text" class="form-control" id="accountForReg" name="accountForReg"
+                               required="required"/>
+                        <button class="btn btn-primary" type="button" onclick="checkAccount()">检查账户是否存在</button>
+                    </div>
+                    <div class="form-group">
+                        <label for="passwordForReg" class="control-label">代理密码:</label>
+                        <input class="form-control" type="password" id="passwordForReg" name="passwordForReg"
+                               required="required"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="nickName" class="control-label">代理昵称:</label>
+                        <input class="form-control" type="text" id="nickNameForReg" name="nickNameForReg"
+                               required="required"/>
+                    </div>
+
+
+                    <div>
+                        <label for="royaltyRate" class="control-label">提成比例:</label>
+                        <div class="input-group input-group-sm">
+
+                            <input type="number" class="form-control" id="royaltyRate" name="royaltyRate"
+                                   aria-describedby="sizing-addon1" required="required"
+                                   value=""/>
+                            <span class="input-group-addon" id="sizing-addon1">%</span>
+                            <span class="input-group-addon" id="sizing-addon2" style="color: red">可设范围：0 - 30</span>
+
+
+
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="remark" class="control-label">备注:</label>
+                        <textarea class="form-control" id="remark" name="remark"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="hidden" name="_csrf" value="fd55c480-168a-4158-8894-50b4f13c18de"/>
+
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" onclick="submitForm()" class="btn btn-primary">添加</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- edit modal-->
+<div class="modal fade" id="exampleModal1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="exampleModalLabel1">修改代理</h4>
+            </div>
+            <form action="editAgent" method="post" id="editAgent">
+                <div class="modal-body">
+
+                    <label for="royaltyRate" class="control-label">提成比例:</label>
+                    <div class="input-group input-group-lg">
+                        <input type="number" class="form-control" id="royaltyRateForEdit" name="royaltyRate"
+                               aria-describedby="sizing-addon1" required="required" disabled data="17"/>
+                        <span class="input-group-addon">
+                             <input type="checkbox" aria-label="..." id="modifier" name="changeRate" value="1"
+                                    onclick="removeDisabled()">
+                        </span>
+                        <span class="input-group-addon" id="sizing-addon4" style="color: red">可设范围：0 - 30</span>
+
+
+                    </div>
+
+
+                    <div class="checkbox input-group input-group-lg">
+
+                    </div>
+                    <label for="statusForEdit">封号状态:</label>
+                    <select class="form-control m-b" id="statusForEdit" name="status" onchange="statusChange(this)">
+                        <option value="">全部：</option>
+                        <option value="1">是</option>
+                        <option value="0">否</option>
+                    </select>
+                    <div class="form-group">
+                        <label for="nicknameForEdit" class="control-label">昵称:</label>
+                        <input class="form-control" id="nicknameForEdit" name="nickname" type="text"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="remark" class="control-label">备注:</label>
+                        <textarea class="form-control" id="remark1" name="remark"></textarea>
+                    </div>
+                    <input type="hidden" name="id" id="id"/>
+                    <input type="hidden" name="accountId" id="accountId">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" onclick="submitEdit()" class="btn btn-primary">修改</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- change modal-->
+
+<div class="modal fade" id="ModelBindPhone" tabindex="-1" role="dialog" aria-labelledby="ModelBindPhone">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="exampleModalLabel1">修改绑定手机</h4>
+            </div>
+            <form action="editAgentMobile" method="post" id="editAgentMobile">
+                <div class="modal-body">
+
+                    <label for="royaltyRate" class="control-label">输入手机号码:</label>
+                    <div class="input-group input-group-lg">
+                        <input type="text" class="form-control" id="phonenum" name="phonenum"
+                               aria-describedby="sizing-addon1" required="required"  data="11" value=""/>
+                    </div>
+                    <input type="hidden" name="pid" id="pid">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" onclick="submitPhone()" class="btn btn-primary">修改</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">代理详情</h4>
+            </div>
+            <div class="modal-body">
+                <table class="table ">
+                    <tbody id="detail">
+
+                    </tbody>
+
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="__JS__/jquery.min.js?v=2.1.4"></script>
+<script src="__JS__/bootstrap.min.js?v=3.3.6"></script>
+<script src="__JS__/bootstrap-datepicker.js"></script>
+<script src="__JS__/bootstrap-table.js"></script>
+<!-- 自定义js -->
+<script src="__JS__/content.js?v=1.0.0"></script>
+<script src="__JS__/common.js?v=1.1"></script>
+<script>
+    var pattern = new RegExp("^[a-zA-Z][a-zA-Z0-9_]{5,25}");
+
+
+    $(document).ready(function () {
+        $('#pageTd').attr('colspan', 13)
+
+    });
+
+
+    function changeStatus(url) {
+        window.location.href = "{:url('proxy/index')}?status=" + url.value;
+
+    }
+
+
+    function submitForm() {
+        if ($('#passwordForReg').val() === '') {
+            alert('密码不能为空')
+            return false;
+        }
+        if ($('#passwordForReg').val().length < 6) {
+            alert('密码长度需大于6位')
+            return false;
+
+        }
+        if ($("#royaltyRate").val() === '') {
+            alert('提成比例不能为空')
+            return false;
+        }
+        if ($('#accountForReg').val() === '') {
+            alert('账户不能为空')
+            return false;
+
+        }
+        if ($('#nickNameForReg').val() === '') {
+            alert('代理昵称不能为空')
+            return false;
+        }
+        if (!pattern.test($('#accountForReg').val())) {
+            alert('账号需以字母开头,并不少于6位')
+            return false;
+
+        }
+        $.ajax({
+            url: "{:url('proxy/addProxy')}",
+            type: 'post',
+            data: $('#addProxy').serialize(),
+            success: function (response) {
+                if (response.code !== 0) {
+                    $('#exampleModal').modal('hide')
+                    alert('添加成功')
+                    window.location.href = "{:url('proxy/index')}"
+
+                } else {
+                    alert(response.msg)
+                }
+            }, complete: function (x) {
+                if (x.statusText === 'error') {
+                    alert(x.responseJSON.message)
+                }
+            }
+        })
+    }
+
+
+    function checkAccount() {
+        if ($('#accountForReg').val() === '') {
+            alert('输入的账号为空')
+            return false;
+        }
+        if (!pattern.test($('#accountForReg').val())) {
+            alert('账号需以字母开头,并不少于6位')
+            return false;
+        }
+        $.ajax({
+            url: "{:url('proxy/checkexist')}",
+            data: {
+                account: $('#accountForReg').val()
+            }, success: function (data) {
+                if (data) {
+                    alert('账号已经存在')
+                    return false;
+                } else {
+                    alert('账号可用')
+                }
+            }
+        })
+    }
+
+    function bindMobile() {
+
+        if ($("input[type='checkbox']:checkbox:checked").length > 1) {
+            alert('请选择一项进行修改')
+            return false
+        }
+        if ($("input[type='checkbox']:checkbox:checked").length < 1) {
+            alert('请选择一项进行修改')
+            return false
+        }
+
+            var list = [{volist name="list" id="vo"}{"id":{$vo.id},"bindmobile":"{$vo.mobile}","username":"{$vo.username}"},{/volist}];
+            var id = $("input[type='checkbox']:checkbox:checked").first().val();
+            var accountId = -1;
+            var mobile ='';
+            list.forEach(function (t) {
+                if (id / 1 === t.id / 1) {
+                    accountId = t.id;
+                    mobile = t.bindmobile;
+
+                }
+            });
+            $('#pid').val(id);
+            $('#phonenum').val(mobile);
+
+        $('#ModelBindPhone').modal('toggle');
+    }
+
+
+    function editMessage() {
+
+        if ($("input[type='checkbox']:checkbox:checked").length > 1) {
+            alert('请选择一项进行修改')
+            return false
+        }
+        if ($("input[type='checkbox']:checkbox:checked").length < 1) {
+            alert('请选择一项进行修改')
+            return false
+        }
+        var list = [
+            {volist name="list" id="vo"}{"id":{$vo.id},"realMoney":"{$vo.balance}","realTotalMoney":"{$vo.historyin}","nickName":"{$vo.nickname}","level":{$vo.grade},"brand":1,"isBan":"\u5426","username":"{$vo.username}","remark":"{$vo.descript}","date":"{$vo.regtime}","lastLoginDate":"{$vo.last_login}","isDel":{if condition="$vo.isdel eq '0'"}true{else/}false{/if},"royaltyRate":{$vo.percent},"bindIp":false,"ban":false,"del":{if condition="$vo.isdel eq '0'"}true{else/}false{/if}},{/volist}];
+        var id = $("input[type='checkbox']:checkbox:checked").first().val();
+        var remark;
+        var rate;
+        var status;
+        var accountId;
+        var nickname;
+        list.forEach(function (t) {
+            if (id / 1 === t.id / 1) {
+                remark = t.remark
+                rate = t.royaltyRate
+                status = t.ban === true ? 1 : 0
+                accountId = t.accountId
+                nickname = t.nickName
+            }
+        })
+        $('#statusForEdit option').each(function (t) {
+            if (t === 1) ;
+            $(this).attr('selected', true);
+        });
+        $('#royaltyRateForEdit').val(rate);
+        $('#remark1').val(remark);
+        $('#accountId').val(accountId);
+        $('#statusForEdit').val(status);
+        $('#nicknameForEdit').val(nickname);
+
+        $('#exampleModal1').modal('toggle');
+    }
+
+    function changeSuperior() {
+
+        if ($("input[type='checkbox']:checkbox:checked").length > 1) {
+            alert('请选择一项进行修改')
+            return false
+        }
+        if ($("input[type='checkbox']:checkbox:checked").length < 1) {
+            alert('请选择一项进行修改')
+            return false
+        }
+        var list = [{volist name="list" id="vo"}{"id":{$vo.id},"realMoney":"{$vo.balance}","realTotalMoney":"{$vo.historyin}","nickName":"{$vo.nickname}","level":{$vo.grade},"brand":1,"isBan":"\u5426","username":"{$vo.username}","remark":"{$vo.descript}","date":"{$vo.regtime}","lastLoginDate":"{$vo.last_login}","isDel":"{$vo.isdel}","royaltyRate":{$vo.percent},"bindIp":false,"ban":false,"del":false},{/volist}];
+        var id = $("input[type='checkbox']:checkbox:checked").first().val();
+
+        var username = "";
+        var nickname = "";
+        var accountId = -1;
+        var level = -1;
+        list.forEach(function (t) {
+            if (id / 1 === t.id / 1) {
+                accountId = t.accountId
+                username = t.username;
+                nickname = t.nickName
+                level = t.level;
+            }
+        })
+
+        if (level !== 3) {
+            alert('选择的代理已有上级，不能修改上级');
+            return false;
+        }
+
+
+        $('#accountIdForChange').val(accountId);
+        $('#agentIDForChange').val(id);
+        $('#usernameForChange').val(username);
+        $('#nicknameForChange').val(nickname);
+        $('#exampleModal2').modal('toggle');
+    }
+
+
+
+    function submitPhone(){
+        var account = $("#pid").val();
+        var mobile = $("#phonenum").val();
+
+        if(mobile!="" && account!=""){
+            $.ajax({
+                url: "{:url('proxy/editAgentMobile')}",
+                data: $('#editAgentMobile').serialize(),
+                type: 'post',
+                success: function (response) {
+                    if (response.code !== 0 || response === true) {
+                        $('#ModelBindPhone').modal('hide')
+                        alert('绑定成功')
+                        window.location.href = '{:url("proxy/index")}';
+                    } else {
+                        alert(response.msg)
+                    }
+                }
+            })
+
+        }
+    }
+
+
+
+    function submitEdit() {
+        if ($("#royaltyRateForEdit").val() === '') {
+            alert('提成比例不能为空')
+            return false;
+        }
+
+        if ($('#royaltyRateForEdit').val() < 0 || $('#royaltyRateForEdit').val() > 30) {
+            alert('请输入合法的比例,比例最大为30%')
+            return false;
+        }
+
+        if (Math.floor($('#royaltyRateForEdit').val()) !== Number($('#royaltyRateForEdit').val())) {
+            alert('提成比例必须为整数')
+            return false;
+        }
+
+        var id = $("input[type='checkbox']:checkbox:checked").first().val();
+        $('#id').val(id);
+
+        $.ajax({
+            url: "{:url('proxy/editAgent')}",
+            data: $('#editAgent').serialize(),
+            type: 'post',
+            success: function (response) {
+                if (response.code !== 0 || response === true) {
+                    $('#exampleModal1').modal('hide')
+                    alert('修改成功')
+                    window.location.href = '{:url("proxy/index")}';
+                } else {
+                    alert(response.msg)
+                }
+            }
+        })
+
+    }
+
+    function submitChange() {
+
+        var id = $("input[type='checkbox']:checkbox:checked").first().val();
+        $('#id').val(id);
+
+        $.ajax({
+            url: 'changeSuperior',
+            data: $('#changeSuperior').serialize(),
+            type: 'put',
+            success: function (response) {
+                if (response.code !== 0 || response === true) {
+                    $('#exampleModal2').modal('hide')
+                    alert('修改代理上级成功')
+                    window.location.href = 'agentManager'
+                } else {
+                    alert(response.msg)
+                }
+            }
+        })
+
+    }
+
+
+    function statusChange(data) {
+        if (data.value !== '') {
+            $('#statusValue').val(data.value)
+
+        }
+    }
+
+    function removeDisabled() {
+        var chk = $("#modifier").prop("checked")
+        if (chk) {
+            $("#royaltyRateForEdit").attr("disabled", false);
+        } else {
+            $("#royaltyRateForEdit").attr("disabled", true);
+
+        }
+    }
+
+    function getDetail(dom) {
+        var id = dom.attributes['data'].value;
+        $.ajax({
+            url: 'getAgentDetail',
+            data: {id: id},
+            success: function (response) {
+                if (response.code !== 0 || response !== true) {
+                    var result = response.data;
+                    var str = "<tr>";
+                    str += "<th >代理id</th>"
+                    str += "<th >" + result.agentId + "</th>";
+                    str += "</tr><tr>";
+
+                    str += "<th class='success'>总充值</th>"
+                    str += "<th >" + result.recharge + "</th>";
+                    str += "<th class='success'>总兑换金额</th>"
+                    str += "<th >" + result.extractSum  + "</th>";
+                    str += "</tr><tr>";
+                    str += "<th class='warning'>税收</th>"
+                    str += "<th>" + result.revenue  + "</th>";
+
+                    str += "<th class='warning'>总收入</th>"
+                    str += "<th>" + result.income  + "</th>";
+
+                    str += "</tr><tr>";
+                    str += "<th>总注册量</th>"
+                    str += "<th>" + result.reg + "</th>";
+
+                    str += "<th>总提现金额</th>"
+                    str += "<th>" + result.withdrawDeposit + "</th>";
+                    str += "</tr><tr>";
+                    str += "<th>收益比例(现在/最高)</th>"
+                    str += "<th>" + result.royaltyRate + "%/" + result.maxRoyaltyRate + "%" + "</th>";
+                    str += "</tr><tr>";
+                    str += "<th class='success'>账户余额</th>"
+                    str += "<th>" + result.money  + "</th>";
+
+
+                    str += "</tr>";
+                    $('#detail').html(str);
+                    id = dom.attributes['data-order'].value;
+                    $("[data-order='" + id + "']").prop('checked', true)
+
+                } else {
+                    swal({
+                            title: response.msg === undefined ? response : response.msg,
+                            text: '失败',
+                            type: "error"
+                        },
+                        function () {
+                            location.reload();
+                        }
+                    );
+                }
+            }
+        })
+        $('#myModal').modal('toggle');
+    }
+
+    function modify() {
+        if ($("input[type='checkbox']:checkbox:checked").length > 1) {
+            alert('请选择一项进行修改')
+            return false
+        }
+        if ($("input[type='checkbox']:checkbox:checked").length < 1) {
+            alert('请选择一项进行修改')
+            return false
+        }
+        var id = $("input[type='checkbox']:checkbox:checked").first().val();
+        $.ajax({
+            url: 'getAgentInfo',
+            data: {id: id},
+            success: function (response) {
+
+            }
+        })
+    }
+</script>
+
+
+</body>
+
+</html>

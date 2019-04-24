@@ -1,0 +1,785 @@
+{extend name="common/base" /}
+
+{block name="title"}{/block}
+{block name="content"}
+<div class="layui-card">
+    <div class="layui-card-header layuiadmin-card-header-auto">
+        <h2>结算账户设置</h2>
+    </div>
+
+    <div class="layui-card-body">
+        <div class="layui-tab layui-tab-brief" lay-filter="dev_tab">
+            <ul class="layui-tab-title">
+                <li class="layui-this" id="bindali">绑定支付宝</li>
+                <li>绑定银行卡</li>
+            </ul>
+            <div class="layui-tab-content">
+                <form action="checkResetPassword" method="get" class="layui-form" id="addProxy">
+                    <div class="layui-tab-item layui-show" id="aliInfo">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">支付宝账户</label>
+                            <div class="layui-input-inline">
+                                <input id="aliAccount" type="text" class="layui-input"
+                                       value="{$bankinfo.alipay}" placeholder="请输入支付宝账号"
+                                       name="aliAccount" />
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">真实姓名</label>
+                            <div class="layui-input-inline">
+                                <input id="realName"
+                                       value="{$bankinfo.alipay_name}" name="realName"
+                                       placeholder="请输入支付宝真实姓名" type="text" class="layui-input"
+                                       />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-tab-item" id="bankInfo">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">银行卡账号</label>
+                            <div class="layui-input-inline">
+                                <input id="cardAccount" type="text" class="layui-input"
+                                       value="{$bankinfo.cardaccount}"
+                                       name="cardAccount"
+                                       placeholder="请输入银行卡账号"
+                                       />
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">开户行</label>
+                            <div class="layui-input-inline">
+                            <select class="layui-form-select" id="bank" name="bank" >
+                                <option value="-1" >请选择开户行...</option>
+
+                                <option value="ICBC" {if condition="$bankinfo.bank eq 'ICBC'"}selected="true"{/if}>中国工商银行</option>
+
+                                <option value="CCB" {if condition="$bankinfo.bank eq 'CCB'"}selected="true"{/if}>中国建设银行</option>
+
+                                <option value="BOC" {if condition="$bankinfo.bank eq 'BOC'"}selected="true"{/if}>中国银行</option>
+
+                                <option value="ABC" {if condition="$bankinfo.bank eq 'ABC'"}selected="true"{/if}>中国农业银行</option>
+
+                                <option value="PSBC" {if condition="$bankinfo.bank eq 'PSBC'"}selected="true"{/if}>中国邮政储蓄银行</option>
+
+                                <option value="CMB" {if condition="$bankinfo.bank eq 'CMB'"}selected="true"{/if}>招商银行</option>
+
+                                <option value="CITIC" {if condition="$bankinfo.bank eq 'CITIC'"}selected="true"{/if}>中信银行</option>
+
+                                <option value="SPDB" {if condition="$bankinfo.bank eq 'SPDB'"}selected="true"{/if}>浦发银行</option>
+
+                                <option value="CIB" {if condition="$bankinfo.bank eq 'CIB'"}selected="true"{/if}>兴业银行</option>
+
+                                <option value="CMBC" {if condition="$bankinfo.bank eq 'CMBC'"}selected="true"{/if}>中国民生银行</option>
+
+                                <option value="CEB" {if condition="$bankinfo.bank eq 'CEB'"}selected="true"{/if}>中国光大银行</option>
+
+                                <option value="PAB" {if condition="$bankinfo.bank eq 'PAB'"}selected="true"{/if}>平安银行</option>
+
+                                <option value="HXB" {if condition="$bankinfo.bank eq 'HXB'"}selected="true"{/if}>华夏银行</option>
+
+                                <option value="BOB" {if condition="$bankinfo.bank eq 'BOB'"}selected="true"{/if}>北京银行</option>
+
+                                <option value="CGB" {if condition="$bankinfo.bank eq 'CGB'"}selected="true"{/if}>广发银行</option>
+
+                                <option value="BOS" {if condition="$bankinfo.bank eq 'BOS'"}selected="true"{/if}>上海银行</option>
+
+                                <option value="JSB" {if condition="$bankinfo.bank eq 'JSB'"}selected="true"{/if}>江苏银行</option>
+
+                                <option value="EGB" {if condition="$bankinfo.bank eq 'EGB'"}selected="true"{/if}>恒丰银行</option>
+
+                                <option value="BJRCB" {if condition="$bankinfo.bank eq 'BJRCB'"}selected="true"{/if}>北京农商银行</option>
+
+                                <option value="CQRCB" {if condition="$bankinfo.bank eq 'CQRCB'"}selected="true"{/if}>重庆农村商业银行</option>
+
+                                <option value="CBHB" {if condition="$bankinfo.bank eq 'CBHB'"}selected="true"{/if}>渤海银行</option>
+
+                                <option value="SRCB" {if condition="$bankinfo.bank eq 'SRCB'"}selected="true"{/if}>上海农商银行</option>
+
+                                <option value="CZB" {if condition="$bankinfo.bank eq 'CZB'"}selected="true"{/if}>浙商银行</option>
+
+                                <option value="NJCB" {if condition="$bankinfo.bank eq 'NJCB'"}selected="true"{/if}>南京银行</option>
+
+                                <option value="GRCB" {if condition="$bankinfo.bank eq 'GRCB'"}selected="true"{/if}>广州农村商业银行</option>
+
+                                <option value="NBCB" {if condition="$bankinfo.bank eq 'NBCB'"}selected="true"{/if}>宁波银行</option>
+
+                                <option value="HSB" {if condition="$bankinfo.bank eq 'HSB'"}selected="true"{/if}>徽商银行</option>
+
+                                <option value="HZB">杭州银行</option>
+
+                                <option value="BOSJ">盛京银行</option>
+
+                                <option value="BOHRB">哈尔滨银行</option>
+
+                                <option value="BODL">大连银行</option>
+
+                                <option value="CDRCB">成都农村商业银行</option>
+
+                                <option value="BOJL">吉林银行</option>
+
+                                <option value="JNRCB">江南农村商业银行</option>
+
+                                <option value="BSB">包商银行</option>
+
+                                <option value="BOCD">成都银行</option>
+
+                                <option value="BOLJ">龙江银行</option>
+
+                                <option value="TJRCB">天津农商银行</option>
+
+                                <option value="DRCB">东莞农村商业银行</option>
+
+                                <option value="HKB">汉口银行</option>
+
+                                <option value="BOKL">昆仑银行</option>
+
+                                <option value="CQCB">重庆银行</option>
+
+                                <option value="ZJTLCB">浙江泰隆商行</option>
+
+                                <option value="QDCCB">青岛银行</option>
+
+                                <option value="CHAB">长安银行</option>
+
+                                <option value="TAB">泰安市商业银行</option>
+
+                                <option value="RZB">日照银行</option>
+
+                                <option value="WFCCB">潍坊银行</option>
+
+                                <option value="LSB">临商银行</option>
+
+                                <option value="LWB">莱商银行</option>
+
+                                <option value="DZB">德州银行</option>
+
+                                <option value="QSB">齐商银行</option>
+
+                                <option value="DYLSCZ">东营莱商村镇银行</option>
+
+                                <option value="CJCCB">江苏长江商业银行</option>
+
+                                <option value="BOLY">洛阳银行</option>
+
+                                <option value="GDNYB">广东南粤银行</option>
+
+                                <option value="JZCB">晋中银行</option>
+
+                                <option value="ORDOS">鄂尔多斯银行</option>
+
+                                <option value="BONX">宁夏银行</option>
+
+                                <option value="BOXM">厦门银行</option>
+
+                                <option value="BOFX">阜新银行</option>
+
+                                <option value="YNNX">云南省农村农信社</option>
+
+                                <option value="CZCB">浙江稠州银行</option>
+
+                                <option value="QLB">齐鲁银行</option>
+
+                                <option value="BOHZ">湖州银行</option>
+
+                                <option value="BOTZ">台州银行</option>
+
+                                <option value="YZCZ">银座村镇银行</option>
+
+                                <option value="BOGY">贵阳银行</option>
+
+                                <option value="WJRCB">吴江农村商业银行</option>
+
+                                <option value="JCCB">晋城银行</option>
+
+                                <option value="BONC">江西银行</option>
+
+                                <option value="LYCB">辽阳银行</option>
+
+                                <option value="ZJNX">浙江农信</option>
+
+                                <option value="PZHCCB">攀枝花市商业银行</option>
+
+                                <option value="JSNX">江苏省农村商业银行</option>
+
+                                <option value="BOGL">桂林银行</option>
+
+                                <option value="BODY">德阳银行</option>
+
+                                <option value="DYCCB">东营银行</option>
+
+                                <option value="BOXJ">华融湘江银行</option>
+
+                                <option value="XTB">邢台银行</option>
+
+                                <option value="JJCCB">九江银行</option>
+
+                                <option value="HBCL">湖北银行</option>
+
+                                <option value="JLNX">吉林省农村信用社</option>
+
+                                <option value="BOYK">营口银行</option>
+
+                                <option value="TCRCB">太仓农村商业银行</option>
+
+                                <option value="WXRCB">无锡农村商业银行</option>
+
+                                <option value="HLJNX">黑龙江农信</option>
+
+                                <option value="BOXIA">西安银行</option>
+
+                                <option value="JYRCB">江阴农商银行</option>
+
+                                <option value="HANABANK">韩亚银行</option>
+
+                                <option value="BOPDS">平顶山银行</option>
+
+                                <option value="HBNX">河北省农村信用社</option>
+
+                                <option value="GZNX">贵州省农村信用社</option>
+
+                                <option value="YRRCB">黄河农村商业银行</option>
+
+                                <option value="HUBNX">湖北省农村信用社</option>
+
+                                <option value="JZB">锦州银行</option>
+
+                                <option value="BEEB">鄞州银行</option>
+
+                                <option value="SCNX">四川省农村信用社</option>
+
+                                <option value="SZRCB">深圳农村商业银行</option>
+
+                                <option value="LZCB">兰州银行</option>
+
+                                <option value="CDB">承德银行</option>
+
+                                <option value="GXNX">广西农村信用社</option>
+
+                                <option value="BOZJ">郑州银行</option>
+
+                                <option value="BOFS">抚顺银行</option>
+
+                                <option value="WHCCB">威海市商业银行</option>
+
+                                <option value="BOJN">济宁银行</option>
+
+                                <option value="HUNNX">湖南农村信用社</option>
+
+                                <option value="GSNX">甘肃省农村信用社</option>
+
+                                <option value="ZJKCCB">张家口银行</option>
+
+                                <option value="HNNX">河南省农村信用社</option>
+
+                                <option value="WHRCB">武汉农村商业银行</option>
+
+                                <option value="SHXNX">陕西省农村信用社</option>
+
+                                <option value="KSRCB">昆山农商银行</option>
+
+                                <option value="SHBANK">新韩银行（中国）</option>
+
+                                <option value="BHRCB">天津滨海农村商业银行</option>
+
+                                <option value="BOQZ">泉州银行</option>
+
+                                <option value="SNCCB">遂宁银行</option>
+
+                                <option value="BOTL">铁岭银行</option>
+
+                                <option value="BOZZ">枣庄银行</option>
+
+                                <option value="BOHH">新疆汇合银行</option>
+
+                                <option value="YTCB">烟台银行</option>
+
+                                <option value="TSCCB">唐山银行</option>
+
+                                <option value="SXNX">山西省农村信用社</option>
+
+                                <option value="TJWQCZ">天津武清村镇银行</option>
+
+                                <option value="XJNX">新疆农信</option>
+
+                                <option value="BOBD">保定银行</option>
+
+                                <option value="NMGNX">内蒙古农村信用社</option>
+
+                                <option value="LNNX">辽宁农村信用社</option>
+
+                                <option value="PJCCB">盘锦银行</option>
+
+                                <option value="XHDLCZ">鑫汇村镇银行</option>
+
+                                <option value="ZJGRCB">张家港农商银行</option>
+
+                                <option value="URB">联合村镇银行</option>
+
+                                <option value="XMIB">厦门国际银行</option>
+
+                                <option value="HNRCC">海南省农村信用社</option>
+
+                                <option value="YKYH">营口沿海银行</option>
+
+                                <option value="QHNX">青海省农村信用社</option>
+
+                                <option value="LZCCB">泸州市商业银行</option>
+
+                                <option value="BOCZ">沧州银行</option>
+
+                                <option value="WEBANK">微众银行</option>
+
+                                <option value="BOQHD">秦皇岛银行</option>
+
+                                <option value="COMM">交通银行</option>
+
+                                <option value="GZCB">广州银行</option>
+
+                                <option value="GDNX">广东农信</option>
+
+                            </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">姓名</label>
+                            <div class="layui-input-inline">
+                                <input id="name" type="text" class="layui-input"
+                                       value="{$bankinfo.name}" name="name"
+                                       placeholder="请输入持卡人姓名"
+                                       />
+                            </div>
+                        </div>
+                    </div>
+
+
+                    {if($proxy.check_pass eq '')}
+                    <div class="layui-inline">
+                        <a type="button" class="layui-btn"
+                           href="retrievePassword">设置结算密码</a>
+                    </div>
+                    {else /}
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">结算密码</label>
+                        <div class="layui-input-inline">
+                            <input name="settlementPassword" id="settlementPassword"
+                                   placeholder="请输入结算密码" type="password" class="layui-input"
+                                   lay-verify="required"/>
+                        </div>
+                    </div>
+                    {/if}
+
+
+
+                    {if condition="$proxy.check_pass eq ''"}
+                    <div class="layui-inline">
+                        <a type="button" class="layui-btn"
+                           href="bindmobile">前去绑定</a>
+                    </div>
+                    {else /}
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">手机号</label>
+                        <div class="layui-input-inline">
+                            <input type="text" class="layui-input disabled phoneNumForFind" id="phoneNum"
+                                   value="{$proxy.bind_mobile}" disabled lay-verify="required" />
+                        </div>
+                        <div class="layui-input-inline">
+                            <button class="layui-btn sendCode" type="button" id="sendit" value='{$proxy.bind_mobile}'>获取验证码</button>
+                        </div>
+
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">验证码</label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="code" name="code"
+                                   placeholder="请输入验证码..." lay-verify="required" autocomplete="off" class="layui-input">
+                            <!--<input type="hidden" id="type" lay-verify="required"/>-->
+                            <!--<input type="hidden" id="codeMsg" name="codeMsg" lay-verify="required"/>-->
+                        </div>
+
+                    </div>
+
+                    <div class="layui-form-item">
+                        <div class="layui-input-inline" style="text-align: center">
+                            <button class="layui-btn" id="sure" lay-submit lay-filter="safeset-changeMobile">保存修改</button>
+                        </div>
+                    </div>
+                    {/if}
+
+                </form>
+
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{/block}
+{block name="script"}
+<!-- 全局js -->
+<script src="__JS__/jquery.min.js?v=2.1.4"></script>
+<script src="__JS__/bootstrap.min.js?v=3.3.6"></script>
+<script src="__JS__/cache.js"></script>
+<!-- 自定义js -->
+<script src="__JS__/content.js?v=1.0.0"></script>
+<!-- 区域联动 -->
+<script src="__JS__/distpicker.data.js"></script>
+<script src="__JS__/distpicker.js"></script>
+<!-- 银行卡编码获取 -->
+<script src="__JS__/bankcardinfo.js"></script>
+<!-- Toastr script -->
+<script src="__JS__/toastr.min.js"></script>
+<script src="__JS__/common.js?v=1.0"></script>
+
+
+<script type="text/javascript">
+    layui.use(['layer','table','form', 'jquery', 'element'],function () {
+        var layer = layui.layer
+            ,form = layui.form
+            ,table = layui.table
+            ,element=layui.element
+            ,$    = layui.$;
+        element.on('tab(dev_tab)', function(data){
+            $(".layui-tab-item").each(function (item) {
+                $(this).removeClass('layui-show');
+                if(item === data.index){
+                    $(this).addClass('layui-show');
+                }
+            });
+        });
+        $('#sure').on('click', function(e){
+            e.preventDefault();
+            submitForm();
+        });
+        $('#sendit').on('click' ,function (e) {
+            e.preventDefault();
+            sendCode(this);
+        });
+        cache.initCode('settlementAccountCode');
+
+        var bindType = "ali"
+
+        if (bindType === 'bank') {
+            var bankType = document.getElementById("bankType");
+            changeBindType(bankType);
+        }
+
+        $('#mail').css("display", "none");
+        $('#mobile').css("display", "block");
+
+        var bankBind = {"id":null,"agentId":null,"name":null,"idCard":null,"cardAccount":null,"bank":null,"province":null,"city":null,"bankBranch":null};
+        $('#distPicker').distpicker({
+            autoSelect: false,
+            province: bankBind.province === "" ? "请输入开户行所在省份..." : bankBind.province,
+            city: bankBind.city === "" ? "请输入开户行所在城市..." : bankBind.city
+        });
+        function checkPassword() {
+            var settlementPassword = null;
+            if ($('#settlementPassword').val() !== settlementPassword) {
+                layer.msg("结算密码不正确");
+                return false;
+            }
+            var code = null;
+            if ($('#code').val() !== code) {
+                layer.msg("验证码不正确");
+                return false;
+            }
+
+        }
+
+        function setBankBin(dom){
+
+            var cardAccount = dom.value;
+            console.log(cardAccount)
+            getBankBin( cardAccount,function(err,data){
+                if(!err){
+                    var banklist = [{"id":144,"name":"\u4E2D\u56FD\u5DE5\u5546\u94F6\u884C","value":"ICBC"},
+                        {"id":145,"name":"\u4E2D\u56FD\u5EFA\u8BBE\u94F6\u884C","value":"CCB"},
+                        {"id":146,"name":"\u4E2D\u56FD\u94F6\u884C","value":"BOC"},
+                        {"id":147,"name":"\u4E2D\u56FD\u519C\u4E1A\u94F6\u884C","value":"ABC"},{"id":149,"name":"\u4E2D\u56FD\u90AE\u653F\u50A8\u84C4\u94F6\u884C","value":"PSBC"},{"id":150,"name":"\u62DB\u5546\u94F6\u884C","value":"CMB"},{"id":151,"name":"\u4E2D\u4FE1\u94F6\u884C","value":"CITIC"},{"id":152,"name":"\u6D66\u53D1\u94F6\u884C","value":"SPDB"},{"id":153,"name":"\u5174\u4E1A\u94F6\u884C","value":"CIB"},{"id":154,"name":"\u4E2D\u56FD\u6C11\u751F\u94F6\u884C","value":"CMBC"},{"id":155,"name":"\u4E2D\u56FD\u5149\u5927\u94F6\u884C","value":"CEB"},{"id":156,"name":"\u5E73\u5B89\u94F6\u884C","value":"PAB"},{"id":157,"name":"\u534E\u590F\u94F6\u884C","value":"HXB"},{"id":158,"name":"\u5317\u4EAC\u94F6\u884C","value":"BOB"},{"id":159,"name":"\u5E7F\u53D1\u94F6\u884C","value":"CGB"},{"id":160,"name":"\u4E0A\u6D77\u94F6\u884C","value":"BOS"},{"id":161,"name":"\u6C5F\u82CF\u94F6\u884C","value":"JSB"},{"id":162,"name":"\u6052\u4E30\u94F6\u884C","value":"EGB"},{"id":163,"name":"\u5317\u4EAC\u519C\u5546\u94F6\u884C","value":"BJRCB"},{"id":164,"name":"\u91CD\u5E86\u519C\u6751\u5546\u4E1A\u94F6\u884C","value":"CQRCB"},{"id":165,"name":"\u6E24\u6D77\u94F6\u884C","value":"CBHB"},{"id":166,"name":"\u4E0A\u6D77\u519C\u5546\u94F6\u884C","value":"SRCB"},{"id":167,"name":"\u6D59\u5546\u94F6\u884C","value":"CZB"},{"id":168,"name":"\u5357\u4EAC\u94F6\u884C","value":"NJCB"},{"id":169,"name":"\u5E7F\u5DDE\u519C\u6751\u5546\u4E1A\u94F6\u884C","value":"GRCB"},{"id":170,"name":"\u5B81\u6CE2\u94F6\u884C","value":"NBCB"},{"id":171,"name":"\u5FBD\u5546\u94F6\u884C","value":"HSB"},{"id":172,"name":"\u676D\u5DDE\u94F6\u884C","value":"HZB"},{"id":173,"name":"\u76DB\u4EAC\u94F6\u884C","value":"BOSJ"},{"id":174,"name":"\u54C8\u5C14\u6EE8\u94F6\u884C","value":"BOHRB"},{"id":175,"name":"\u5927\u8FDE\u94F6\u884C","value":"BODL"},{"id":176,"name":"\u6210\u90FD\u519C\u6751\u5546\u4E1A\u94F6\u884C","value":"CDRCB"},{"id":177,"name":"\u5409\u6797\u94F6\u884C","value":"BOJL"},{"id":178,"name":"\u6C5F\u5357\u519C\u6751\u5546\u4E1A\u94F6\u884C","value":"JNRCB"},{"id":179,"name":"\u5305\u5546\u94F6\u884C","value":"BSB"},{"id":180,"name":"\u6210\u90FD\u94F6\u884C","value":"BOCD"},{"id":181,"name":"\u9F99\u6C5F\u94F6\u884C","value":"BOLJ"},{"id":182,"name":"\u5929\u6D25\u519C\u5546\u94F6\u884C","value":"TJRCB"},{"id":183,"name":"\u4E1C\u839E\u519C\u6751\u5546\u4E1A\u94F6\u884C","value":"DRCB"},{"id":184,"name":"\u6C49\u53E3\u94F6\u884C","value":"HKB"},{"id":185,"name":"\u6606\u4ED1\u94F6\u884C","value":"BOKL"},{"id":186,"name":"\u91CD\u5E86\u94F6\u884C","value":"CQCB"},{"id":187,"name":"\u6D59\u6C5F\u6CF0\u9686\u5546\u884C","value":"ZJTLCB"},{"id":188,"name":"\u9752\u5C9B\u94F6\u884C","value":"QDCCB"},{"id":189,"name":"\u957F\u5B89\u94F6\u884C","value":"CHAB"},{"id":190,"name":"\u6CF0\u5B89\u5E02\u5546\u4E1A\u94F6\u884C","value":"TAB"},{"id":191,"name":"\u65E5\u7167\u94F6\u884C","value":"RZB"},{"id":192,"name":"\u6F4D\u574A\u94F6\u884C","value":"WFCCB"},{"id":193,"name":"\u4E34\u5546\u94F6\u884C","value":"LSB"},{"id":194,"name":"\u83B1\u5546\u94F6\u884C","value":"LWB"},{"id":195,"name":"\u5FB7\u5DDE\u94F6\u884C","value":"DZB"},{"id":196,"name":"\u9F50\u5546\u94F6\u884C","value":"QSB"},{"id":197,"name":"\u4E1C\u8425\u83B1\u5546\u6751\u9547\u94F6\u884C","value":"DYLSCZ"},{"id":198,"name":"\u6C5F\u82CF\u957F\u6C5F\u5546\u4E1A\u94F6\u884C","value":"CJCCB"},{"id":199,"name":"\u6D1B\u9633\u94F6\u884C","value":"BOLY"},{"id":200,"name":"\u5E7F\u4E1C\u5357\u7CA4\u94F6\u884C","value":"GDNYB"},{"id":201,"name":"\u664B\u4E2D\u94F6\u884C","value":"JZCB"},{"id":202,"name":"\u9102\u5C14\u591A\u65AF\u94F6\u884C","value":"ORDOS"},{"id":203,"name":"\u5B81\u590F\u94F6\u884C","value":"BONX"},{"id":204,"name":"\u53A6\u95E8\u94F6\u884C","value":"BOXM"},{"id":205,"name":"\u961C\u65B0\u94F6\u884C","value":"BOFX"},{"id":206,"name":"\u4E91\u5357\u7701\u519C\u6751\u519C\u4FE1\u793E","value":"YNNX"},{"id":207,"name":"\u6D59\u6C5F\u7A20\u5DDE\u94F6\u884C","value":"CZCB"},{"id":208,"name":"\u9F50\u9C81\u94F6\u884C","value":"QLB"},{"id":209,"name":"\u6E56\u5DDE\u94F6\u884C","value":"BOHZ"},{"id":210,"name":"\u53F0\u5DDE\u94F6\u884C","value":"BOTZ"},{"id":211,"name":"\u94F6\u5EA7\u6751\u9547\u94F6\u884C","value":"YZCZ"},{"id":212,"name":"\u8D35\u9633\u94F6\u884C","value":"BOGY"},{"id":213,"name":"\u5434\u6C5F\u519C\u6751\u5546\u4E1A\u94F6\u884C","value":"WJRCB"},{"id":214,"name":"\u664B\u57CE\u94F6\u884C","value":"JCCB"},{"id":215,"name":"\u6C5F\u897F\u94F6\u884C","value":"BONC"},{"id":216,"name":"\u8FBD\u9633\u94F6\u884C","value":"LYCB"},{"id":217,"name":"\u6D59\u6C5F\u519C\u4FE1","value":"ZJNX"},{"id":218,"name":"\u6500\u679D\u82B1\u5E02\u5546\u4E1A\u94F6\u884C","value":"PZHCCB"},{"id":219,"name":"\u6C5F\u82CF\u7701\u519C\u6751\u5546\u4E1A\u94F6\u884C","value":"JSNX"},{"id":220,"name":"\u6842\u6797\u94F6\u884C","value":"BOGL"},{"id":221,"name":"\u5FB7\u9633\u94F6\u884C","value":"BODY"},{"id":222,"name":"\u4E1C\u8425\u94F6\u884C","value":"DYCCB"},{"id":223,"name":"\u534E\u878D\u6E58\u6C5F\u94F6\u884C","value":"BOXJ"},{"id":224,"name":"\u90A2\u53F0\u94F6\u884C","value":"XTB"},{"id":225,"name":"\u4E5D\u6C5F\u94F6\u884C","value":"JJCCB"},{"id":226,"name":"\u6E56\u5317\u94F6\u884C","value":"HBCL"},{"id":227,"name":"\u5409\u6797\u7701\u519C\u6751\u4FE1\u7528\u793E","value":"JLNX"},{"id":228,"name":"\u8425\u53E3\u94F6\u884C","value":"BOYK"},{"id":229,"name":"\u592A\u4ED3\u519C\u6751\u5546\u4E1A\u94F6\u884C","value":"TCRCB"},{"id":230,"name":"\u65E0\u9521\u519C\u6751\u5546\u4E1A\u94F6\u884C","value":"WXRCB"},{"id":231,"name":"\u9ED1\u9F99\u6C5F\u519C\u4FE1","value":"HLJNX"},{"id":232,"name":"\u897F\u5B89\u94F6\u884C","value":"BOXIA"},{"id":233,"name":"\u6C5F\u9634\u519C\u5546\u94F6\u884C","value":"JYRCB"},{"id":234,"name":"\u97E9\u4E9A\u94F6\u884C","value":"HANABANK"},{"id":235,"name":"\u5E73\u9876\u5C71\u94F6\u884C","value":"BOPDS"},{"id":236,"name":"\u6CB3\u5317\u7701\u519C\u6751\u4FE1\u7528\u793E","value":"HBNX"},{"id":237,"name":"\u8D35\u5DDE\u7701\u519C\u6751\u4FE1\u7528\u793E","value":"GZNX"},{"id":238,"name":"\u9EC4\u6CB3\u519C\u6751\u5546\u4E1A\u94F6\u884C","value":"YRRCB"},{"id":239,"name":"\u6E56\u5317\u7701\u519C\u6751\u4FE1\u7528\u793E","value":"HUBNX"},{"id":240,"name":"\u9526\u5DDE\u94F6\u884C","value":"JZB"},{"id":241,"name":"\u911E\u5DDE\u94F6\u884C","value":"BEEB"},{"id":242,"name":"\u56DB\u5DDD\u7701\u519C\u6751\u4FE1\u7528\u793E","value":"SCNX"},{"id":243,"name":"\u6DF1\u5733\u519C\u6751\u5546\u4E1A\u94F6\u884C","value":"SZRCB"},{"id":244,"name":"\u5170\u5DDE\u94F6\u884C","value":"LZCB"},{"id":245,"name":"\u627F\u5FB7\u94F6\u884C","value":"CDB"},{"id":246,"name":"\u5E7F\u897F\u519C\u6751\u4FE1\u7528\u793E","value":"GXNX"},{"id":247,"name":"\u90D1\u5DDE\u94F6\u884C","value":"BOZJ"},{"id":248,"name":"\u629A\u987A\u94F6\u884C","value":"BOFS"},{"id":249,"name":"\u5A01\u6D77\u5E02\u5546\u4E1A\u94F6\u884C","value":"WHCCB"},{"id":250,"name":"\u6D4E\u5B81\u94F6\u884C","value":"BOJN"},{"id":251,"name":"\u6E56\u5357\u519C\u6751\u4FE1\u7528\u793E","value":"HUNNX"},{"id":252,"name":"\u7518\u8083\u7701\u519C\u6751\u4FE1\u7528\u793E","value":"GSNX"},{"id":253,"name":"\u5F20\u5BB6\u53E3\u94F6\u884C","value":"ZJKCCB"},{"id":254,"name":"\u6CB3\u5357\u7701\u519C\u6751\u4FE1\u7528\u793E","value":"HNNX"},{"id":255,"name":"\u6B66\u6C49\u519C\u6751\u5546\u4E1A\u94F6\u884C","value":"WHRCB"},{"id":256,"name":"\u9655\u897F\u7701\u519C\u6751\u4FE1\u7528\u793E","value":"SHXNX"},{"id":257,"name":"\u6606\u5C71\u519C\u5546\u94F6\u884C","value":"KSRCB"},{"id":258,"name":"\u65B0\u97E9\u94F6\u884C\uFF08\u4E2D\u56FD\uFF09","value":"SHBANK"},{"id":259,"name":"\u5929\u6D25\u6EE8\u6D77\u519C\u6751\u5546\u4E1A\u94F6\u884C","value":"BHRCB"},{"id":260,"name":"\u6CC9\u5DDE\u94F6\u884C","value":"BOQZ"},{"id":261,"name":"\u9042\u5B81\u94F6\u884C","value":"SNCCB"},{"id":262,"name":"\u94C1\u5CAD\u94F6\u884C","value":"BOTL"},{"id":263,"name":"\u67A3\u5E84\u94F6\u884C","value":"BOZZ"},{"id":264,"name":"\u65B0\u7586\u6C47\u5408\u94F6\u884C","value":"BOHH"},{"id":265,"name":"\u70DF\u53F0\u94F6\u884C","value":"YTCB"},{"id":266,"name":"\u5510\u5C71\u94F6\u884C","value":"TSCCB"},{"id":267,"name":"\u5C71\u897F\u7701\u519C\u6751\u4FE1\u7528\u793E","value":"SXNX"},{"id":268,"name":"\u5929\u6D25\u6B66\u6E05\u6751\u9547\u94F6\u884C","value":"TJWQCZ"},{"id":269,"name":"\u65B0\u7586\u519C\u4FE1","value":"XJNX"},{"id":270,"name":"\u4FDD\u5B9A\u94F6\u884C","value":"BOBD"},{"id":271,"name":"\u5185\u8499\u53E4\u519C\u6751\u4FE1\u7528\u793E","value":"NMGNX"},{"id":272,"name":"\u8FBD\u5B81\u519C\u6751\u4FE1\u7528\u793E","value":"LNNX"},{"id":273,"name":"\u76D8\u9526\u94F6\u884C","value":"PJCCB"},{"id":274,"name":"\u946B\u6C47\u6751\u9547\u94F6\u884C","value":"XHDLCZ"},{"id":275,"name":"\u5F20\u5BB6\u6E2F\u519C\u5546\u94F6\u884C","value":"ZJGRCB"},{"id":276,"name":"\u8054\u5408\u6751\u9547\u94F6\u884C","value":"URB"},{"id":277,"name":"\u53A6\u95E8\u56FD\u9645\u94F6\u884C","value":"XMIB"},{"id":278,"name":"\u6D77\u5357\u7701\u519C\u6751\u4FE1\u7528\u793E","value":"HNRCC"},{"id":279,"name":"\u8425\u53E3\u6CBF\u6D77\u94F6\u884C","value":"YKYH"},{"id":280,"name":"\u9752\u6D77\u7701\u519C\u6751\u4FE1\u7528\u793E","value":"QHNX"},{"id":281,"name":"\u6CF8\u5DDE\u5E02\u5546\u4E1A\u94F6\u884C","value":"LZCCB"},{"id":282,"name":"\u6CA7\u5DDE\u94F6\u884C","value":"BOCZ"},{"id":283,"name":"\u5FAE\u4F17\u94F6\u884C","value":"WEBANK"},{"id":284,"name":"\u79E6\u7687\u5C9B\u94F6\u884C","value":"BOQHD"},{"id":287,"name":"\u4EA4\u901A\u94F6\u884C","value":"COMM"},{"id":288,"name":"\u5E7F\u5DDE\u94F6\u884C","value":"GZCB"},{"id":289,"name":"\u5E7F\u4E1C\u519C\u4FE1","value":"GDNX"}];
+
+                    var res = banklist.find(function (it) {
+                        return it.value === data.bankCode;
+                    })
+
+                    if(res){
+                        document.getElementById("bank").value = data.bankCode;
+                    }else{
+                        document.getElementById("bank").value = '-1';
+                    }
+
+                }
+            })
+
+        }
+
+        function change(data) {
+            var name = data.name
+            $("#type").val(name);
+
+            $(data).attr("class", "btn btn-primary").siblings().attr("class", "btn btn-default");
+            if (name === 'mail') {
+                $('#mail').css("display", "block");
+                $('#mobile').css("display", "none");
+                return;
+            }
+            $('#mail').css("display", "none");
+            $('#mobile').css("display", "block");
+        }
+
+        function changeBindType(data){
+            var name = data.name
+            $("#type").val(name);
+
+            $(data).attr("class", "btn btn-primary").siblings().attr("class", "btn btn-default");
+            if (name === 'aliType') {
+                var aliTarget = document.getElementById("aliInfo");
+                var bankTarget = document.getElementById("bankInfo");
+
+                aliTarget.style.display='block';
+                bankTarget.style.display='none';
+
+                $('#ali').css("display", "block");
+                $('#bank').css("display", "none");
+                return;
+            }else{
+                var aliTarget = document.getElementById("aliInfo");
+                var bankTarget = document.getElementById("bankInfo")
+
+                aliTarget.style.display='none';
+                bankTarget.style.display='block';
+
+                $('#ali').css("display", "none");
+                $('#bank').css("display", "block");
+            }
+
+        }
+
+        function sendCode(data) {
+            $('#codeMsg').val(data.value);
+            $.ajax({
+                url: "{:url('sms/sendCode2')}",
+                type: 'get',
+                data: {mobile: $('#phoneNum').val()},
+                success: function (response) {
+                    if (response.code !== 0 || response === true) {
+                        layer.msg('发送成功');
+                        cache.setItem('settlementAccountCode',$('#phoneNum').val());
+                        data.setAttribute('id', 'sendCode')
+                        settime();
+                    } else {
+                        layer.msg(response.msg)
+                    }
+                }
+            })
+        }
+
+        var countdown = 120;
+
+        function settime() {
+
+            if (countdown === 0) {
+                $("#sendCode").attr("disabled", false);
+                $("#sendCode").html("获取验证码");
+                countdown = 60;
+                return;
+            } else {
+                $("#sendCode").attr("disabled", true);
+                $("#sendCode").html(countdown+ "秒后可发");
+                countdown--;
+            }
+            setTimeout(function () {
+                    settime(this)
+                }
+                , 1000)
+
+        }
+
+
+        function submitForm() {
+
+            var aliType = $("#bindali");
+            var isAlibind = true;
+            if (aliType.hasClass('layui-this')) {
+                isAlibind = true
+            } else {
+                isAlibind = false
+            }
+
+            console.log(isAlibind)
+            if(isAlibind){
+                if ($('#aliAccount').val() === '') {
+                    layer.msg('支付宝账户不能为空')
+                    return false;
+                }
+                if ($('#realName').val() === '') {
+                    layer.msg('支付宝姓名不能为空')
+                    return false
+                }
+                if ($('#settlementPassword').val() === '') {
+                    layer.msg('结算密码不能为空')
+                    return false
+                }
+            }else{
+                if ($('#cardAccount').val() === '' && valid_credit_card($('#cardAccount').val()) ) {
+                    layer.msg('银行卡账号不能为空')
+                    return false;
+                }
+
+                if( $('#bank').val() == -1){
+                    layer.msg('所选开户行不正确,请检查银行卡号或手动选择开户行')
+                    return false;
+                }
+
+                if ($('#name').val() === '') {
+                    layer.msg('姓名不能为空')
+                    return false
+                }
+
+                if ($('#bank').val() === '') {
+                    layer.msg('开户行不能为空')
+                    return false
+                }
+            }
+
+            if ($('#code').val() === '') {
+                layer.msg('验证码不能为空')
+                return false
+            }
+            if ($('#code').val().length < 4) {
+                layer.msg('验证码不正确' )
+                return false
+            }
+
+            $.ajax({
+                url: isAlibind ? "{:url('Settle/updateSettlementAccount')}":"{:url('Settle/updateSettlementBank')}",
+                // url:"{:url('Settle/updateSettlementAccount')}",
+                data: $("#addProxy").serialize(),
+                method: 'post',
+                success: function (response) {
+                    if (response.code !== 0 || response === true) {
+                        layer.msg('更新账户信息成功');
+                        cache.removeItem('settlementAccountCode');
+                        cache.createTimeOut()
+                        $("#exampleModal").modal('hide')
+                        window.location.href = "{:url('index/main')}";
+                        return;
+                    } else {
+                        layer.msg(response.msg)
+                    }
+                }
+            })
+        }
+
+        function sendMailCode(data) {
+            if ($('#mails').val() === null || $('#mails').val() === '') {
+                layer.msg('请输入邮箱')
+                return
+            }
+            $('#codeMsg').val(data.value);
+            $.ajax({
+                url: "sendMailCode",
+                type: 'get',
+                data: {mail: $('#mails').val()},
+                success: function (response) {
+                    if (response.code !== 0 || response === true) {
+                        $('#sendCode').attr('id', Math.random())
+                        data.setAttribute('id', 'sendCode')
+                        settime(this)
+                        layer.msg('发送成功')
+                    } else {
+                        layer.msg(response.msg)
+                    }
+
+                }
+            })
+        }
+
+        function valid_credit_card(cardNo){
+            var tmp=true,total=0;
+            for(var i=cardNo.length;i>0;i--){
+                var num=cardNo.substring(i,i-1);
+                if(tmp=!tmp,tmp)num=num*2;
+                var gw=num%10;
+                total+=(gw+(num-gw)/10);
+            }
+            return total%10==0;
+        }
+
+        function isIdCardNo(num)
+        {
+            num = num.toUpperCase();
+            //身份证号码为15位或者18位，15位时全为数字，18位前17位为数字，最后一位是校验位，可能为数字或字符X。
+            if (!(/(^\d{15}$)|(^\d{17}([0-9]|X)$)/.test(num))) {
+                layer.msg('输入的身份证号长度不对，或者号码不符合规定！\n15位号码应全为数字，18位号码末位可以为数字或X。');
+                return false;
+            }
+            //校验位按照ISO 7064:1983.MOD 11-2的规定生成，X可以认为是数字10。
+            //下面分别分析出生日期和校验位
+            var len, re;
+            len = num.length;
+            if (len == 15) {
+                re = new RegExp(/^(\d{6})(\d{2})(\d{2})(\d{2})(\d{3})$/);
+                var arrSplit = num.match(re);
+
+                //检查生日日期是否正确
+                var dtmBirth = new Date('19' + arrSplit[2] + '/' + arrSplit[3] + '/' + arrSplit[4]);
+                var bGoodDay;
+                bGoodDay = (dtmBirth.getYear() == Number(arrSplit[2])) && ((dtmBirth.getMonth() + 1) == Number(arrSplit[3])) && (dtmBirth.getDate() == Number(arrSplit[4]));
+                if (!bGoodDay) {
+                    return false;
+                }
+                else {
+                    //将15位身份证转成18位
+                    //校验位按照ISO 7064:1983.MOD 11-2的规定生成，X可以认为是数字10。
+                    var arrInt = new Array(7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2);
+                    var arrCh = new Array('1', '0', 'X', '9', '8', '7', '6', '5', '4', '3', '2');
+                    var nTemp = 0, i;
+                    num = num.substr(0, 6) + '19' + num.substr(6, num.length - 6);
+                    for(i = 0; i < 17; i ++) {
+                        nTemp += num.substr(i, 1) * arrInt[i];
+                    }
+                    num += arrCh[nTemp % 11];
+                    return true;
+                }
+            }
+            if (len == 18) {
+                re = new RegExp(/^(\d{6})(\d{4})(\d{2})(\d{2})(\d{3})([0-9]|X)$/);
+                var arrSplit = num.match(re);
+
+                //检查生日日期是否正确
+                var dtmBirth = new Date(arrSplit[2] + "/" + arrSplit[3] + "/" + arrSplit[4]);
+                var bGoodDay;
+                bGoodDay = (dtmBirth.getFullYear() == Number(arrSplit[2])) && ((dtmBirth.getMonth() + 1) == Number(arrSplit[3])) && (dtmBirth.getDate() == Number(arrSplit[4]));
+                if (!bGoodDay) {
+                    return false;
+                }
+                else {
+                    //检验18位身份证的校验码是否正确。
+                    //校验位按照ISO 7064:1983.MOD 11-2的规定生成，X可以认为是数字10。
+                    var valnum;
+                    var arrInt = new Array(7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2);
+                    var arrCh = new Array('1', '0', 'X', '9', '8', '7', '6', '5', '4', '3', '2');
+                    var nTemp = 0, i;
+                    for(i = 0; i < 17; i ++) {
+                        nTemp += num.substr(i, 1) * arrInt[i];
+                    }
+                    valnum = arrCh[nTemp % 11];
+                    if (valnum != num.substr(17, 1)) {
+                        return false;
+                    }
+                    return true;
+                }
+            }
+            return false;
+        }
+
+
+
+
+    });
+</script>
+{/block}

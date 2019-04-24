@@ -1,0 +1,288 @@
+<?php
+
+namespace app\manage\controller;
+
+use think\Controller;
+use think\Session;
+use think\Db;
+use think\validate;
+use Hprose;
+use think\log;
+
+class  Company  extends  Controller{
+
+    public function getPlayerList()
+    {
+
+        $proxylist = Db::name("proxy")->where("islock","0")->select();		
+        foreach($proxylist as $k=>$v){
+            $proxy_id = $v["code"];
+            $company = new \app\manage\model\Company();
+            $ret = $company->getPlayer($proxy_id);			
+            if($ret->data==null){
+                //Log::write($ret->message,"DEBUG");
+                echo "ID:".$proxy_id."has no data!! \r\n";
+            }
+            else
+            {
+                $retdata = $ret->data;
+                if($retdata!=null){
+
+                    foreach($retdata as $key=>$value)
+                    {
+                        $where=  array(
+                            "userid"=>$value->userid,
+                            "accountid"=>$value->accountid
+                        );
+
+                        $playernum = Db::name("thirdplayer")->where($where)->count();
+                        $obj = object_to_array($value);
+                        if($playernum==0){
+                            Db::name('thirdplayer')->insert($obj);
+                            $data=array(
+                                "parent_id"=> $v['parent_id'],
+                                "proxy_id"=> $proxy_id,
+                                "proxy_name"=> $v['nickname'],
+                                "userid"=>$value->userid,
+                                "accountid"=>$value->accountid,
+                                "nickname" => $value->nickname,
+                                "ismobile"=>$value->ismobile,
+                                "regtime"=>$value->regtime,
+                                "addtime"=>Date("Y-m-d H:i:s")
+                            );
+
+                            $ret = Db::name("player")
+                                ->insert($data);
+                            if($ret)
+                                echo $value->userid." insert  success!!";
+                        }
+                        // sleep(1000);
+                    }
+                }
+            }
+        }
+    }
+
+
+    public function getBillList(){
+        $proxylist = Db::name("proxy")->where("islock","0")->select();
+        foreach($proxylist as $k=>$v){
+            $proxy_id = $v["code"];
+            $company = new \app\manage\model\Company();
+            $ret = $company->getBillList($proxy_id,1,10000);			
+            if($ret->data==null){
+                //Log::write($ret->message,"DEBUG");
+                echo "ID:".$proxy_id."has no data!! \r\n";
+            }
+            else
+            {
+                $retdata = $ret->data;
+                //print_r($retdata);
+                if($retdata!=null) {
+                    foreach ($retdata as $key => $value) {
+                        $sqlwhere11 = array(
+                            "time" => $value->time,
+                            "userid" => $value->userid,
+                            "game" => $value->game,
+                            "tax" => $value->tax
+                        );
+                        Db::startTrans();
+                        try {
+                            $playernum = Db::name("third_player_order")->where($sqlwhere11)->count();
+                            if ($playernum == 0) {
+                                $obj = object_to_array($value);
+                                Db::name("third_player_order")->insert($obj);
+                                $data = array(
+                                    "parent_id" => $v['parent_id'],
+                                    "proxy_id" => $proxy_id,
+                                    "percent" => $v['percent'],
+                                    "userid" => $value->userid,
+                                    "game" => $value->game,
+                                    "addtime" => date("Y-m-d H:i:s", time()),
+                                    "total_tax" => $value->tax / 1000,
+                                    "createtime" => $value->time
+                                );
+                                $ret = Db::name("playerorder")->insert($data);
+                                if ($ret) {
+                                    $totaltax = $value->tax / 1000;
+                                    //做个处理、、
+
+                                    $parent_percent = Db::name("proxy")->where("code", $v["parent_id"])->value("percent");
+
+                                    //判断上下级比例是否一样
+                                    if ($parent_percent == $v['percent']) {
+                                        //一样的话下级抽出1%分给上级
+                                        $usertax = $totaltax * ($v["percent"] - 1) / 100;
+                                        $parent_tax = $totaltax*1/100;
+                                    } else {
+                                        $usertax = $totaltax * $v["percent"] / 100;
+                                        $parent_tax = ($parent_percent - $v["percent"]) / 100 * $totaltax;
+                                    }
+
+                                    $proxy_data = array(
+                                        "proxy_id" => $v["code"],
+                                        "totaltax" => $totaltax,
+                                        "changmoney" => $usertax,
+                                        "createtime" => time(),
+                                        "descript" => $v["code"] . "代理的玩家税收分成，总金额" . $totaltax
+                                    );
+                                    $parentdata = array(
+                                        "proxy_id" => $v["parent_id"],
+                                        "totaltax" => $totaltax,
+                                        "changmoney" => $parent_tax,
+                                        "createtime" => time(),
+                                        "descript" => $v["code"] . "给上级税收分成，金额" . $parent_tax
+                                    );
+                                    Db::name("incomelog")->insert($proxy_data);
+                                    Db::name("incomelog")->insert($parentdata);
+
+                                    Db::name("proxy")->where("code", $v["code"])->update([
+                                        'balance' => Db::raw('balance+' . $usertax),
+                                        'historyin' => Db::raw('historyin+' . $usertax)
+                                    ]);
+
+                                    Db::name("proxy")->where("code", $v["parent_id"])->update([
+                                        'balance' => Db::raw('balance+' . $parent_tax),
+                                        'historyin' => Db::raw('historyin+' . $parent_tax)
+                                    ]);
+
+                                    echo $value->userid . " insert  success!!\r\n";
+                                }
+                            }
+                            Db::commit();
+                        } catch (\Exception $e) {
+                            echo $e->getMessage();
+                            //echo $e->getTraceAsString();
+                            Db::rollback();
+                        }
+                    }
+
+
+                }
+            }
+        }
+    }
+
+
+    public function upgrade()
+    {
+        //开始处理等级
+
+        if(config("upgrade")=="true") {
+            $proxylist = Db::name("proxy")->where(['islock'=>0, 'percent'=>['egt',config('proxy_rate.levelup_need')]])->select();
+            $today = strtotime(date('Y-m-d 00:00:00'));
+            $beginDay = $today - 7*24*60*60;
+            //$levelData = config('proxy_rate.levelup');
+            foreach($proxylist as $k=>$v) {
+                if ($v['percent'] >= config('proxy_rate.general_proxy')) {
+                    //达到最高等级的忽略
+                    continue;
+                }
+                $proxy_id = $v["code"];
+
+                $where['createtime'] = [['egt', $beginDay], ['lt', $today]];
+                $where['proxy_id'] = $proxy_id;
+                $todayMoney = Db::name("incomelog")->where($where)->sum("totaltax");
+
+                $levelup = 0;
+
+                $where1['profit'] = array('elt', $todayMoney);
+                $arrUpgrade = Db::name("proxyupgrade")->where($where1)->order("profit desc ")->limit(1)->select();
+                if (!empty($arrUpgrade)) {
+                    $arrUpgrade = $arrUpgrade[0];
+                    if (!empty($arrUpgrade)) {
+                        $levelup = $arrUpgrade["percent"];
+                    }
+                }
+                if ($levelup == 0) { //未达到条件
+                    continue;
+                }
+                //获取代理信息
+
+                if ($levelup <= $v['percent']) {
+                    //可升级的比例小于等于当前的比例
+                    continue;
+                }
+                Db::name("proxy")->where("code", $v["code"])->update([
+                    'percent' => $levelup
+                ]);
+                $updateData = array(
+                    "proxy_id" => $v["code"],
+                    "oldpercent" => $v["percent"],
+                    "newpercent" => $levelup,
+                    "todaymoney" => $todayMoney,
+                    "createtime" => time()
+                );
+                Db::name("proxyUpgradeLog")->insert($updateData);
+                echo $v['code'] . " upgrade  success!!\r\n";
+
+
+//                $where1['profit'] = array('elt', $todayMoney);
+//                $arrUpgrade = Db::name("proxyupgrade")->where($where1)->order("profit desc ")->limit(1)->select();
+//
+//                if (!empty($arrUpgrade)) {
+//                    $arrUpgrade = $arrUpgrade[0];
+//                    if (!empty($arrUpgrade) && $v["grade"] == 4) {
+//                        if ($v["percent"] != $arrUpgrade["percent"]) {
+//
+//                        }
+//                    }
+//                }
+
+
+            }
+        }
+    }
+
+
+    public function getPayTime(){
+        $proxylist = Db::name("player")->select();
+        foreach($proxylist as $k=>$v){
+            $user_id = $v["userid"];
+            $company = new \app\manage\model\Company();
+            $ret =  $ret = $company->getPayTime($user_id);
+            //print_r($ret);
+            if($ret->data==null){
+                //Log::write($ret->message,"DEBUG");
+                echo "ID:".$user_id."has no data!! \r\n";
+            }
+            else
+            {
+                $retdata = $ret->data;
+                if($retdata!=null){
+                    foreach($retdata as $key=>$value)
+                    {
+                        $where=  array(
+                            "loginid"=>$value->loginid,
+                            "updatetime"=>$value->updatetime,
+                            "totalfee"=>$value->totalfee
+                        );
+                        $playernum = Db::name("thirdpaytime")->where($where)->count();
+                        if($playernum==0){
+                            $obj = object_to_array($value);
+                            Db::name("thirdpaytime")->insert($obj);
+                            $data=array(
+                                "proxy_id"=>  $v["proxy_id"],
+                                "userid"=>$value->LoginID,
+                                "totalfee"=>$value->TotalFee,
+                                "addtime"=> $value->UpdateTime,
+                                "createtime"=> time()
+                            );
+
+                            $ret = Db::name("paytime")->insert($data);
+                            if($ret)
+                                echo $value["userid"]." insert  success!!\r\n";
+                        }
+                    }
+                }
+                else{
+                    echo "has no data! \r\n";
+                }
+            }
+        }
+
+    }
+
+
+
+}

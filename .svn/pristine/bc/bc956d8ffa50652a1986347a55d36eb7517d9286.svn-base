@@ -1,0 +1,277 @@
+<?php
+
+namespace app\admin\controller;
+
+use app\admin\controller\Base;
+use think\Db;
+use think\captcha\Captcha;
+use app\admin\model;
+use think\Exception;
+use think\Log;
+
+class Index extends Base {
+
+    public function index() {
+        if ($this->verify()) {
+            $proxy = session("proxy");
+            $bind_mobile = Db::name("proxy")->where("code",$proxy["code"])->value("bind_mobile");
+            //$bind_mobile = $proxy["bind_mobile"];
+            if($bind_mobile=='' || empty($bind_mobile)){
+                $bind_mobile = "false";
+            }
+            $this->assign("proxy",$proxy);
+            $this->assign("bind_mobile",$bind_mobile);
+            return $this->fetch();
+        } else {
+            $this->redirect('login/index');
+        }
+    }
+
+    public function main(){
+        $message =Db::name("message")->order( 'id desc ')->select();
+
+        $today=strtotime(date('Y-m-d 00:00:00'));
+
+        $proxy_id =session("proxy_id");
+        $proxy = session("proxy");
+       // $now =
+        $data['addtime'] = array('egt',$today);
+
+        //总注册
+        $regtotal = Db::name("player")
+            ->where(['proxy_id'=>session("proxy_id")])
+            ->whereor("parent_id",session("proxy_id"))
+            ->count();
+
+        $regtoday = Db::name("player")
+            ->where("proxy_id='".session("proxy_id")."' and datediff(`regtime`,NOW())=0 ")
+            ->whereor("parent_id='".session("proxy_id")."' and datediff(`regtime`,NOW())=0 ")
+            ->count();
+
+
+        $regyestday = Db::name("player")
+            ->where("proxy_id='".session("proxy_id")."' and datediff(`regtime`,NOW())=-1 ")
+            ->whereor("parent_id='".session("proxy_id")."' and datediff(`regtime`,NOW())=-1 ")
+            ->count();
+
+
+        //总税收
+        $totaltax = Db::name("playerorder")
+            ->alias("a")
+            ->join("proxy b","a.proxy_id=b.code","LEFT")
+            ->where("a.proxy_id='".session("proxy_id")."'  ")
+            ->whereor("a.parent_id='".session("proxy_id")."' ")
+            ->sum("a.total_tax");
+
+
+        $allmoney = Db::name("playerorder")
+            ->alias("a")
+            ->field('a.total_tax,b.percent,b.code')
+            ->join("proxy b","a.proxy_id=b.code","LEFT")
+            ->where("a.proxy_id='".session("proxy_id")."'")
+            ->whereor("a.parent_id='".session("proxy_id")."'")
+            ->select();
+
+
+        //print_r($allmoney);
+       // exit();
+//
+//
+//
+        $totalmoney = Db::name("playerorder")
+            ->alias("a")
+            ->join("proxy b","a.proxy_id=b.code","LEFT")
+            ->where("a.proxy_id='".session("proxy_id")."' and datediff(`createtime`,NOW())=-1 ")
+            ->whereor("a.parent_id='".session("proxy_id")."' and datediff(`createtime`,NOW())=-1 ")
+            ->select();
+//
+//
+//
+//
+//
+//
+        $todaytotal = Db::name("playerorder")
+            ->alias("a")
+            ->join("proxy b","a.proxy_id=b.code","LEFT")
+            ->where("a.proxy_id='".session("proxy_id")."' and datediff(`createtime`,NOW())=0 ")
+            ->whereor("a.parent_id='".session("proxy_id")."' and datediff(`createtime`,NOW())=0 ")
+            ->select();
+
+
+        $yesterdaytt = 0;
+        foreach($totalmoney as $key=>$v){
+            if($v["code"]==$proxy_id){
+                $yesterdaytt += $v["total_tax"] * $v["percent"]/100;
+            }
+            else
+            {
+                $yesterdaytt += $v["total_tax"] * ($proxy["percent"]-$v["percent"])/100;
+            }
+        }
+//
+//
+//
+        $todaytt = 0;
+        foreach($todaytotal as $key=>$v){
+            if($v["code"]==$proxy_id){
+                $todaytt += $v["total_tax"] * $v["percent"]/100;
+            }
+            else
+            {
+                $todaytt += $v["total_tax"] * ($proxy["percent"]-$v["percent"])/100;
+            }
+        }
+//
+//
+        $alltt = 0;
+        foreach($allmoney as $key=>$v){
+            if($v["code"]==$proxy_id){
+                $alltt += $v["total_tax"] * $v["percent"]/100;
+            }
+            else
+            {
+                $alltt += $v["total_tax"] * ($proxy["percent"]-$v["percent"])/100;
+            }
+        }
+
+        //print($alltt);
+
+        //领取红包按钮
+        $getReward = 0;
+        $reward = Db::name("dayreward")->where(['income' => ['elt', $yesterdaytt]])->order("income desc")->limit(1)->find();
+        if (!$reward) {
+            $getReward = 1; //未达标
+        } else {
+            if (Db::name('incomelog')->where([
+                'proxy_id' => $proxy_id,
+                'typeid'   => config('incomelog.day_reward'),
+                'createday' => date('Ymd')
+            ])->find()) {
+                $getReward = 2;
+            }
+        }
+
+        $this->assign('regtotal',$regtotal);
+        $this->assign('regtoday',$regtoday);
+        $this->assign("regzt",$regyestday);
+        $this->assign("totaltax",$totaltax);
+        $this->assign("zrsy",$yesterdaytt);
+        $this->assign("jrsy",$todaytt);
+        $this->assign("alltt",$alltt);
+        $this->assign('getreward', $getReward);
+        $this->assign("list",$message);
+        return $this->fetch();
+    }
+
+    public function notice(){
+        return $this->fetch();
+    }
+
+
+
+    //按每日收益领取红包(昨日)
+    private function handleReward()
+    {
+        $proxy_id = session("proxy_id");
+        $proxy = session("proxy");
+        $data = ['code' => 0, 'msg' => '', 'data' => []];
+        $todaytotal = Db::name("playerorder")
+            ->alias("a")
+            ->join("proxy b","a.proxy_id=b.code","LEFT")
+            ->where("a.proxy_id='".session("proxy_id")."' and datediff(`createtime`,NOW())=-1 ")
+            ->whereor("a.parent_id='".session("proxy_id")."' and datediff(`createtime`,NOW())=-1 ")
+            ->select();
+        $todaytt = 0;
+        foreach($todaytotal as $key=>$v){
+            if($v["code"]==$proxy_id){
+                $todaytt += $v["total_tax"] * $v["percent"]/100;
+            }
+            else
+            {
+                $todaytt += $v["total_tax"] * ($proxy["percent"]-$v["percent"])/100;
+            }
+        }
+        //$todaytt = 700;
+        $where = ['income' => ['elt', $todaytt]];
+        //获取可领取的奖励
+        $reward = Db::name("dayreward")->where($where)->order("income desc")->limit(1)->find();
+        if (!$reward) {
+            $data['code'] = 1;
+            $data['msg']  = '收益暂不达标，不能领取红包奖励';
+            return $data;
+        }
+
+        //判断今日是否已经领取过
+        $where1 = [
+            'proxy_id' => $proxy_id,
+            'typeid'   => config('incomelog.day_reward'),
+            'createday' => date('Ymd')
+        ];
+        if (Db::name('incomelog')->where($where1)->find()) {
+            $data['code'] = 2;
+            $data['msg']  = '今日已经领取过红包了哦';
+            return $data;
+        }
+        $data['data'] = ['total' =>$todaytt,'reward' => $reward ];
+        return $data;
+    }
+
+    //领取提示
+    public function getRewardPre()
+    {
+        $return = $this->handleReward();
+        if ($return['code'] == 0) {
+            $return['msg'] = "您的昨日收益为{$return['data']['total']}元，可领取红包为{$return['data']['reward']['reward']}元";
+        }
+
+        return json($return);
+    }
+
+    //领取
+    public function getReward()
+    {
+        $return = $this->handleReward();
+        if ($return['code'] != 0) {
+            return json($return);
+        }
+        $proxy_id = session("proxy_id");
+        $proxy = session("proxy");
+        $res = ['code' => 0,'msg' => '', 'data' => []];
+        $reward = $return['data']['reward'];
+        $today = $return['data']['total'];
+        $descript = $proxy_id."昨日收益为{$today}元，达到{$reward['income']}元，领取金额{$reward['reward']}元";
+
+        Db::startTrans();
+        try {
+            //记录到incomelog
+            $insertLog = [
+                'proxy_id' => $proxy_id,
+                'typeid' => config('incomelog.day_reward'),
+                'changmoney' => $reward['reward'],
+                'createtime' => time(),
+                'descript' => $descript,
+                'createday' => date('Ymd')
+            ];
+            Db::name('incomelog')->insert($insertLog);
+
+            //添加到用户余额
+            Db::name('proxy')
+                ->where("code",$proxy_id)
+                ->update([
+                    'balance' =>Db::raw('balance+'.$reward['reward']),
+                    'historyin' => Db::raw('historyin+'.$reward['reward']),
+                ]);
+            Db::commit();
+            $res['msg'] = '领取成功';
+            return json($res);
+        } catch (\Exception $e) {
+            Log::write($e->getMessage(),"day_reward");
+            Db::rollback();
+            $res['code'] = 1;
+            $res['msg']  = "领取失败，请稍后重试";
+            return json($res);
+        }
+
+    }
+
+}

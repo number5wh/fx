@@ -1,0 +1,54 @@
+<?php
+namespace app\admin\controller;
+
+use app\admin\controller\Base;
+use think\Db;
+use think\model;
+use think\Paginator;
+
+class Message extends Base{
+
+    public function index(){
+
+        $title = input("title");
+
+
+        $where= array("isDel"=>0);
+        if(!empty($title)){
+            $where['title'] =array('like','%'.$title.'%');
+        }
+
+        $messagelist=Model("message");
+
+        //查询满足要求的总的记录数
+        $list=$messagelist->where($where)->order('addtime desc ')->paginate()->
+        each(function($item, $key){
+
+        });
+        $this->assign('list',$list);
+        //赋值分页输出
+        //$this->assign("status",$status);
+        return $this->fetch();
+    }
+
+
+
+    public function getMsgDetail(){
+        $id = input("id");
+        if(empty($id)){
+            return '';
+        }
+        else
+        {
+            $data = Db::name('message')->where('id',$id)->find();
+            return json($data);
+        }
+
+    }
+
+
+
+}
+
+
+?>

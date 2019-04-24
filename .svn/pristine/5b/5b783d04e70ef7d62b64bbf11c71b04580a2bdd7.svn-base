@@ -1,0 +1,290 @@
+---------------------------------------------------------------
+[ 2019-04-17T14:32:53+08:00 ] 127.0.0.1 POST /admin/login/auth.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.006245s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `proxy` [ RunTime:0.063174s ]
+[ sql ] [ SQL ] SELECT `salt` FROM `proxy` WHERE  `username` = 'admin' LIMIT 1 [ RunTime:0.000727s ]
+[ sql ] [ SQL ] SELECT * FROM `proxy` WHERE  `username` = 'admin'  AND `password` = '72d1ad20e681c6d07f9e9188a084e183' LIMIT 1 [ RunTime:0.000478s ]
+[ sql ] [ SQL ] UPDATE `proxy`  SET `last_login`=now(),`logtimes`=logtimes+1,`last_ip`='127.0.0.1'  WHERE  `id` = 1 [ RunTime:0.118750s ]
+---------------------------------------------------------------
+[ 2019-04-17T14:32:53+08:00 ] 127.0.0.1 GET /admin/index/index.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.011416s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `proxy` [ RunTime:0.002774s ]
+[ sql ] [ SQL ] SELECT `bind_mobile` FROM `proxy` WHERE  `code` = '1' LIMIT 1 [ RunTime:0.000965s ]
+---------------------------------------------------------------
+[ 2019-04-17T14:32:53+08:00 ] 127.0.0.1 GET /admin/index/main.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.002427s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `message` [ RunTime:0.037872s ]
+[ sql ] [ SQL ] SELECT * FROM `message` ORDER BY `id` DESC [ RunTime:0.000403s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `player` [ RunTime:0.024889s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `player` WHERE  `proxy_id` = '1' OR `parent_id` = '1' LIMIT 1 [ RunTime:0.002188s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `player` WHERE  (  proxy_id='1' and datediff(`regtime`,NOW())=0  ) OR (  parent_id='1' and datediff(`regtime`,NOW())=0  ) LIMIT 1 [ RunTime:0.021821s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `player` WHERE  (  proxy_id='1' and datediff(`regtime`,NOW())=-1  ) OR (  parent_id='1' and datediff(`regtime`,NOW())=-1  ) LIMIT 1 [ RunTime:0.001471s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `playerorder` [ RunTime:0.016576s ]
+[ sql ] [ SQL ] SELECT SUM(a.total_tax) AS tp_sum FROM `playerorder` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (  a.proxy_id='1'   ) OR (  a.parent_id='1'  ) LIMIT 1 [ RunTime:0.097818s ]
+[ sql ] [ SQL ] SELECT `a`.`total_tax`,`b`.`percent`,`b`.`code` FROM `playerorder` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (  a.proxy_id='1' ) OR (  a.parent_id='1' ) [ RunTime:0.013761s ]
+[ sql ] [ SQL ] SELECT * FROM `playerorder` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (  a.proxy_id='1' and datediff(`createtime`,NOW())=-1  ) OR (  a.parent_id='1' and datediff(`createtime`,NOW())=-1  ) [ RunTime:0.010031s ]
+[ sql ] [ SQL ] SELECT * FROM `playerorder` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (  a.proxy_id='1' and datediff(`createtime`,NOW())=0  ) OR (  a.parent_id='1' and datediff(`createtime`,NOW())=0  ) [ RunTime:0.010079s ]
+---------------------------------------------------------------
+[ 2019-04-17T14:32:56+08:00 ] 127.0.0.1 GET /admin/template/getindex.html?page=1&limit=10
+[ sql ] [ DB ] CONNECT:[ UseTime:0.010870s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `user_template` [ RunTime:0.033925s ]
+[ sql ] [ SQL ] SELECT * FROM `user_template` WHERE  `proxy_id` = '1' ORDER BY `id` DESC LIMIT 0,10 [ RunTime:0.003887s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `user_template` WHERE  `proxy_id` = '1' LIMIT 1 [ RunTime:0.000806s ]
+---------------------------------------------------------------
+[ 2019-04-17T14:47:17+08:00 ] 127.0.0.1 GET /admin/template/getindex.html?page=1&limit=10
+[ sql ] [ DB ] CONNECT:[ UseTime:0.002386s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `user_template` [ RunTime:0.003180s ]
+[ sql ] [ SQL ] SELECT * FROM `user_template` WHERE  `proxy_id` = '1' ORDER BY `id` DESC LIMIT 0,10 [ RunTime:0.001234s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `user_template` WHERE  `proxy_id` = '1' LIMIT 1 [ RunTime:0.000503s ]
+---------------------------------------------------------------
+[ 2019-04-17T14:47:40+08:00 ] 127.0.0.1 GET /admin/template/getindex.html?page=1&limit=10
+[ sql ] [ DB ] CONNECT:[ UseTime:0.001919s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `user_template` [ RunTime:0.002980s ]
+[ sql ] [ SQL ] SELECT * FROM `user_template` WHERE  `proxy_id` = '1' ORDER BY `id` DESC LIMIT 0,10 [ RunTime:0.000907s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `user_template` WHERE  `proxy_id` = '1' LIMIT 1 [ RunTime:0.000498s ]
+---------------------------------------------------------------
+[ 2019-04-17T14:48:15+08:00 ] 127.0.0.1 GET /admin/template/getindex.html?page=1&limit=10
+[ sql ] [ DB ] CONNECT:[ UseTime:0.001911s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `user_template` [ RunTime:0.002706s ]
+[ sql ] [ SQL ] SELECT * FROM `user_template` WHERE  `proxy_id` = '1' ORDER BY `id` DESC LIMIT 0,10 [ RunTime:0.000924s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `user_template` WHERE  `proxy_id` = '1' LIMIT 1 [ RunTime:0.000504s ]
+---------------------------------------------------------------
+[ 2019-04-17T14:48:22+08:00 ] 127.0.0.1 GET /admin/template/getindex.html?page=1&limit=10
+[ sql ] [ DB ] CONNECT:[ UseTime:0.010242s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `user_template` [ RunTime:0.002637s ]
+[ sql ] [ SQL ] SELECT * FROM `user_template` WHERE  `proxy_id` = '1' ORDER BY `id` DESC LIMIT 0,10 [ RunTime:0.000957s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `user_template` WHERE  `proxy_id` = '1' LIMIT 1 [ RunTime:0.000450s ]
+---------------------------------------------------------------
+[ 2019-04-17T14:49:08+08:00 ] 127.0.0.1 GET /admin/template/getindex.html?page=1&limit=10
+[ sql ] [ DB ] CONNECT:[ UseTime:0.001515s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `user_template` [ RunTime:0.002420s ]
+[ sql ] [ SQL ] SELECT * FROM `user_template` WHERE  `proxy_id` = '1' ORDER BY `id` DESC LIMIT 0,10 [ RunTime:0.000858s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `user_template` WHERE  `proxy_id` = '1' LIMIT 1 [ RunTime:0.000433s ]
+---------------------------------------------------------------
+[ 2019-04-17T14:49:19+08:00 ] 127.0.0.1 GET /admin/template/getindex.html?page=1&limit=10
+[ sql ] [ DB ] CONNECT:[ UseTime:0.001452s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `user_template` [ RunTime:0.002628s ]
+[ sql ] [ SQL ] SELECT * FROM `user_template` WHERE  `proxy_id` = '1' ORDER BY `id` DESC LIMIT 0,10 [ RunTime:0.001194s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `user_template` WHERE  `proxy_id` = '1' LIMIT 1 [ RunTime:0.000391s ]
+---------------------------------------------------------------
+[ 2019-04-17T14:49:31+08:00 ] 127.0.0.1 GET /admin/template/getindex.html?page=1&limit=10
+[ sql ] [ DB ] CONNECT:[ UseTime:0.001366s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `user_template` [ RunTime:0.003275s ]
+[ sql ] [ SQL ] SELECT * FROM `user_template` WHERE  `proxy_id` = '1' ORDER BY `id` DESC LIMIT 0,10 [ RunTime:0.001150s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `user_template` WHERE  `proxy_id` = '1' LIMIT 1 [ RunTime:0.000577s ]
+---------------------------------------------------------------
+[ 2019-04-17T14:49:55+08:00 ] 127.0.0.1 GET /admin/template/getindex.html?page=1&limit=10
+[ sql ] [ DB ] CONNECT:[ UseTime:0.001246s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `user_template` [ RunTime:0.002466s ]
+[ sql ] [ SQL ] SELECT * FROM `user_template` WHERE  `proxy_id` = '1' ORDER BY `id` DESC LIMIT 0,10 [ RunTime:0.000766s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `user_template` WHERE  `proxy_id` = '1' LIMIT 1 [ RunTime:0.000391s ]
+---------------------------------------------------------------
+[ 2019-04-17T15:04:55+08:00 ] 127.0.0.1 GET /admin/index/index.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.001886s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `proxy` [ RunTime:0.003630s ]
+[ sql ] [ SQL ] SELECT `bind_mobile` FROM `proxy` WHERE  `code` = '1' LIMIT 1 [ RunTime:0.000597s ]
+---------------------------------------------------------------
+[ 2019-04-17T15:04:55+08:00 ] 127.0.0.1 GET /admin/index/main.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.002016s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `message` [ RunTime:0.003248s ]
+[ sql ] [ SQL ] SELECT * FROM `message` ORDER BY `id` DESC [ RunTime:0.000570s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `player` [ RunTime:0.003548s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `player` WHERE  `proxy_id` = '1' OR `parent_id` = '1' LIMIT 1 [ RunTime:0.001122s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `player` WHERE  (  proxy_id='1' and datediff(`regtime`,NOW())=0  ) OR (  parent_id='1' and datediff(`regtime`,NOW())=0  ) LIMIT 1 [ RunTime:0.000950s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `player` WHERE  (  proxy_id='1' and datediff(`regtime`,NOW())=-1  ) OR (  parent_id='1' and datediff(`regtime`,NOW())=-1  ) LIMIT 1 [ RunTime:0.000992s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `playerorder` [ RunTime:0.003233s ]
+[ sql ] [ SQL ] SELECT SUM(a.total_tax) AS tp_sum FROM `playerorder` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (  a.proxy_id='1'   ) OR (  a.parent_id='1'  ) LIMIT 1 [ RunTime:0.009251s ]
+[ sql ] [ SQL ] SELECT `a`.`total_tax`,`b`.`percent`,`b`.`code` FROM `playerorder` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (  a.proxy_id='1' ) OR (  a.parent_id='1' ) [ RunTime:0.006331s ]
+[ sql ] [ SQL ] SELECT * FROM `playerorder` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (  a.proxy_id='1' and datediff(`createtime`,NOW())=-1  ) OR (  a.parent_id='1' and datediff(`createtime`,NOW())=-1  ) [ RunTime:0.010364s ]
+[ sql ] [ SQL ] SELECT * FROM `playerorder` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (  a.proxy_id='1' and datediff(`createtime`,NOW())=0  ) OR (  a.parent_id='1' and datediff(`createtime`,NOW())=0  ) [ RunTime:0.008224s ]
+---------------------------------------------------------------
+[ 2019-04-17T15:04:58+08:00 ] 127.0.0.1 GET /admin/template/getindex.html?page=1&limit=10
+[ sql ] [ DB ] CONNECT:[ UseTime:0.001175s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `user_template` [ RunTime:0.002397s ]
+[ sql ] [ SQL ] SELECT * FROM `user_template` WHERE  `proxy_id` = '1' ORDER BY `id` DESC LIMIT 0,10 [ RunTime:0.000785s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `user_template` WHERE  `proxy_id` = '1' LIMIT 1 [ RunTime:0.000349s ]
+---------------------------------------------------------------
+[ 2019-04-17T15:05:01+08:00 ] 127.0.0.1 POST /admin/template/resetPromotionSetting
+[ sql ] [ DB ] CONNECT:[ UseTime:0.011514s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `template` [ RunTime:0.036256s ]
+[ sql ] [ SQL ] SELECT * FROM `template` WHERE  `template_code` = 1 LIMIT 1 [ RunTime:0.000875s ]
+[ ERROR ] file_get_contents(./public/upload/Qrcode/1.png): failed to open stream: No such file or directory
+[ sql ] [ SQL ] SHOW COLUMNS FROM `user_template` [ RunTime:0.002661s ]
+[ sql ] [ SQL ] UPDATE `user_template`  SET `template_code`='1',`template_name`='五洲游戏',`qrcode`='/public/upload/Qrcode/proxy_11.png',`image_url`='/public/upload/Qrcode/proxy_11.png',`descript`='2019-04-17 15:05:01生成'  WHERE  `proxy_id` = '1' [ RunTime:0.045255s ]
+---------------------------------------------------------------
+[ 2019-04-17T15:05:03+08:00 ] 127.0.0.1 GET /admin/template/getindex.html?page=1&limit=10
+[ sql ] [ DB ] CONNECT:[ UseTime:0.001717s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `user_template` [ RunTime:0.002607s ]
+[ sql ] [ SQL ] SELECT * FROM `user_template` WHERE  `proxy_id` = '1' ORDER BY `id` DESC LIMIT 0,10 [ RunTime:0.000936s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `user_template` WHERE  `proxy_id` = '1' LIMIT 1 [ RunTime:0.000417s ]
+---------------------------------------------------------------
+[ 2019-04-17T15:07:31+08:00 ] 127.0.0.1 GET /admin/template/getindex.html?page=1&limit=10
+[ sql ] [ DB ] CONNECT:[ UseTime:0.001810s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `user_template` [ RunTime:0.000666s ]
+[ sql ] [ SQL ] SELECT * FROM `user_template` WHERE  `proxy_id` = '1' ORDER BY `id` DESC LIMIT 0,10 [ RunTime:0.000900s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `user_template` WHERE  `proxy_id` = '1' LIMIT 1 [ RunTime:0.000478s ]
+---------------------------------------------------------------
+[ 2019-04-17T15:12:57+08:00 ] 127.0.0.1 GET /admin/index/index.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.001774s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `proxy` [ RunTime:0.002679s ]
+[ sql ] [ SQL ] SELECT `bind_mobile` FROM `proxy` WHERE  `code` = '1' LIMIT 1 [ RunTime:0.000420s ]
+---------------------------------------------------------------
+[ 2019-04-17T15:12:57+08:00 ] 127.0.0.1 GET /admin/index/main.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.004898s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `message` [ RunTime:0.003670s ]
+[ sql ] [ SQL ] SELECT * FROM `message` ORDER BY `id` DESC [ RunTime:0.000543s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `player` [ RunTime:0.003967s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `player` WHERE  `proxy_id` = '1' OR `parent_id` = '1' LIMIT 1 [ RunTime:0.001005s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `player` WHERE  (  proxy_id='1' and datediff(`regtime`,NOW())=0  ) OR (  parent_id='1' and datediff(`regtime`,NOW())=0  ) LIMIT 1 [ RunTime:0.000981s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `player` WHERE  (  proxy_id='1' and datediff(`regtime`,NOW())=-1  ) OR (  parent_id='1' and datediff(`regtime`,NOW())=-1  ) LIMIT 1 [ RunTime:0.000986s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `playerorder` [ RunTime:0.003486s ]
+[ sql ] [ SQL ] SELECT SUM(a.total_tax) AS tp_sum FROM `playerorder` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (  a.proxy_id='1'   ) OR (  a.parent_id='1'  ) LIMIT 1 [ RunTime:0.008489s ]
+[ sql ] [ SQL ] SELECT `a`.`total_tax`,`b`.`percent`,`b`.`code` FROM `playerorder` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (  a.proxy_id='1' ) OR (  a.parent_id='1' ) [ RunTime:0.005931s ]
+[ sql ] [ SQL ] SELECT * FROM `playerorder` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (  a.proxy_id='1' and datediff(`createtime`,NOW())=-1  ) OR (  a.parent_id='1' and datediff(`createtime`,NOW())=-1  ) [ RunTime:0.012811s ]
+[ sql ] [ SQL ] SELECT * FROM `playerorder` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (  a.proxy_id='1' and datediff(`createtime`,NOW())=0  ) OR (  a.parent_id='1' and datediff(`createtime`,NOW())=0  ) [ RunTime:0.008295s ]
+---------------------------------------------------------------
+[ 2019-04-17T15:13:00+08:00 ] 127.0.0.1 GET /admin/template/getindex.html?page=1&limit=10
+[ sql ] [ DB ] CONNECT:[ UseTime:0.010487s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `user_template` [ RunTime:0.000626s ]
+[ sql ] [ SQL ] SELECT * FROM `user_template` WHERE  `proxy_id` = '1' ORDER BY `id` DESC LIMIT 0,10 [ RunTime:0.000864s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `user_template` WHERE  `proxy_id` = '1' LIMIT 1 [ RunTime:0.000392s ]
+---------------------------------------------------------------
+[ 2019-04-17T15:13:02+08:00 ] 127.0.0.1 POST /admin/template/resetPromotionSetting
+[ sql ] [ DB ] CONNECT:[ UseTime:0.011115s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `template` [ RunTime:0.002530s ]
+[ sql ] [ SQL ] SELECT * FROM `template` WHERE  `template_code` = 1 LIMIT 1 [ RunTime:0.000410s ]
+[ ERROR ] file_get_contents(./public/upload/Qrcode/1.png): failed to open stream: No such file or directory
+[ sql ] [ SQL ] SHOW COLUMNS FROM `user_template` [ RunTime:0.000710s ]
+[ sql ] [ SQL ] UPDATE `user_template`  SET `template_code`='1',`template_name`='五洲游戏',`qrcode`='/public/upload/Qrcode/proxy_11.png',`image_url`='/public/upload/Qrcode/proxy_11.png',`descript`='2019-04-17 15:13:02生成'  WHERE  `proxy_id` = '1' [ RunTime:0.031710s ]
+[ sql ] [ SQL ] SELECT * FROM `template` WHERE  `template_code` = 2 LIMIT 1 [ RunTime:0.000596s ]
+[ ERROR ] file_get_contents(./public/upload/Qrcode/1.png): failed to open stream: No such file or directory
+[ sql ] [ SQL ] UPDATE `user_template`  SET `template_code`='2',`template_name`='五洲游戏',`qrcode`='/public/upload/Qrcode/proxy_12.png',`image_url`='/public/upload/Qrcode/proxy_12.png',`descript`='2019-04-17 15:13:02生成'  WHERE  `proxy_id` = '1' [ RunTime:0.005266s ]
+[ sql ] [ SQL ] SELECT * FROM `template` WHERE  `template_code` = 3 LIMIT 1 [ RunTime:0.000380s ]
+[ ERROR ] file_get_contents(./public/upload/Qrcode/1.png): failed to open stream: No such file or directory
+[ sql ] [ SQL ] UPDATE `user_template`  SET `template_code`='3',`template_name`='五洲游戏',`qrcode`='/public/upload/Qrcode/proxy_13.png',`image_url`='/public/upload/Qrcode/proxy_13.png',`descript`='2019-04-17 15:13:02生成'  WHERE  `proxy_id` = '1' [ RunTime:0.030257s ]
+[ sql ] [ SQL ] SELECT * FROM `template` WHERE  `template_code` = 4 LIMIT 1 [ RunTime:0.000490s ]
+[ ERROR ] file_get_contents(./public/upload/Qrcode/1.png): failed to open stream: No such file or directory
+[ sql ] [ SQL ] UPDATE `user_template`  SET `template_code`='4',`template_name`='五洲游戏',`qrcode`='/public/upload/Qrcode/proxy_14.png',`image_url`='/public/upload/Qrcode/proxy_14.png',`descript`='2019-04-17 15:13:02生成'  WHERE  `proxy_id` = '1' [ RunTime:0.005677s ]
+[ sql ] [ SQL ] SELECT * FROM `template` WHERE  `template_code` = 5 LIMIT 1 [ RunTime:0.000796s ]
+[ ERROR ] file_get_contents(./public/upload/Qrcode/1.png): failed to open stream: No such file or directory
+[ sql ] [ SQL ] UPDATE `user_template`  SET `template_code`='5',`template_name`='五洲游戏',`qrcode`='/public/upload/Qrcode/proxy_15.png',`image_url`='/public/upload/Qrcode/proxy_15.png',`descript`='2019-04-17 15:13:02生成'  WHERE  `proxy_id` = '1' [ RunTime:0.043760s ]
+[ sql ] [ SQL ] SELECT * FROM `template` WHERE  `template_code` = 6 LIMIT 1 [ RunTime:0.000466s ]
+[ ERROR ] file_get_contents(./public/upload/Qrcode/1.png): failed to open stream: No such file or directory
+[ sql ] [ SQL ] UPDATE `user_template`  SET `template_code`='6',`template_name`='五洲游戏',`qrcode`='/public/upload/Qrcode/proxy_16.png',`image_url`='/public/upload/Qrcode/proxy_16.png',`descript`='2019-04-17 15:13:02生成'  WHERE  `proxy_id` = '1' [ RunTime:0.005532s ]
+---------------------------------------------------------------
+[ 2019-04-17T15:13:04+08:00 ] 127.0.0.1 GET /admin/template/getindex.html?page=1&limit=10
+[ sql ] [ DB ] CONNECT:[ UseTime:0.010253s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `user_template` [ RunTime:0.000802s ]
+[ sql ] [ SQL ] SELECT * FROM `user_template` WHERE  `proxy_id` = '1' ORDER BY `id` DESC LIMIT 0,10 [ RunTime:0.000964s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `user_template` WHERE  `proxy_id` = '1' LIMIT 1 [ RunTime:0.000619s ]
+---------------------------------------------------------------
+[ 2019-04-17T15:14:19+08:00 ] 127.0.0.1 POST /admin/template/resetPromotionSetting
+[ sql ] [ DB ] CONNECT:[ UseTime:0.010485s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `template` [ RunTime:0.003089s ]
+[ sql ] [ SQL ] SELECT * FROM `template` WHERE  `template_code` = 1 LIMIT 1 [ RunTime:0.000378s ]
+[ ERROR ] file_get_contents(./public/upload/Qrcode/1.png): failed to open stream: No such file or directory
+[ sql ] [ SQL ] SHOW COLUMNS FROM `user_template` [ RunTime:0.000670s ]
+[ sql ] [ SQL ] UPDATE `user_template`  SET `template_code`='1',`template_name`='五洲游戏',`qrcode`='/public/upload/Qrcode/proxy_1_1.png',`image_url`='/public/upload/Qrcode/proxy_1_1.png',`descript`='2019-04-17 15:14:19生成'  WHERE  `proxy_id` = '1' [ RunTime:0.017910s ]
+[ sql ] [ SQL ] SELECT * FROM `template` WHERE  `template_code` = 2 LIMIT 1 [ RunTime:0.000449s ]
+[ ERROR ] file_get_contents(./public/upload/Qrcode/1.png): failed to open stream: No such file or directory
+[ sql ] [ SQL ] UPDATE `user_template`  SET `template_code`='2',`template_name`='五洲游戏',`qrcode`='/public/upload/Qrcode/proxy_1_2.png',`image_url`='/public/upload/Qrcode/proxy_1_2.png',`descript`='2019-04-17 15:14:19生成'  WHERE  `proxy_id` = '1' [ RunTime:0.041027s ]
+[ sql ] [ SQL ] SELECT * FROM `template` WHERE  `template_code` = 3 LIMIT 1 [ RunTime:0.000378s ]
+[ ERROR ] file_get_contents(./public/upload/Qrcode/1.png): failed to open stream: No such file or directory
+[ sql ] [ SQL ] UPDATE `user_template`  SET `template_code`='3',`template_name`='五洲游戏',`qrcode`='/public/upload/Qrcode/proxy_1_3.png',`image_url`='/public/upload/Qrcode/proxy_1_3.png',`descript`='2019-04-17 15:14:19生成'  WHERE  `proxy_id` = '1' [ RunTime:0.006447s ]
+[ sql ] [ SQL ] SELECT * FROM `template` WHERE  `template_code` = 4 LIMIT 1 [ RunTime:0.000609s ]
+[ ERROR ] file_get_contents(./public/upload/Qrcode/1.png): failed to open stream: No such file or directory
+[ sql ] [ SQL ] UPDATE `user_template`  SET `template_code`='4',`template_name`='五洲游戏',`qrcode`='/public/upload/Qrcode/proxy_1_4.png',`image_url`='/public/upload/Qrcode/proxy_1_4.png',`descript`='2019-04-17 15:14:19生成'  WHERE  `proxy_id` = '1' [ RunTime:0.029325s ]
+[ sql ] [ SQL ] SELECT * FROM `template` WHERE  `template_code` = 5 LIMIT 1 [ RunTime:0.001200s ]
+[ ERROR ] file_get_contents(./public/upload/Qrcode/1.png): failed to open stream: No such file or directory
+[ sql ] [ SQL ] UPDATE `user_template`  SET `template_code`='5',`template_name`='五洲游戏',`qrcode`='/public/upload/Qrcode/proxy_1_5.png',`image_url`='/public/upload/Qrcode/proxy_1_5.png',`descript`='2019-04-17 15:14:20生成'  WHERE  `proxy_id` = '1' [ RunTime:0.004925s ]
+[ sql ] [ SQL ] SELECT * FROM `template` WHERE  `template_code` = 6 LIMIT 1 [ RunTime:0.000454s ]
+[ ERROR ] file_get_contents(./public/upload/Qrcode/1.png): failed to open stream: No such file or directory
+[ sql ] [ SQL ] UPDATE `user_template`  SET `template_code`='6',`template_name`='五洲游戏',`qrcode`='/public/upload/Qrcode/proxy_1_6.png',`image_url`='/public/upload/Qrcode/proxy_1_6.png',`descript`='2019-04-17 15:14:20生成'  WHERE  `proxy_id` = '1' [ RunTime:0.039340s ]
+---------------------------------------------------------------
+[ 2019-04-17T15:14:21+08:00 ] 127.0.0.1 GET /admin/template/getindex.html?page=1&limit=10
+[ sql ] [ DB ] CONNECT:[ UseTime:0.001170s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `user_template` [ RunTime:0.000634s ]
+[ sql ] [ SQL ] SELECT * FROM `user_template` WHERE  `proxy_id` = '1' ORDER BY `id` DESC LIMIT 0,10 [ RunTime:0.000737s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `user_template` WHERE  `proxy_id` = '1' LIMIT 1 [ RunTime:0.000317s ]
+---------------------------------------------------------------
+[ 2019-04-17T15:15:01+08:00 ] 127.0.0.1 POST /admin/template/resetPromotionSetting
+[ sql ] [ DB ] CONNECT:[ UseTime:0.010883s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `template` [ RunTime:0.002379s ]
+[ sql ] [ SQL ] SELECT * FROM `template` WHERE  `template_code` = 1 LIMIT 1 [ RunTime:0.000345s ]
+[ ERROR ] file_get_contents(./public/upload/Qrcode/1.png): failed to open stream: No such file or directory
+[ sql ] [ SQL ] SHOW COLUMNS FROM `user_template` [ RunTime:0.002538s ]
+[ sql ] [ SQL ] UPDATE `user_template`  SET `template_code`='1',`template_name`='五洲游戏',`qrcode`='/public/upload/Qrcode/proxy_1_1.png',`image_url`='/public/upload/Qrcode/proxy_1_1.png',`descript`='2019-04-17 15:15:01生成'  WHERE  `proxy_id` = '1'  AND `template_code` = '1' [ RunTime:0.000835s ]
+[ sql ] [ SQL ] SELECT * FROM `template` WHERE  `template_code` = 2 LIMIT 1 [ RunTime:0.000292s ]
+[ ERROR ] file_get_contents(./public/upload/Qrcode/1.png): failed to open stream: No such file or directory
+[ sql ] [ SQL ] UPDATE `user_template`  SET `template_code`='2',`template_name`='五洲游戏',`qrcode`='/public/upload/Qrcode/proxy_1_2.png',`image_url`='/public/upload/Qrcode/proxy_1_2.png',`descript`='2019-04-17 15:15:01生成'  WHERE  `proxy_id` = '1'  AND `template_code` = '2' [ RunTime:0.000974s ]
+[ sql ] [ SQL ] SELECT * FROM `template` WHERE  `template_code` = 3 LIMIT 1 [ RunTime:0.000360s ]
+[ ERROR ] file_get_contents(./public/upload/Qrcode/1.png): failed to open stream: No such file or directory
+[ sql ] [ SQL ] UPDATE `user_template`  SET `template_code`='3',`template_name`='五洲游戏',`qrcode`='/public/upload/Qrcode/proxy_1_3.png',`image_url`='/public/upload/Qrcode/proxy_1_3.png',`descript`='2019-04-17 15:15:01生成'  WHERE  `proxy_id` = '1'  AND `template_code` = '3' [ RunTime:0.000928s ]
+[ sql ] [ SQL ] SELECT * FROM `template` WHERE  `template_code` = 4 LIMIT 1 [ RunTime:0.000356s ]
+[ ERROR ] file_get_contents(./public/upload/Qrcode/1.png): failed to open stream: No such file or directory
+[ sql ] [ SQL ] UPDATE `user_template`  SET `template_code`='4',`template_name`='五洲游戏',`qrcode`='/public/upload/Qrcode/proxy_1_4.png',`image_url`='/public/upload/Qrcode/proxy_1_4.png',`descript`='2019-04-17 15:15:01生成'  WHERE  `proxy_id` = '1'  AND `template_code` = '4' [ RunTime:0.001025s ]
+[ sql ] [ SQL ] SELECT * FROM `template` WHERE  `template_code` = 5 LIMIT 1 [ RunTime:0.000347s ]
+[ ERROR ] file_get_contents(./public/upload/Qrcode/1.png): failed to open stream: No such file or directory
+[ sql ] [ SQL ] UPDATE `user_template`  SET `template_code`='5',`template_name`='五洲游戏',`qrcode`='/public/upload/Qrcode/proxy_1_5.png',`image_url`='/public/upload/Qrcode/proxy_1_5.png',`descript`='2019-04-17 15:15:01生成'  WHERE  `proxy_id` = '1'  AND `template_code` = '5' [ RunTime:0.001015s ]
+[ sql ] [ SQL ] SELECT * FROM `template` WHERE  `template_code` = 6 LIMIT 1 [ RunTime:0.000397s ]
+[ ERROR ] file_get_contents(./public/upload/Qrcode/1.png): failed to open stream: No such file or directory
+[ sql ] [ SQL ] UPDATE `user_template`  SET `template_code`='6',`template_name`='五洲游戏',`qrcode`='/public/upload/Qrcode/proxy_1_6.png',`image_url`='/public/upload/Qrcode/proxy_1_6.png',`descript`='2019-04-17 15:15:01生成'  WHERE  `proxy_id` = '1'  AND `template_code` = '6' [ RunTime:0.060802s ]
+---------------------------------------------------------------
+[ 2019-04-17T15:15:03+08:00 ] 127.0.0.1 GET /admin/template/getindex.html?page=1&limit=10
+[ sql ] [ DB ] CONNECT:[ UseTime:0.010267s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `user_template` [ RunTime:0.003145s ]
+[ sql ] [ SQL ] SELECT * FROM `user_template` WHERE  `proxy_id` = '1' ORDER BY `id` DESC LIMIT 0,10 [ RunTime:0.000881s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `user_template` WHERE  `proxy_id` = '1' LIMIT 1 [ RunTime:0.000469s ]
+---------------------------------------------------------------
+[ 2019-04-17T15:15:25+08:00 ] 127.0.0.1 POST /admin/template/resetPromotionSetting
+[ sql ] [ DB ] CONNECT:[ UseTime:0.011112s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `template` [ RunTime:0.002595s ]
+[ sql ] [ SQL ] SELECT * FROM `template` WHERE  `template_code` = 1 LIMIT 1 [ RunTime:0.000411s ]
+[ ERROR ] file_get_contents(./public/upload/Qrcode/1.png): failed to open stream: No such file or directory
+[ sql ] [ SQL ] SHOW COLUMNS FROM `user_template` [ RunTime:0.000707s ]
+[ sql ] [ SQL ] UPDATE `user_template`  SET `template_code`='1',`template_name`='五洲游戏',`qrcode`='/public/upload/Qrcode/proxy_1_1.png',`image_url`='/public/upload/Qrcode/proxy_1_1.png',`descript`='2019-04-17 15:15:25生成'  WHERE  `proxy_id` = '1'  AND `template_code` = '1' [ RunTime:0.031629s ]
+[ sql ] [ SQL ] SELECT * FROM `template` WHERE  `template_code` = 2 LIMIT 1 [ RunTime:0.000504s ]
+[ ERROR ] file_get_contents(./public/upload/Qrcode/1.png): failed to open stream: No such file or directory
+[ sql ] [ SQL ] UPDATE `user_template`  SET `template_code`='2',`template_name`='五洲游戏',`qrcode`='/public/upload/Qrcode/proxy_1_2.png',`image_url`='/public/upload/Qrcode/proxy_1_2.png',`descript`='2019-04-17 15:15:25生成'  WHERE  `proxy_id` = '1'  AND `template_code` = '2' [ RunTime:0.031015s ]
+[ sql ] [ SQL ] SELECT * FROM `template` WHERE  `template_code` = 3 LIMIT 1 [ RunTime:0.000442s ]
+[ ERROR ] file_get_contents(./public/upload/Qrcode/1.png): failed to open stream: No such file or directory
+[ sql ] [ SQL ] UPDATE `user_template`  SET `template_code`='3',`template_name`='五洲游戏',`qrcode`='/public/upload/Qrcode/proxy_1_3.png',`image_url`='/public/upload/Qrcode/proxy_1_3.png',`descript`='2019-04-17 15:15:25生成'  WHERE  `proxy_id` = '1'  AND `template_code` = '3' [ RunTime:0.038425s ]
+[ sql ] [ SQL ] SELECT * FROM `template` WHERE  `template_code` = 4 LIMIT 1 [ RunTime:0.000446s ]
+[ ERROR ] file_get_contents(./public/upload/Qrcode/1.png): failed to open stream: No such file or directory
+[ sql ] [ SQL ] UPDATE `user_template`  SET `template_code`='4',`template_name`='五洲游戏',`qrcode`='/public/upload/Qrcode/proxy_1_4.png',`image_url`='/public/upload/Qrcode/proxy_1_4.png',`descript`='2019-04-17 15:15:25生成'  WHERE  `proxy_id` = '1'  AND `template_code` = '4' [ RunTime:0.026500s ]
+[ sql ] [ SQL ] SELECT * FROM `template` WHERE  `template_code` = 5 LIMIT 1 [ RunTime:0.000398s ]
+[ ERROR ] file_get_contents(./public/upload/Qrcode/1.png): failed to open stream: No such file or directory
+[ sql ] [ SQL ] UPDATE `user_template`  SET `template_code`='5',`template_name`='五洲游戏',`qrcode`='/public/upload/Qrcode/proxy_1_5.png',`image_url`='/public/upload/Qrcode/proxy_1_5.png',`descript`='2019-04-17 15:15:25生成'  WHERE  `proxy_id` = '1'  AND `template_code` = '5' [ RunTime:0.039775s ]
+[ sql ] [ SQL ] SELECT * FROM `template` WHERE  `template_code` = 6 LIMIT 1 [ RunTime:0.000416s ]
+[ ERROR ] file_get_contents(./public/upload/Qrcode/1.png): failed to open stream: No such file or directory
+[ sql ] [ SQL ] UPDATE `user_template`  SET `template_code`='6',`template_name`='五洲游戏',`qrcode`='/public/upload/Qrcode/proxy_1_6.png',`image_url`='/public/upload/Qrcode/proxy_1_6.png',`descript`='2019-04-17 15:15:25生成'  WHERE  `proxy_id` = '1'  AND `template_code` = '6' [ RunTime:0.022787s ]
+---------------------------------------------------------------
+[ 2019-04-17T15:15:27+08:00 ] 127.0.0.1 GET /admin/template/getindex.html?page=1&limit=10
+[ sql ] [ DB ] CONNECT:[ UseTime:0.011595s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `user_template` [ RunTime:0.000607s ]
+[ sql ] [ SQL ] SELECT * FROM `user_template` WHERE  `proxy_id` = '1' ORDER BY `id` DESC LIMIT 0,10 [ RunTime:0.000746s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `user_template` WHERE  `proxy_id` = '1' LIMIT 1 [ RunTime:0.000298s ]
+---------------------------------------------------------------
+[ 2019-04-17T15:17:40+08:00 ] 127.0.0.1 POST /admin/template/resetPromotionSetting
+[ sql ] [ DB ] CONNECT:[ UseTime:0.010497s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `template` [ RunTime:0.002623s ]
+[ sql ] [ SQL ] SELECT * FROM `template` WHERE  `template_code` = 1 LIMIT 1 [ RunTime:0.000419s ]
+[ ERROR ] file_get_contents(./public/upload/Qrcode/1.png): failed to open stream: No such file or directory
+---------------------------------------------------------------
+[ 2019-04-17T15:17:41+08:00 ] 127.0.0.1 GET /admin/template/getindex.html?page=1&limit=10
+[ sql ] [ DB ] CONNECT:[ UseTime:0.010691s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `user_template` [ RunTime:0.002687s ]
+[ sql ] [ SQL ] SELECT * FROM `user_template` WHERE  `proxy_id` = '1' ORDER BY `id` DESC LIMIT 0,10 [ RunTime:0.000927s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `user_template` WHERE  `proxy_id` = '1' LIMIT 1 [ RunTime:0.000562s ]
+---------------------------------------------------------------
+[ 2019-04-17T15:18:09+08:00 ] 127.0.0.1 POST /admin/template/resetPromotionSetting
+[ sql ] [ DB ] CONNECT:[ UseTime:0.010242s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `template` [ RunTime:0.002412s ]
+[ sql ] [ SQL ] SELECT * FROM `template` WHERE  `template_code` = 1 LIMIT 1 [ RunTime:0.000389s ]
+[ ERROR ] file_get_contents(./public/upload/Qrcode/1.png): failed to open stream: No such file or directory
+---------------------------------------------------------------
+[ 2019-04-17T15:18:10+08:00 ] 127.0.0.1 GET /admin/template/getindex.html?page=1&limit=10
+[ sql ] [ DB ] CONNECT:[ UseTime:0.010269s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `user_template` [ RunTime:0.000676s ]
+[ sql ] [ SQL ] SELECT * FROM `user_template` WHERE  `proxy_id` = '1' ORDER BY `id` DESC LIMIT 0,10 [ RunTime:0.000966s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `user_template` WHERE  `proxy_id` = '1' LIMIT 1 [ RunTime:0.000503s ]

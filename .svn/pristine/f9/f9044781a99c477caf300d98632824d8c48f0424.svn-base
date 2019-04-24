@@ -1,0 +1,454 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>提交结算</title>
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href="__CSS__/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="__CSS__/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="__CSS__/animate.css" rel="stylesheet">
+    <link href="__CSS__/style.css?v=4.1.0" rel="stylesheet">
+    <link href="__CSS__/toastr.min.css" rel="stylesheet">
+    <script src="__JS__/jquery.min.js?v=2.1.4"></script>
+
+</head>
+
+<body class="gray-bg">
+<div class="row">
+    <div class="col-lg-12">
+        <div class="wrapper wrapper-content">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5>提交结算</h5>
+                            <p style="color: red">( 提交结算后，申请的金额将在账户中扣除 )</p>
+                            <div class="ibox-tools">
+                                <a class="collapse-link">
+                                    <i class="fa fa-chevron-up"></i>
+                                </a>
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                    <i class="fa fa-wrench"></i>
+                                </a>
+
+                                <a class="close-link">
+                                    <i class="fa fa-times"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <form action="applySettlement" method="post" id="myForm">
+                            <div class="ibox-content">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="balance">结算余额</label>
+                                            <p type="text" class="form-control" id="balance">{$proxy.balance}元</p>
+                                        </div>
+                                        <label for="money">结算金额<span style="color: red">(单次最低提现100元，最高50000元)</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-addon">￥</span>
+                                            <input type="text" class="form-control" id="money" step="1" name="money"
+                                                   aria-label="Amount (to the nearest dollar)" min="1"
+                                                   onkeyup="checkValue(this);if(!/^\d+$/.test(this.value)){value = value.replace(/[^\d]/g,'');}"
+                                            />
+                                            <span class="input-group-addon">元</span>
+                                        </div>
+
+                                        <div style=" margin-top: 10px;"></div>
+
+                                        <div class="btn-group" role="group" aria-label="...">
+                                            <button type="button" class="btn btn-primary" name="aliType" id="aliType"
+                                                    onclick="changeType(this)" data-status="2">支付宝
+                                            </button>
+
+
+
+                                            <button type="button" class="btn btn-default" name="bankType" id="bankType"
+                                                    onclick="changeType(this)" data-status="1">银行卡
+                                            </button>
+                                        </div>
+
+
+                                        <div class="form-group" id="aliInfo">
+                                            <div class="form-group">
+                                                <label for="aliAccount">支付宝账户</label>
+                                                <input id="aliAccount" type="text" class="form-control"
+                                                       value="{$bankinfo.alipay}"
+                                                       name="aliAccount"
+                                                       required="required"
+                                                       placeholder="请输入支付宝账户..." disabled>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="realname">支付宝真实姓名</label>
+                                                <input type="text" class="form-control" id="realName"
+                                                       value="{$bankinfo.alipay_name}"
+                                                       name="realName"
+                                                       placeholder="请输入支付宝真实姓名..." required="required" disabled/>
+
+                                            </div>
+                                        </div>
+                                        <div class="btn-group" id="bankInfo" >
+                                            <div class="form-group">
+                                                <label for="cardAccount">银行卡账号</label>
+                                                <input id="cardAccount" type="text" class="form-control"
+                                                       value="{$bankinfo.cardaccount}"
+                                                       name="cardAccount"
+                                                       required="required"
+                                                       placeholder="请输入银行卡账号..." disabled>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="bank">开户行</label>
+                                                <input type="text" class="form-control" id="bank"
+                                                       value="{$bankinfo.bank}" name="bank"
+                                                       placeholder="请输入开户行..." required="required" disabled/>
+
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="name">姓名</label>
+                                                <input type="text" class="form-control" id="name"
+                                                       value="{$bankinfo.name}" name="name"
+                                                       placeholder="请输入持卡人姓名..." required="required" disabled/>
+
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="settlementPassword">验证结算密码</label>
+                                            <input type="password" required="required" class="form-control"
+                                                   name="settlementPassword" id="settlementPassword"
+                                                   placeholder="请输入结算密码..."/>
+                                        </div>
+
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="ibox-content">
+                                <!--<div class="btn-group" role="group" aria-label="...">-->
+                                    <!--<button type="button" class="btn btn-primary" name="phone" onclick="change(this)">-->
+                                        <!--手机号验证-->
+                                    <!--</button>-->
+                                    <!--<button type="button" class="btn btn-default" name="mail" onclick="alert('暂不支持')">-->
+                                        <!--邮箱验证-->
+                                    <!--</button>-->
+                                <!--</div>-->
+                                <!--<div id="mobile">-->
+                                    <!--<div class="row">-->
+                                        <!--<div class="col-lg-6">-->
+                                            <!--<div class="input-group">-->
+                                                <!--<div>-->
+                                                    <!--<input type="text" class="form-control disabled phoneNumForFind" id="phoneNum"-->
+                                                           <!--value="{$proxy.bind_mobile}" disabled/>-->
+                                                    <!--<span class="input-group-btn">-->
+                                                         <!--<button class="btn btn-primary sendCode " type="button"-->
+                                                                 <!--value='' onclick="sendCodes(this)-->
+                                                         <!--" id="2">获取验证码</button>-->
+                                                   <!--</span>-->
+                                                <!--</div>-->
+
+                                            <!--</div>&lt;!&ndash; /input-group &ndash;&gt;-->
+                                        <!--</div>&lt;!&ndash; /.col-lg-6 &ndash;&gt;-->
+                                    <!--</div>-->
+                                <!--</div>-->
+
+                                <!--<div class="form-group">-->
+                                    <!--<label for="code">验证码</label>-->
+                                    <!--<input type="text" class="form-control" id="code" name="code"-->
+                                           <!--placeholder="请输入验证码..." required="required"/>-->
+                                <!--</div>-->
+                                <input type="hidden" id="type" name="type" required="required"/>
+                                <input type="hidden" id="codeMsg" name="codeMsg" required="required">
+                                <h5 style="color: red">提现手续费：提现总额的2%,最低为3元。</h5>
+                                <button class="btn btn-primary" type="button" onclick="submitForm()" >提交结算</button>
+
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="__JS__/bootstrap.min.js?v=3.3.6"></script>
+<script src="__JS__/cache.js"></script>
+
+
+<!-- 自定义js -->
+<script src="__JS__/content.js?v=1.0.0"></script>
+
+
+<!-- Toastr script -->
+<script src="__JS__/toastr.min.js"></script>
+<script type="text/javascript">
+
+    $(function () {
+
+        cache.initCode('submitCode');
+
+        var aliInfo = document.getElementById("aliInfo");
+        var bankInfo = document.getElementById("bankInfo");
+
+        var aliType = document.getElementById("aliType");
+        var bankType = document.getElementById("bankType");
+
+        $('#mail').css("display", "none");
+        $('#mobile').css("display", "block");
+
+        if( "1" !== "1") {
+            aliInfo.style.display = 'none';
+            bankInfo.style.display = 'none';
+            $('#type').val(null);
+            alert('支付系统正在维护,请稍后提交结算');
+            window.location.href='main'
+        }else{
+
+            var aliBind = {$alipay};
+            var bankBind = {$bank};
+
+            if("2" !== "0" && "1" === "1") {
+
+                if (aliBind !== null) {
+                    aliInfo.style.display = 'block';
+                    bankInfo.style.display = 'none';
+
+                    $('#type').val(1);
+                }else if(bankBind !== null){
+
+                    aliInfo.style.display = 'none';
+                    bankInfo.style.display = 'block';
+
+                    aliType.className = "btn btn-default"
+                    bankType.className = "btn btn-primary"
+
+                    $('#type').val(2);
+                }else{
+                    alert('尚未绑定支付信息,即将跳转到绑定页面')
+                    window.location.href = '{:url("proxy/checkaccount")}';
+                }
+            }else if("2" !== "0" && "1" === "0"){
+                if(aliBind !== null){
+                    aliInfo.style.display = 'block';
+                    bankInfo.style.display = 'none';
+
+                    $('#type').val(1);
+                }else{
+                    alert('尚未绑定支付宝账户,即将跳转到绑定页面')
+                    window.location.href = '{:url("proxy/checkaccount",array("type"=>"alipay"))}'
+                }
+            }else if("2" === "0" && "1" === "1"){
+                if(bankBind !== null){
+                    aliInfo.style.display = 'none';
+                    bankInfo.style.display = 'block';
+
+                    $('#type').val(2);
+                }else{
+                    alert('支付宝结算维护,可选择使用银行卡结算.您尚未绑定银行卡,即将跳转到银行卡绑定页面')
+                    window.location.href = '{:url("proxy/checkaccount",array("type"=>"bank"))}';
+                }
+            }
+        }
+
+    });
+
+    function sendMailCode(data) {
+        if ($('#mails').val() === null || $('#mails').val() === '') {
+            alert('请输入邮箱')
+            return
+        }
+        $('#codeMsg').val(data.value);
+        $.ajax({
+            url: "sendMailCode",
+            type: 'get',
+            data: {mail: $('#mails').val()},
+            success: function (response) {
+                if (response.code !== 0 || response === true) {
+                    $('#sendCode').attr('id', Math.random())
+                    data.setAttribute('id', 'sendCode')
+                    settime(this)
+                    alert('发送成功')
+                } else {
+                    alert(response.msg)
+                }
+
+            }
+        })
+    }
+
+    function change(data) {
+        var name = data.name
+        $("#type").val(name);
+
+        $(data).attr("class", "btn btn-primary").siblings().attr("class", "btn btn-default");
+        if (name === 'mail') {
+            $('#mail').css("display", "block");
+            $('#mobile').css("display", "none");
+            return;
+        }
+        $('#mail').css("display", "none");
+        $('#mobile').css("display", "block");
+    }
+
+    function changeType(data) {
+
+        if ($(data).attr('data-status') === '0') {
+            alert("维护中,请尝试其他方式");
+            return;
+        }
+        var name = data.name
+        $("#type").val(name);
+
+        $(data).attr("class", "btn btn-primary").siblings().attr("class", "btn btn-default");
+        var aliTarget = document.getElementById("aliInfo");
+        var bankTarget = document.getElementById("bankInfo");
+        if (name === 'aliType') {
+            aliTarget.style.display = 'block';
+            bankTarget.style.display = 'none';
+            $('#type').val(1);
+            $('#ali').css("display", "block");
+            $('#bank').css("display", "none");
+
+        } else {
+            aliTarget.style.display = 'none';
+            bankTarget.style.display = 'block';
+            $('#type').val(2);
+            $('#ali').css("display", "none");
+            $('#bank').css("display", "block");
+
+            var bankBind ={$bank};
+            if (bankBind === null) {
+                alert('您尚未绑定银行卡,即将跳转到银行卡绑定页面');
+                window.location.href = '{:url("proxy/checkaccount",array("type"=>"bank"))}';
+                return;
+            }
+        }
+
+    }
+
+    function sendCodes(data) {
+        $('#codeMsg').val(data.value);
+        $.ajax({
+            url: "{:url('sms/sendCode3')}",
+            type: 'get',
+            data: {mobile: $('#phoneNum').val()},
+            success: function (response) {
+                if (response.code !== 0 || response === true) {
+                    alert('发送成功');
+                    cache.setItem('submitCode',$('#phoneNum').val());
+                    $('#sendCode').attr('id', Math.random());
+                    data.setAttribute('id', 'sendCode')
+                    settime();
+                } else {
+                    alert(response.msg)
+                }
+            }
+        })
+    }
+
+    var countdown = 120;
+
+    function formatSeconds(value) {
+        var s = parseInt(value) % 60;// 需要转换的时间秒
+        var h = parseInt(value) / 60;// 分
+        var result = '';
+        if (s > 0) {
+            result = "" + parseInt(s) + "秒";
+        }
+        if (h > 0) {
+            result = "" + parseInt(h) + "分" + result;
+        }
+
+        return result;
+    }
+
+    function settime() {
+
+        if (countdown === 0) {
+            $("#sendCode").attr("disabled", false);
+            $("#sendCode").html("免费获取验证码");
+            countdown = 60;
+            return;
+        } else {
+            $("#sendCode").attr("disabled", true);
+            $("#sendCode").html("重新发送(" + formatSeconds(countdown) + ")");
+            countdown--;
+        }
+        setTimeout(function () {
+                settime(this)
+            }
+            , 1000)
+
+    }
+
+
+    function submitForm() {
+        if ($('#money').val() === '') {
+            alert('金额不能为空')
+            return false
+        }
+        if ($('#money').val() < 100) {
+            alert('提现金额最低一百元起')
+            return false;
+        }
+        if ($('#money').val() > 50000) {
+            alert('单次提现金额最高五万元')
+            return false;
+        }
+        if ($('#money').val() <= 0) {
+            alert('请填写正确的金额')
+            return false;
+        }
+        if ($('#settlementPassword').val() === '') {
+            alert("结算密码不能为空");
+            return false;
+        }
+        if ($('#code').val() === '') {
+            alert("验证码不正确");
+            return false;
+        }
+        if ($('#code').val().length < 4) {
+            alert('验证码不正确')
+            return false
+
+        }
+        $.ajax({
+            url: "{:url('settle/applySettlement')}",//'applySettlement',
+            data: $("#myForm").serialize(),
+            method: 'post',
+            success: function (response) {
+                if (response.code !== 0 || response === true) {
+                    alert('提交结算成功');
+                    cache.removeItem('submitCode');
+                    $("#exampleModal").modal('hide')
+                    window.location.href = "{:url('settle/settlementlog')}";
+                } else {
+                    cache.removeItem('submitCode');
+                    alert(response.msg)
+                    cache.removeItem('submitCode');
+                }
+            }
+        })
+    }
+
+    function checkValue(dom) {
+        if (Number(dom.value) > Number({$proxy.balance})) {
+            dom.value = Math.floor({$proxy.balance})
+        }
+
+        if (dom.value < 0) {
+            dom.value = 0;
+        }
+        if (dom.value >50000){
+            dom.value = 50000;
+        }
+    }
+</script>
+
+</body>
+
+</html>

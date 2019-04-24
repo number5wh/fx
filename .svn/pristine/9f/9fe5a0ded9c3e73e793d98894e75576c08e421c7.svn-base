@@ -1,0 +1,435 @@
+<?php
+
+namespace app\manage\controller;
+
+use app\manage\controller\Base;
+use think\Db;
+use think\captcha\Captcha;
+use app\manage\model;
+use think\log;
+use PHPExcel_IOFactory;
+use PHPExcel;
+
+
+class Settle extends Base {
+
+
+    public function updateSettlementAccount(){
+
+        $aliAccount = input("aliAccount");
+        $realname = input("realName");
+
+//        $cardAccount = input("cardAccount");
+//        $bank = input("bank");
+//        $name = input("name");
+
+        $password =input("settlementPassword");
+        $code =input("code");
+        $codeMsg = input("codeMsg");
+
+        $proxy_id = session("proxy_id");
+        $proxy = Db::name("proxy")->where("code",$proxy_id)->find();
+        $checkpass = md5($proxy["salt"].$password);
+        //print($proxy['check_pass']);
+        if($proxy['check_pass']!=$checkpass){
+            return $this->showmsg(0,"验证码密码不正确，请重输！",'',false,null);
+        }
+
+        $sms = new \app\admin\model\Sms();
+        $status = $sms->checkcode($proxy["bind_mobile"],$code,'setaccount');
+        if(!$status){
+            return $this->showmsg(0,"短信验证码输入错误，请重输！",'',false,null);
+        }
+
+        $total = Db::name("bankinfo")->where("proxy_id",$proxy['code'])->count();
+        $data = array("alipay"=>$aliAccount,"alipay_name"=>$realname);//, "cardAccount"=>$cardAccount,"bank"=>$bank,"name"=>$name
+
+        $status = false;
+        if($total>0){
+            $status = Db::name("bankinfo")->where("code",$proxy["code"])->update($data);
+        }
+        else
+        {
+            $data["proxy_id"]= $proxy["code"];
+            Db::name("bankinfo")->insert($data);
+        }
+
+        if($status){
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+
+    public function updateSettlementBank(){
+//        $aliAccount = input("aliAccount");
+////        $realname = input("realName");
+
+        $cardAccount = input("cardAccount");
+        $bank = input("bank");
+        $name = input("name");
+
+        $password =input("settlementPassword");
+        $code =input("code");
+        $codeMsg = input("codeMsg");
+
+        $proxy_id = session("proxy_id");
+        $proxy = Db::name("proxy")->where("code",$proxy_id)->find();
+        $checkpass = md5($proxy["salt"].$password);
+        //print($proxy['check_pass']);
+        if($proxy['check_pass']!=$checkpass){
+            return $this->showmsg(0,"验证码密码不正确，请重输！",'',false,null);
+        }
+
+        $sms = new \app\admin\model\Sms();
+        $status = $sms->checkcode($proxy["bind_mobile"],$code,'setaccount');
+        if(!$status){
+            return $this->showmsg(0,"短信验证码输入错误，请重输！",'',false,null);
+        }
+
+        $total = Db::name("bankinfo")->where("proxy_id",$proxy['code'])->count();
+        $data = array("cardAccount"=>$cardAccount,"bank"=>$bank,"name"=>$name);
+        $status = false;
+        if($total>0){
+            $status = Db::name("bankinfo")->where("code",$proxy["code"])->update($data);
+        }
+        else
+        {
+            $data["proxy_id"]= $proxy["code"];
+            Db::name("bankinfo")->insert($data);
+        }
+
+        if($status){
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+
+
+    public function settlementlog(){
+
+        $status = input("condition");
+        $startime = input("startTime");
+        $endtime = input("endTime");
+        $alipay =input("alipayAccount");
+        $alipayName =input("realName");
+        $agent_id =input("agentId");
+
+        $where =array();
+        if(!empty($status))
+        {
+            $where["a.status"] = $status;
+        }
+
+
+        if (!empty($startime)) {
+            if (!empty($endtime)) {
+                $where['addtime'] = array(array('gt', strtotime($startime)), array('lt', strtotime($endtime)));
+            } else {
+                $where['addtime'] = array('gt', strtotime($startime));
+            }
+        }
+
+
+        if(!empty($alipay)){
+            $where["a.alipay"] =$alipay;
+        }
+
+        if(!empty($alipayName)){
+            $where["a.alipay_name"] =array("like",'%'.$alipayName.'%');
+        }
+
+        $strwhere ="";
+        if(!empty($agent_id)){
+            $strwhere= " a.proxy_id in (select `code` from proxy where  code=".$agent_id.") ";
+            if(!empty($status)){
+                $strwhere.=" and status=".$status;
+            }
+            if(!empty($alipay)){
+                $strwhere.=" and a.alipay=".$alipay;
+            }
+        }
+        else
+        {
+            $strwhere= ' a.proxy_id in (select `code` from proxy)';
+            if(!empty($status)){
+                $strwhere.='and a.status='.$status;
+            }
+            if(!empty($alipay)){
+                $strwhere.=" and a.alipay='".$alipay."'";
+            }
+        }
+
+        //print($strwhere);
+
+        $checklist = Db::name("checklog")->alias('a')
+            ->field('a.id,a.orderid,a.alipay,a.tax,a.name,a.bank,a.cardaccount,a.alipay_name,a.proxy_id,a.amount,a.checktype,a.status,a.addtime,a.createtime,a.descript,c.nickname,c.username,a.info')
+            ->join('proxy c',' a.proxy_id=c.code',"LEFT")
+            ->where($where)->whereor($strwhere)
+            ->paginate();
+        $this->assign("status",$status);
+        $this->assign("starttime",$startime);
+        $this->assign("endtime",$endtime);
+        $this->assign("list",$checklist);
+        $this->assign("alipay",$alipay);
+        $this->assign("alipayname",$alipayName);
+        $this->assign("agentid",$agent_id);
+        return   $this->fetch();
+    }
+
+
+
+    public function permitorder(){
+        //[{"id":"2"},{"id":"1"}]
+        $param =$this->request->param("args");
+        $param =str_replace("&quot;","\"",$param);
+        $ids=json_decode($param,true);
+        $manage = session('manage');
+
+        $status =true;
+        foreach($ids as $k=>$v){
+            $data=array("status"=>2,"checktime"=>date('Y-m-d H:i:s'),"checkuser"=>$manage['realname'],"info"=>"您的申请已通过审核");
+            $ret = Db::name("checklog")->where("id",$v["id"])->update($data);
+            //if(!$ret)
+            //    return $this->msg(1,"【".$v["id"]."】记录处理失败",null);
+        }
+
+       return true;//$this->msg(1,"处理成功",null);
+    }
+
+    public function refuseorder(){
+        $param=$this->request->param("args");
+        $msg = input("msg");
+        $param =str_replace("&quot;","\"",$param);
+        $ids=json_decode($param,true);
+        $manage = session('manage');
+
+        $status =true;
+        foreach($ids as $k=>$v){
+            $data=array("status"=>3,"checktime"=>date('Y-m-d H:i:s'),"checkuser"=>$manage['realname'],"info"=>$msg);
+            $ret = Db::name("checklog")->where("id",$v["id"])->update($data);
+            $checklog = Db::name("checklog")->where("id",$v['id'])->find();
+            if($ret){
+                //退钱给用户
+                Db::startTrans();
+                try{
+
+                    $ret1 =Db::name('proxy')
+                        ->where("code",$checklog['proxy_id'])
+                        ->update(['balance' =>Db::raw('balance+'.$checklog['amount'])]);
+                    $data1= array(
+                        "typeid"=>2,
+                        "proxy_id"=>$checklog['proxy_id'],
+                        "changmoney"=>$checklog['amount'],
+                        "descript"=>"审核拒绝退还账户",
+                        "createtime"=>time(),
+                        'createday' => date('Ymd')
+                    );
+                    Db::name("incomelog")->insert($data1);
+                    // 提交事务
+                    Db::commit();
+                } catch (\Exception $e) {
+                    // 回滚事务
+                    Log::write($e->getMessage(),"DEBUG");
+                    Db::rollback();
+                }
+
+            }
+            //    return $this->msg(1,"【".$v["id"]."】记录处理失败",null);
+        }
+        return true;//$this->msg(1,"处理成功",null);
+
+    }
+
+
+    public function  repairOrder(){
+        $param =$this->request->param("args");
+        $param =str_replace("&quot;","\"",$param);
+        $ids=json_decode($param,true);
+        $manage = session('manage');
+
+    }
+
+
+
+    public function settlePayment()
+    {
+        $status = input("condition");
+        $startime = input("startTime");
+        $endtime = input("endTime");
+        $alipay =input("alipayAccount");
+        $alipayName =input("realName");
+        $agent_id =input("agentId");
+
+        $where =array();
+        if(!empty($status))
+        {
+            $where["a.status"] = $status;
+        }
+
+
+        if (!empty($startime)) {
+            if (!empty($endtime)) {
+                $where['addtime'] = array(array('gt', strtotime($startime)), array('lt', strtotime($endtime)));
+            } else {
+                $where['addtime'] = array('gt', strtotime($startime));
+            }
+        }
+
+
+        if(!empty($alipay)){
+            $where["a.alipay"] =$alipay;
+        }
+
+        if(!empty($alipayName)){
+            $where["a.alipay_name"] =array("like",'%'.$alipayName.'%');
+        }
+
+        $where["a.status"] = 2;
+        $checklist = Db::name("checklog")->alias('a')
+            ->field('a.id,a.orderid,a.proxy_id,a.tax,a.alipay,a.name,a.bank,a.cardaccount,a.alipay_name,a.amount,a.checktype,a.status,a.addtime,a.createtime,a.descript,c.nickname,c.username,a.info,c.password')
+            ->join('proxy c',' a.proxy_id=c.code',"LEFT")
+            ->where($where)
+            ->paginate();
+
+
+        $this->assign("starttime",$startime);
+        $this->assign("endtime",$endtime);
+        $this->assign("list",$checklist);
+        $this->assign("alipay",$alipay);
+        $this->assign("alipayname",$alipayName);
+        $this->assign("agentid",$agent_id);
+        return $this->fetch();
+    }
+
+
+    public function getbankinfo(){
+        $proxy_id = input("id");
+        if(empty($proxy_id)){
+           return $this->msg(0,'参数错误',null);
+        }
+
+        $data =array();
+        $bankinfo = Db::name("bankinfo")->where("proxy_id",$proxy_id)->find();
+        if($bankinfo){
+            $data['proxy_id'] =$bankinfo['proxy_id'];
+            $data['alipay'] =$bankinfo['alipay'];
+            $data['alipay_name'] =$bankinfo['alipay_name'];
+            $data['name'] =$bankinfo['name'];
+            $data['bank'] =$bankinfo['bank'];
+            $data['cardaccount'] =$bankinfo['cardaccount'];
+        }
+
+        return $this->msg(1,"获取成功",$bankinfo);
+    }
+
+
+
+
+    public function finishorder(){
+        $msg = input("msg");
+        $param =$this->request->param("args");
+        $param =str_replace("&quot;","\"",$param);
+        $ids=json_decode($param,true);
+        $manage = session('manage');
+        foreach($ids as $k=>$v){
+            $data=array("status"=>4,"checktime"=>date('Y-m-d H:i:s'),"checkuser"=>$manage['realname'],"info"=>$msg);
+            $ret = Db::name("checklog")->where("id",$v["id"])->update($data);
+        }
+
+        return true;
+    }
+
+
+    public function outputexcel(){
+        Vendor('phpexcel.PHPExcel');//调用类库,路径是基于vendor文件夹的
+        Vendor('phpexcel.PHPExcel.Worksheet.Drawing');
+        Vendor('phpexcel.PHPExcel.Writer.Excel2007');
+        $objExcel = new \PHPExcel();
+        //set document Property
+        $objWriter = \PHPExcel_IOFactory::createWriter($objExcel, 'Excel2007');
+
+        $objActSheet = $objExcel->getActiveSheet();
+        $key = ord("A");
+        $letter =explode(',',"A,B,C,D,E,F,G,H");
+        $arrHeader =  array('结算ID','代理id','类型','结算金额','账号','时间','备注','信息');
+        //填充表头信息
+        $lenth =  count($arrHeader);
+        for($i = 0;$i < $lenth;$i++) {
+            $objActSheet->setCellValue("$letter[$i]1","$arrHeader[$i]");
+        };
+
+
+        $data = Db::name("checklog")->alias('a')
+            ->field('a.id,a.orderid,a.proxy_id,a.amount,a.checktype,a.status,a.addtime,a.createtime,a.descript,c.nickname,c.username,a.info')
+            ->join('proxy c',' a.proxy_id=c.code',"LEFT")->where("a.status",2)->select();
+
+        //填充表格信息
+        foreach($data as $k=>$v){
+            $k +=2;
+            $objActSheet->setCellValue('A'.$k,$v['orderid']);
+            $objActSheet->setCellValue('B'.$k, $v['proxy_id']);
+
+            $checkname="";
+            if($v['checktype']==1){
+                $checkname="支付宝";
+            }
+            else if($v['checktype']==2){
+                $checkname="银行卡";
+            }
+            // // 图片生成
+            // $objDrawing[$k] = new \PHPExcel_Worksheet_Drawing();
+            // $objDrawing[$k]->setPath('public/static/admin/images/profile_small.jpg');
+            // // 设置宽度高度
+            // $objDrawing[$k]->setHeight(40);//照片高度
+            // $objDrawing[$k]->setWidth(40); //照片宽度
+            // /*设置图片要插入的单元格*/
+            // $objDrawing[$k]->setCoordinates('C'.$k);
+            // // 图片偏移距离
+            // $objDrawing[$k]->setOffsetX(30);
+            // $objDrawing[$k]->setOffsetY(12);
+            // $objDrawing[$k]->setWorksheet($objPHPExcel->getActiveSheet());
+            // 表格内容
+            $objActSheet->setCellValue('C'.$k, $checkname);
+            $objActSheet->setCellValue('D'.$k, $v['amount']);
+            $objActSheet->setCellValue('E'.$k, $v['username']);
+            $objActSheet->setCellValue('F'.$k, $v['addtime']);
+            $objActSheet->setCellValue('G'.$k, $v['descript']);
+            $objActSheet->setCellValue('H'.$k, $v['info']);
+
+            // 表格高度
+            $objActSheet->getRowDimension($k)->setRowHeight(20);
+        }
+
+        $width = array(30,20,15,10,10,50,10,15);
+        //设置表格的宽度
+        $objActSheet->getColumnDimension('A')->setWidth($width[0]);
+        $objActSheet->getColumnDimension('B')->setWidth($width[3]);
+        $objActSheet->getColumnDimension('C')->setWidth($width[0]);
+        $objActSheet->getColumnDimension('D')->setWidth($width[3]);
+        $objActSheet->getColumnDimension('E')->setWidth($width[2]);
+        $objActSheet->getColumnDimension('F')->setWidth($width[0]);
+        $objActSheet->getColumnDimension('G')->setWidth($width[5]);
+        $objActSheet->getColumnDimension('H')->setWidth($width[5]);
+
+        $outfile = "商家交易结算".date("Y-m-d").".xls";
+        ob_end_clean();
+        header("Content-Type: application/force-download");
+        header("Content-Type: application/octet-stream");
+        header("Content-Type: application/download");
+        header('Content-Disposition:inline;filename="'.$outfile.'"');
+        header("Content-Transfer-Encoding: binary");
+        header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+        header("Pragma: no-cache");
+        $objWriter->save('php://output');
+    }
+
+
+}

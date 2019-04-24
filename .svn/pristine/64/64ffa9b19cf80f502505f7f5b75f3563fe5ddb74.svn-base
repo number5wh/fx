@@ -1,0 +1,149 @@
+!(function(self){
+    var Cookies = {
+        getItem: function (sKey) {
+            return decodeURIComponent(document.cookie.replace(new RegExp("(?:(?:^|.*;)\\s*" + encodeURIComponent(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=\\s*([^;]*).*$)|^.*$"), "$1")) || null;
+        },
+        setItem: function (sKey, sValue, vEnd, sPath, sDomain, bSecure) {
+            if (!sKey || /^(?:expires|max\-age|path|domain|secure)$/i.test(sKey)) { return false; }
+            var sExpires = "";
+            if (vEnd) {
+                switch (vEnd.constructor) {
+                    case Number:
+                        sExpires = vEnd === Infinity ? "; expires=Fri, 31 Dec 9999 23:59:59 GMT" : "; max-age=" + vEnd;
+                        break;
+                    case String:
+                        sExpires = "; expires=" + vEnd;
+                        break;
+                    case Date:
+                        sExpires = "; expires=" + vEnd.toUTCString();
+                        break;
+                }
+            }
+            document.cookie = encodeURIComponent(sKey) + "=" + encodeURIComponent(sValue) + sExpires + (sDomain ? "; domain=" + sDomain : "") + (sPath ? "; path=" + sPath : "") + (bSecure ? "; secure" : "");
+            return true;
+        },
+        removeItem: function (sKey, sPath, sDomain) {
+            if (!sKey || !this.hasItem(sKey)) { return false; }
+            document.cookie = encodeURIComponent(sKey) + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT" + ( sDomain ? "; domain=" + sDomain : "") + ( sPath ? "; path=" + sPath : "");
+            return true;
+        },
+        hasItem: function (sKey) {
+            return (new RegExp("(?:^|;\\s*)" + encodeURIComponent(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=")).test(document.cookie);
+        },
+        keys: /* optional method: you can safely remove it! */ function () {
+            var aKeys = document.cookie.replace(/((?:^|\s*;)[^\=]+)(?=;|$)|^\s*|\s*(?:\=[^;]*)?(?:\1|$)/g, "").split(/\s*(?:\=[^;]*)?;\s*/);
+            for (var nIdx = 0; nIdx < aKeys.length; nIdx++) { aKeys[nIdx] = decodeURIComponent(aKeys[nIdx]); }
+            return aKeys;
+        },
+        clear: function () {
+            Cookies.keys().forEach(function (it) {
+                Cookies.removeItem(it);
+            })
+        }
+    };
+
+    self.cookie = Cookies;
+
+})(this)
+
+
+!(function(self){
+    var cache = {
+        setItem: function (key,phone) {
+            var now = new Date();
+            var setDate = new Date();
+            setDate.setTime(now.getTime()+2*60*1000);
+            cookie.setItem(key,now.getTime()+2*60*1000, setDate , '/');
+            cookie.setItem(key+'_phone',phone, setDate , '/');
+        },
+        hasItem : function(key){
+            if(cookie.hasItem(key)){
+                var value = Number(cookie.getItem(key));
+                var now   = new Date().getTime();
+                var diff = Math.ceil((value - now)/1000);
+                return diff;
+            }
+            return false;
+        },
+        removeItem : function (key){
+            var k = key;
+            var code = $('.sendCode').attr('data-code');
+            if(!k && code){
+                k = code;
+            }
+            cookie.removeItem(k);
+            cookie.removeItem(k+"_phone");
+        },
+
+        initCode : function(key){
+            var diff = cache.hasItem(key);
+            //console.log(diff);
+
+            if(diff){
+                var phone = cookie.getItem(key+"_phone");
+                $(".sendCode").attr("disabled", true);
+                $(".phoneNumForFind").val(phone);
+
+
+                function updateMS(ms) {
+                    $(".sendCode").html(ms + "秒后可发");
+                }
+                updateMS(diff);
+
+                var timeout = setInterval(function () {
+                    diff -= 1;
+                    updateMS(diff);
+
+                    if(diff===0){
+                        clearTimeout(timeout);
+                        $(".sendCode").attr("disabled", false);
+                    }
+                },1000);
+
+            }
+        },
+        createTimeOut : function(dom){
+            var time = 120;
+            var el = dom ;
+            if(typeof dom === 'string'){
+                el = $(dom);
+            }
+
+            if(!el){
+                el = $('.sendCode');
+            }
+
+            el.attr("disabled", true);
+            function updateMS(ms) {
+                el.html(ms + "秒后可发");
+            }
+            updateMS(time);
+            var timeout = setInterval(function () {
+                time -= 1;
+                updateMS(time);
+
+                if(time===0){
+                    clearTimeout(timeout);
+                    el.attr("disabled", false);
+                }
+            },1000);
+
+
+
+        }
+    };
+
+
+
+    self.cache = cache;
+})(this);
+
+!(function(){
+    var btn = $('.sendCode');
+
+    if(btn){
+        var cacheName = btn.attr('data-code');
+        cache.initCode(cacheName);
+    }
+
+})();

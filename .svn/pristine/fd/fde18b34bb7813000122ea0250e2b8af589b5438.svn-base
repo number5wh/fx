@@ -1,0 +1,264 @@
+---------------------------------------------------------------
+[ 2019-03-29T09:04:29+08:00 ] 127.0.0.1 POST /manage/login/auth.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.059651s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `sysadmin` [ RunTime:0.125636s ]
+[ sql ] [ SQL ] SELECT `salt` FROM `sysadmin` WHERE  `username` = 'admin' LIMIT 1 [ RunTime:0.007304s ]
+[ sql ] [ SQL ] SELECT * FROM `sysadmin` WHERE  `username` = 'admin'  AND `password` = '81255cb0dca1a5f304328a70ac85dcbd' LIMIT 1 [ RunTime:0.011979s ]
+---------------------------------------------------------------
+[ 2019-03-29T09:04:30+08:00 ] 127.0.0.1 GET /manage/index/main.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.010561s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `message` [ RunTime:0.031176s ]
+[ sql ] [ SQL ] SELECT * FROM `message` ORDER BY `id` DESC [ RunTime:0.000960s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `player` [ RunTime:0.020261s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `player` LIMIT 1 [ RunTime:0.013705s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `player` WHERE  (   datediff(`regtime`,NOW())=0  ) LIMIT 1 [ RunTime:0.014636s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `player` WHERE  (   datediff(`regtime`,NOW())=-1  ) LIMIT 1 [ RunTime:0.001145s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `playerorder` [ RunTime:0.013292s ]
+[ sql ] [ SQL ] SELECT SUM(total_tax) AS tp_sum FROM `playerorder` LIMIT 1 [ RunTime:0.026103s ]
+[ sql ] [ SQL ] SELECT SUM(total_tax) AS tp_sum FROM `playerorder` LIMIT 1 [ RunTime:0.004487s ]
+[ sql ] [ SQL ] SELECT SUM(total_tax) AS tp_sum FROM `playerorder` WHERE  (   datediff(`createtime`,NOW())=-1  ) LIMIT 1 [ RunTime:0.004423s ]
+[ sql ] [ SQL ] SELECT SUM(total_tax) AS tp_sum FROM `playerorder` WHERE  (   datediff(`createtime`,NOW())=0  ) LIMIT 1 [ RunTime:0.004330s ]
+---------------------------------------------------------------
+[ 2019-03-29T09:04:32+08:00 ] 127.0.0.1 GET /manage/settle/settlepayment.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.010648s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `checklog` [ RunTime:0.018320s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`status` = 2 LIMIT 1 [ RunTime:0.028628s ]
+[ sql ] [ SQL ] SELECT `a`.`id`,`a`.`orderid`,`a`.`proxy_id`,`a`.`tax`,`a`.`alipay`,`a`.`name`,`a`.`bank`,`a`.`cardaccount`,`a`.`alipay_name`,`a`.`amount`,`a`.`checktype`,`a`.`status`,`a`.`addtime`,`a`.`createtime`,`a`.`descript`,`c`.`nickname`,`c`.`username`,`a`.`info`,`c`.`password` FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`status` = 2 LIMIT 0,10 [ RunTime:0.001155s ]
+---------------------------------------------------------------
+[ 2019-03-29T09:04:39+08:00 ] 127.0.0.1 GET /manage/settle/outputexcel.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.002108s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `checklog` [ RunTime:0.001143s ]
+[ sql ] [ SQL ] SELECT `a`.`id`,`a`.`orderid`,`a`.`proxy_id`,`a`.`amount`,`a`.`checktype`,`a`.`status`,`a`.`addtime`,`a`.`createtime`,`a`.`descript`,`c`.`nickname`,`c`.`username`,`a`.`info` FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`status` = 2 [ RunTime:0.001013s ]
+---------------------------------------------------------------
+[ 2019-03-29T09:06:59+08:00 ] 127.0.0.1 GET /manage/settle/getbankinfo.html?id=WZ0000002
+[ sql ] [ DB ] CONNECT:[ UseTime:0.010943s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `bankinfo` [ RunTime:0.001192s ]
+[ sql ] [ SQL ] SELECT * FROM `bankinfo` WHERE  `proxy_id` = 'WZ0000002' LIMIT 1 [ RunTime:0.000408s ]
+---------------------------------------------------------------
+[ 2019-03-29T09:07:23+08:00 ] 127.0.0.1 GET /manage/settle/settlementlog.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.011212s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `checklog` [ RunTime:0.001362s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  (   a.proxy_id in (select `code` from proxy) ) LIMIT 1 [ RunTime:0.014617s ]
+[ sql ] [ SQL ] SELECT `a`.`id`,`a`.`orderid`,`a`.`alipay`,`a`.`tax`,`a`.`name`,`a`.`bank`,`a`.`cardaccount`,`a`.`alipay_name`,`a`.`proxy_id`,`a`.`amount`,`a`.`checktype`,`a`.`status`,`a`.`addtime`,`a`.`createtime`,`a`.`descript`,`c`.`nickname`,`c`.`username`,`a`.`info` FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  (   a.proxy_id in (select `code` from proxy) ) LIMIT 0,10 [ RunTime:0.000603s ]
+---------------------------------------------------------------
+[ 2019-03-29T09:07:29+08:00 ] 127.0.0.1 POST /manage/settle/permitOrder
+[ sql ] [ DB ] CONNECT:[ UseTime:0.005077s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `checklog` [ RunTime:0.001318s ]
+[ sql ] [ SQL ] UPDATE `checklog`  SET `status`=2,`checktime`='2019-03-29 09:07:29',`checkuser`='管理员',`info`='您的申请已通过审核'  WHERE  `id` = 8 [ RunTime:0.083429s ]
+[ sql ] [ SQL ] UPDATE `checklog`  SET `status`=2,`checktime`='2019-03-29 09:07:29',`checkuser`='管理员',`info`='您的申请已通过审核'  WHERE  `id` = 9 [ RunTime:0.005268s ]
+[ sql ] [ SQL ] UPDATE `checklog`  SET `status`=2,`checktime`='2019-03-29 09:07:29',`checkuser`='管理员',`info`='您的申请已通过审核'  WHERE  `id` = 10 [ RunTime:0.005524s ]
+---------------------------------------------------------------
+[ 2019-03-29T09:07:29+08:00 ] 127.0.0.1 GET /manage/settle/settlementlog.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.011217s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `checklog` [ RunTime:0.001284s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  (   a.proxy_id in (select `code` from proxy) ) LIMIT 1 [ RunTime:0.001423s ]
+[ sql ] [ SQL ] SELECT `a`.`id`,`a`.`orderid`,`a`.`alipay`,`a`.`tax`,`a`.`name`,`a`.`bank`,`a`.`cardaccount`,`a`.`alipay_name`,`a`.`proxy_id`,`a`.`amount`,`a`.`checktype`,`a`.`status`,`a`.`addtime`,`a`.`createtime`,`a`.`descript`,`c`.`nickname`,`c`.`username`,`a`.`info` FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  (   a.proxy_id in (select `code` from proxy) ) LIMIT 0,10 [ RunTime:0.000608s ]
+---------------------------------------------------------------
+[ 2019-03-29T09:07:33+08:00 ] 127.0.0.1 GET /manage/settle/settlepayment.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.011985s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `checklog` [ RunTime:0.001456s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`status` = 2 LIMIT 1 [ RunTime:0.000906s ]
+[ sql ] [ SQL ] SELECT `a`.`id`,`a`.`orderid`,`a`.`proxy_id`,`a`.`tax`,`a`.`alipay`,`a`.`name`,`a`.`bank`,`a`.`cardaccount`,`a`.`alipay_name`,`a`.`amount`,`a`.`checktype`,`a`.`status`,`a`.`addtime`,`a`.`createtime`,`a`.`descript`,`c`.`nickname`,`c`.`username`,`a`.`info`,`c`.`password` FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`status` = 2 LIMIT 0,10 [ RunTime:0.000513s ]
+---------------------------------------------------------------
+[ 2019-03-29T09:07:34+08:00 ] 127.0.0.1 GET /manage/settle/getbankinfo.html?id=WZ0000002
+[ sql ] [ DB ] CONNECT:[ UseTime:0.011834s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `bankinfo` [ RunTime:0.001313s ]
+[ sql ] [ SQL ] SELECT * FROM `bankinfo` WHERE  `proxy_id` = 'WZ0000002' LIMIT 1 [ RunTime:0.000640s ]
+---------------------------------------------------------------
+[ 2019-03-29T09:07:37+08:00 ] 127.0.0.1 GET /manage/settle/getbankinfo.html?id=WZ0000002
+[ sql ] [ DB ] CONNECT:[ UseTime:0.011738s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `bankinfo` [ RunTime:0.001311s ]
+[ sql ] [ SQL ] SELECT * FROM `bankinfo` WHERE  `proxy_id` = 'WZ0000002' LIMIT 1 [ RunTime:0.000377s ]
+---------------------------------------------------------------
+[ 2019-03-29T09:08:49+08:00 ] 127.0.0.1 GET /manage/settle/getbankinfo.html?id=WZ0000002
+[ sql ] [ DB ] CONNECT:[ UseTime:0.011619s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `bankinfo` [ RunTime:0.001815s ]
+[ sql ] [ SQL ] SELECT * FROM `bankinfo` WHERE  `proxy_id` = 'WZ0000002' LIMIT 1 [ RunTime:0.000585s ]
+---------------------------------------------------------------
+[ 2019-03-29T09:08:52+08:00 ] 127.0.0.1 GET /manage/settle/getbankinfo.html?id=WZ0000002
+[ sql ] [ DB ] CONNECT:[ UseTime:0.011518s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `bankinfo` [ RunTime:0.001231s ]
+[ sql ] [ SQL ] SELECT * FROM `bankinfo` WHERE  `proxy_id` = 'WZ0000002' LIMIT 1 [ RunTime:0.000397s ]
+---------------------------------------------------------------
+[ 2019-03-29T09:08:54+08:00 ] 127.0.0.1 GET /manage/settle/getbankinfo.html?id=WZ0000002
+[ sql ] [ DB ] CONNECT:[ UseTime:0.010816s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `bankinfo` [ RunTime:0.001249s ]
+[ sql ] [ SQL ] SELECT * FROM `bankinfo` WHERE  `proxy_id` = 'WZ0000002' LIMIT 1 [ RunTime:0.000402s ]
+---------------------------------------------------------------
+[ 2019-03-29T09:09:02+08:00 ] 127.0.0.1 GET /manage/settle/outputexcel.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.001973s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `checklog` [ RunTime:0.001338s ]
+[ sql ] [ SQL ] SELECT `a`.`id`,`a`.`orderid`,`a`.`proxy_id`,`a`.`amount`,`a`.`checktype`,`a`.`status`,`a`.`addtime`,`a`.`createtime`,`a`.`descript`,`c`.`nickname`,`c`.`username`,`a`.`info` FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`status` = 2 [ RunTime:0.000971s ]
+---------------------------------------------------------------
+[ 2019-03-29T09:17:23+08:00 ] 127.0.0.1 GET /manage/settle/settlepayment.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.001812s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `checklog` [ RunTime:0.001777s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`status` = 2 LIMIT 1 [ RunTime:0.001077s ]
+[ sql ] [ SQL ] SELECT `a`.`id`,`a`.`orderid`,`a`.`proxy_id`,`a`.`tax`,`a`.`alipay`,`a`.`name`,`a`.`bank`,`a`.`cardaccount`,`a`.`alipay_name`,`a`.`amount`,`a`.`checktype`,`a`.`status`,`a`.`addtime`,`a`.`createtime`,`a`.`descript`,`c`.`nickname`,`c`.`username`,`a`.`info`,`c`.`password` FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`status` = 2 LIMIT 0,10 [ RunTime:0.000629s ]
+---------------------------------------------------------------
+[ 2019-03-29T09:17:23+08:00 ] 127.0.0.1 GET /manage/settle/settlepayment.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.010172s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `checklog` [ RunTime:0.001165s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`status` = 2 LIMIT 1 [ RunTime:0.000846s ]
+[ sql ] [ SQL ] SELECT `a`.`id`,`a`.`orderid`,`a`.`proxy_id`,`a`.`tax`,`a`.`alipay`,`a`.`name`,`a`.`bank`,`a`.`cardaccount`,`a`.`alipay_name`,`a`.`amount`,`a`.`checktype`,`a`.`status`,`a`.`addtime`,`a`.`createtime`,`a`.`descript`,`c`.`nickname`,`c`.`username`,`a`.`info`,`c`.`password` FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`status` = 2 LIMIT 0,10 [ RunTime:0.000447s ]
+---------------------------------------------------------------
+[ 2019-03-29T09:21:50+08:00 ] 127.0.0.1 GET /manage/settle/settlepayment.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.010735s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `checklog` [ RunTime:0.001656s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`status` = 2 LIMIT 1 [ RunTime:0.001163s ]
+[ sql ] [ SQL ] SELECT `a`.`id`,`a`.`orderid`,`a`.`proxy_id`,`a`.`tax`,`a`.`alipay`,`a`.`name`,`a`.`bank`,`a`.`cardaccount`,`a`.`alipay_name`,`a`.`amount`,`a`.`checktype`,`a`.`status`,`a`.`addtime`,`a`.`createtime`,`a`.`descript`,`c`.`nickname`,`c`.`username`,`a`.`info`,`c`.`password` FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`status` = 2 LIMIT 0,10 [ RunTime:0.000689s ]
+---------------------------------------------------------------
+[ 2019-03-29T09:21:50+08:00 ] 127.0.0.1 GET /manage/settle/settlepayment.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.001259s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `checklog` [ RunTime:0.000671s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`status` = 2 LIMIT 1 [ RunTime:0.000294s ]
+[ sql ] [ SQL ] SELECT `a`.`id`,`a`.`orderid`,`a`.`proxy_id`,`a`.`tax`,`a`.`alipay`,`a`.`name`,`a`.`bank`,`a`.`cardaccount`,`a`.`alipay_name`,`a`.`amount`,`a`.`checktype`,`a`.`status`,`a`.`addtime`,`a`.`createtime`,`a`.`descript`,`c`.`nickname`,`c`.`username`,`a`.`info`,`c`.`password` FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`status` = 2 LIMIT 0,10 [ RunTime:0.000358s ]
+---------------------------------------------------------------
+[ 2019-03-29T09:21:50+08:00 ] 127.0.0.1 GET /manage/settle/settlepayment.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.001214s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `checklog` [ RunTime:0.000740s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`status` = 2 LIMIT 1 [ RunTime:0.000988s ]
+[ sql ] [ SQL ] SELECT `a`.`id`,`a`.`orderid`,`a`.`proxy_id`,`a`.`tax`,`a`.`alipay`,`a`.`name`,`a`.`bank`,`a`.`cardaccount`,`a`.`alipay_name`,`a`.`amount`,`a`.`checktype`,`a`.`status`,`a`.`addtime`,`a`.`createtime`,`a`.`descript`,`c`.`nickname`,`c`.`username`,`a`.`info`,`c`.`password` FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`status` = 2 LIMIT 0,10 [ RunTime:0.000401s ]
+---------------------------------------------------------------
+[ 2019-03-29T09:21:55+08:00 ] 127.0.0.1 POST /manage/settle/finishorder
+[ sql ] [ DB ] CONNECT:[ UseTime:0.011104s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `checklog` [ RunTime:0.000738s ]
+[ sql ] [ SQL ] UPDATE `checklog`  SET `status`=4,`checktime`='2019-03-29 09:21:55',`checkuser`='管理员',`info`='qqqq'  WHERE  `id` = 4 [ RunTime:0.031359s ]
+---------------------------------------------------------------
+[ 2019-03-29T09:21:55+08:00 ] 127.0.0.1 GET /manage/settle/settlepayment.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.001373s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `checklog` [ RunTime:0.000733s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`status` = 2 LIMIT 1 [ RunTime:0.000399s ]
+[ sql ] [ SQL ] SELECT `a`.`id`,`a`.`orderid`,`a`.`proxy_id`,`a`.`tax`,`a`.`alipay`,`a`.`name`,`a`.`bank`,`a`.`cardaccount`,`a`.`alipay_name`,`a`.`amount`,`a`.`checktype`,`a`.`status`,`a`.`addtime`,`a`.`createtime`,`a`.`descript`,`c`.`nickname`,`c`.`username`,`a`.`info`,`c`.`password` FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`status` = 2 LIMIT 0,10 [ RunTime:0.000492s ]
+---------------------------------------------------------------
+[ 2019-03-29T09:22:04+08:00 ] 127.0.0.1 GET /manage/settle/settlementlog.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.011243s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `checklog` [ RunTime:0.001291s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  (   a.proxy_id in (select `code` from proxy) ) LIMIT 1 [ RunTime:0.001477s ]
+[ sql ] [ SQL ] SELECT `a`.`id`,`a`.`orderid`,`a`.`alipay`,`a`.`tax`,`a`.`name`,`a`.`bank`,`a`.`cardaccount`,`a`.`alipay_name`,`a`.`proxy_id`,`a`.`amount`,`a`.`checktype`,`a`.`status`,`a`.`addtime`,`a`.`createtime`,`a`.`descript`,`c`.`nickname`,`c`.`username`,`a`.`info` FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  (   a.proxy_id in (select `code` from proxy) ) LIMIT 0,10 [ RunTime:0.000575s ]
+---------------------------------------------------------------
+[ 2019-03-29T09:22:47+08:00 ] 127.0.0.1 GET /manage/settle/settlepayment.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.011200s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `checklog` [ RunTime:0.001894s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`status` = 2 LIMIT 1 [ RunTime:0.000991s ]
+[ sql ] [ SQL ] SELECT `a`.`id`,`a`.`orderid`,`a`.`proxy_id`,`a`.`tax`,`a`.`alipay`,`a`.`name`,`a`.`bank`,`a`.`cardaccount`,`a`.`alipay_name`,`a`.`amount`,`a`.`checktype`,`a`.`status`,`a`.`addtime`,`a`.`createtime`,`a`.`descript`,`c`.`nickname`,`c`.`username`,`a`.`info`,`c`.`password` FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`status` = 2 LIMIT 0,10 [ RunTime:0.000496s ]
+---------------------------------------------------------------
+[ 2019-03-29T09:22:47+08:00 ] 127.0.0.1 GET /manage/settle/settlepayment.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.001366s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `checklog` [ RunTime:0.000832s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`status` = 2 LIMIT 1 [ RunTime:0.000387s ]
+[ sql ] [ SQL ] SELECT `a`.`id`,`a`.`orderid`,`a`.`proxy_id`,`a`.`tax`,`a`.`alipay`,`a`.`name`,`a`.`bank`,`a`.`cardaccount`,`a`.`alipay_name`,`a`.`amount`,`a`.`checktype`,`a`.`status`,`a`.`addtime`,`a`.`createtime`,`a`.`descript`,`c`.`nickname`,`c`.`username`,`a`.`info`,`c`.`password` FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`status` = 2 LIMIT 0,10 [ RunTime:0.000446s ]
+---------------------------------------------------------------
+[ 2019-03-29T09:22:58+08:00 ] 127.0.0.1 POST /manage/settle/finishorder
+[ sql ] [ DB ] CONNECT:[ UseTime:0.001273s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `checklog` [ RunTime:0.000787s ]
+[ sql ] [ SQL ] UPDATE `checklog`  SET `status`=4,`checktime`='2019-03-29 09:22:57',`checkuser`='管理员',`info`='this is ok'  WHERE  `id` = 8 [ RunTime:0.031196s ]
+[ sql ] [ SQL ] UPDATE `checklog`  SET `status`=4,`checktime`='2019-03-29 09:22:58',`checkuser`='管理员',`info`='this is ok'  WHERE  `id` = 9 [ RunTime:0.006345s ]
+---------------------------------------------------------------
+[ 2019-03-29T09:22:58+08:00 ] 127.0.0.1 GET /manage/settle/settlepayment.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.010456s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `checklog` [ RunTime:0.001281s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`status` = 2 LIMIT 1 [ RunTime:0.000426s ]
+[ sql ] [ SQL ] SELECT `a`.`id`,`a`.`orderid`,`a`.`proxy_id`,`a`.`tax`,`a`.`alipay`,`a`.`name`,`a`.`bank`,`a`.`cardaccount`,`a`.`alipay_name`,`a`.`amount`,`a`.`checktype`,`a`.`status`,`a`.`addtime`,`a`.`createtime`,`a`.`descript`,`c`.`nickname`,`c`.`username`,`a`.`info`,`c`.`password` FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`status` = 2 LIMIT 0,10 [ RunTime:0.000487s ]
+---------------------------------------------------------------
+[ 2019-03-29T09:23:28+08:00 ] 127.0.0.1 POST /manage/settle/finishorder
+[ sql ] [ DB ] CONNECT:[ UseTime:0.011271s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `checklog` [ RunTime:0.000756s ]
+[ sql ] [ SQL ] UPDATE `checklog`  SET `status`=4,`checktime`='2019-03-29 09:23:28',`checkuser`='管理员',`info`='okokok'  WHERE  `id` = 10 [ RunTime:0.006118s ]
+---------------------------------------------------------------
+[ 2019-03-29T09:23:28+08:00 ] 127.0.0.1 GET /manage/settle/settlepayment.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.010858s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `checklog` [ RunTime:0.001533s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`status` = 2 LIMIT 1 [ RunTime:0.000428s ]
+[ sql ] [ SQL ] SELECT `a`.`id`,`a`.`orderid`,`a`.`proxy_id`,`a`.`tax`,`a`.`alipay`,`a`.`name`,`a`.`bank`,`a`.`cardaccount`,`a`.`alipay_name`,`a`.`amount`,`a`.`checktype`,`a`.`status`,`a`.`addtime`,`a`.`createtime`,`a`.`descript`,`c`.`nickname`,`c`.`username`,`a`.`info`,`c`.`password` FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`status` = 2 LIMIT 0,10 [ RunTime:0.000457s ]
+---------------------------------------------------------------
+[ 2019-03-29T09:23:34+08:00 ] 127.0.0.1 GET /manage/settle/settlementlog.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.010500s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `checklog` [ RunTime:0.001230s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  (   a.proxy_id in (select `code` from proxy) ) LIMIT 1 [ RunTime:0.000982s ]
+[ sql ] [ SQL ] SELECT `a`.`id`,`a`.`orderid`,`a`.`alipay`,`a`.`tax`,`a`.`name`,`a`.`bank`,`a`.`cardaccount`,`a`.`alipay_name`,`a`.`proxy_id`,`a`.`amount`,`a`.`checktype`,`a`.`status`,`a`.`addtime`,`a`.`createtime`,`a`.`descript`,`c`.`nickname`,`c`.`username`,`a`.`info` FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  (   a.proxy_id in (select `code` from proxy) ) LIMIT 0,10 [ RunTime:0.000556s ]
+---------------------------------------------------------------
+[ 2019-03-29T09:24:25+08:00 ] 127.0.0.1 GET /manage/settle/settlementlog.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.010899s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `checklog` [ RunTime:0.000805s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  (   a.proxy_id in (select `code` from proxy) ) LIMIT 1 [ RunTime:0.001094s ]
+[ sql ] [ SQL ] SELECT `a`.`id`,`a`.`orderid`,`a`.`alipay`,`a`.`tax`,`a`.`name`,`a`.`bank`,`a`.`cardaccount`,`a`.`alipay_name`,`a`.`proxy_id`,`a`.`amount`,`a`.`checktype`,`a`.`status`,`a`.`addtime`,`a`.`createtime`,`a`.`descript`,`c`.`nickname`,`c`.`username`,`a`.`info` FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  (   a.proxy_id in (select `code` from proxy) ) LIMIT 0,10 [ RunTime:0.000505s ]
+---------------------------------------------------------------
+[ 2019-03-29T09:24:30+08:00 ] 127.0.0.1 POST /manage/settle/permitOrder
+[ sql ] [ DB ] CONNECT:[ UseTime:0.011296s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `checklog` [ RunTime:0.000786s ]
+[ sql ] [ SQL ] UPDATE `checklog`  SET `status`=2,`checktime`='2019-03-29 09:24:30',`checkuser`='管理员',`info`='您的申请已通过审核'  WHERE  `id` = 8 [ RunTime:0.023070s ]
+[ sql ] [ SQL ] UPDATE `checklog`  SET `status`=2,`checktime`='2019-03-29 09:24:30',`checkuser`='管理员',`info`='您的申请已通过审核'  WHERE  `id` = 9 [ RunTime:0.004884s ]
+[ sql ] [ SQL ] UPDATE `checklog`  SET `status`=2,`checktime`='2019-03-29 09:24:30',`checkuser`='管理员',`info`='您的申请已通过审核'  WHERE  `id` = 10 [ RunTime:0.005327s ]
+---------------------------------------------------------------
+[ 2019-03-29T09:24:31+08:00 ] 127.0.0.1 GET /manage/settle/settlementlog.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.010426s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `checklog` [ RunTime:0.000786s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  (   a.proxy_id in (select `code` from proxy) ) LIMIT 1 [ RunTime:0.000947s ]
+[ sql ] [ SQL ] SELECT `a`.`id`,`a`.`orderid`,`a`.`alipay`,`a`.`tax`,`a`.`name`,`a`.`bank`,`a`.`cardaccount`,`a`.`alipay_name`,`a`.`proxy_id`,`a`.`amount`,`a`.`checktype`,`a`.`status`,`a`.`addtime`,`a`.`createtime`,`a`.`descript`,`c`.`nickname`,`c`.`username`,`a`.`info` FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  (   a.proxy_id in (select `code` from proxy) ) LIMIT 0,10 [ RunTime:0.000633s ]
+---------------------------------------------------------------
+[ 2019-03-29T09:24:33+08:00 ] 127.0.0.1 GET /manage/settle/settlepayment.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.011110s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `checklog` [ RunTime:0.000855s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`status` = 2 LIMIT 1 [ RunTime:0.000443s ]
+[ sql ] [ SQL ] SELECT `a`.`id`,`a`.`orderid`,`a`.`proxy_id`,`a`.`tax`,`a`.`alipay`,`a`.`name`,`a`.`bank`,`a`.`cardaccount`,`a`.`alipay_name`,`a`.`amount`,`a`.`checktype`,`a`.`status`,`a`.`addtime`,`a`.`createtime`,`a`.`descript`,`c`.`nickname`,`c`.`username`,`a`.`info`,`c`.`password` FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`status` = 2 LIMIT 0,10 [ RunTime:0.000580s ]
+---------------------------------------------------------------
+[ 2019-03-29T09:24:39+08:00 ] 127.0.0.1 GET /manage/settle/settlepayment.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.010737s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `checklog` [ RunTime:0.000840s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`status` = 2 LIMIT 1 [ RunTime:0.000433s ]
+[ sql ] [ SQL ] SELECT `a`.`id`,`a`.`orderid`,`a`.`proxy_id`,`a`.`tax`,`a`.`alipay`,`a`.`name`,`a`.`bank`,`a`.`cardaccount`,`a`.`alipay_name`,`a`.`amount`,`a`.`checktype`,`a`.`status`,`a`.`addtime`,`a`.`createtime`,`a`.`descript`,`c`.`nickname`,`c`.`username`,`a`.`info`,`c`.`password` FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`status` = 2 LIMIT 0,10 [ RunTime:0.000526s ]
+---------------------------------------------------------------
+[ 2019-03-29T09:24:47+08:00 ] 127.0.0.1 POST /manage/settle/finishorder
+[ sql ] [ DB ] CONNECT:[ UseTime:0.001904s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `checklog` [ RunTime:0.000848s ]
+[ sql ] [ SQL ] UPDATE `checklog`  SET `status`=4,`checktime`='2019-03-29 09:24:47',`checkuser`='管理员',`info`='okokok的'  WHERE  `id` = 8 [ RunTime:0.020987s ]
+[ sql ] [ SQL ] UPDATE `checklog`  SET `status`=4,`checktime`='2019-03-29 09:24:47',`checkuser`='管理员',`info`='okokok的'  WHERE  `id` = 9 [ RunTime:0.004776s ]
+---------------------------------------------------------------
+[ 2019-03-29T09:24:48+08:00 ] 127.0.0.1 GET /manage/settle/settlepayment.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.010649s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `checklog` [ RunTime:0.000794s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`status` = 2 LIMIT 1 [ RunTime:0.000408s ]
+[ sql ] [ SQL ] SELECT `a`.`id`,`a`.`orderid`,`a`.`proxy_id`,`a`.`tax`,`a`.`alipay`,`a`.`name`,`a`.`bank`,`a`.`cardaccount`,`a`.`alipay_name`,`a`.`amount`,`a`.`checktype`,`a`.`status`,`a`.`addtime`,`a`.`createtime`,`a`.`descript`,`c`.`nickname`,`c`.`username`,`a`.`info`,`c`.`password` FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`status` = 2 LIMIT 0,10 [ RunTime:0.000465s ]
+---------------------------------------------------------------
+[ 2019-03-29T09:31:08+08:00 ] 127.0.0.1 GET /manage/settle/settlepayment.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.002126s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `checklog` [ RunTime:0.001195s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`status` = 2 LIMIT 1 [ RunTime:0.000488s ]
+[ sql ] [ SQL ] SELECT `a`.`id`,`a`.`orderid`,`a`.`proxy_id`,`a`.`tax`,`a`.`alipay`,`a`.`name`,`a`.`bank`,`a`.`cardaccount`,`a`.`alipay_name`,`a`.`amount`,`a`.`checktype`,`a`.`status`,`a`.`addtime`,`a`.`createtime`,`a`.`descript`,`c`.`nickname`,`c`.`username`,`a`.`info`,`c`.`password` FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`status` = 2 LIMIT 0,10 [ RunTime:0.000498s ]
+---------------------------------------------------------------
+[ 2019-03-29T09:31:09+08:00 ] 127.0.0.1 GET /manage/settle/settlepayment.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.001262s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `checklog` [ RunTime:0.000624s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`status` = 2 LIMIT 1 [ RunTime:0.000379s ]
+[ sql ] [ SQL ] SELECT `a`.`id`,`a`.`orderid`,`a`.`proxy_id`,`a`.`tax`,`a`.`alipay`,`a`.`name`,`a`.`bank`,`a`.`cardaccount`,`a`.`alipay_name`,`a`.`amount`,`a`.`checktype`,`a`.`status`,`a`.`addtime`,`a`.`createtime`,`a`.`descript`,`c`.`nickname`,`c`.`username`,`a`.`info`,`c`.`password` FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`status` = 2 LIMIT 0,10 [ RunTime:0.000398s ]
+---------------------------------------------------------------
+[ 2019-03-29T09:31:19+08:00 ] 127.0.0.1 POST /manage/settle/settlePayment
+[ sql ] [ DB ] CONNECT:[ UseTime:0.011192s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `checklog` [ RunTime:0.000752s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  ( `addtime` > '1551715200' AND `addtime` < '1552924800' )  AND `a`.`status` = 2 LIMIT 1 [ RunTime:0.000437s ]
+[ sql ] [ SQL ] SELECT `a`.`id`,`a`.`orderid`,`a`.`proxy_id`,`a`.`tax`,`a`.`alipay`,`a`.`name`,`a`.`bank`,`a`.`cardaccount`,`a`.`alipay_name`,`a`.`amount`,`a`.`checktype`,`a`.`status`,`a`.`addtime`,`a`.`createtime`,`a`.`descript`,`c`.`nickname`,`c`.`username`,`a`.`info`,`c`.`password` FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  ( `addtime` > '1551715200' AND `addtime` < '1552924800' )  AND `a`.`status` = 2 LIMIT 0,10 [ RunTime:0.000473s ]
+---------------------------------------------------------------
+[ 2019-03-29T09:31:23+08:00 ] 127.0.0.1 POST /manage/settle/settlePayment
+[ sql ] [ DB ] CONNECT:[ UseTime:0.011031s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `checklog` [ RunTime:0.000799s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  ( `addtime` > '1551715200' AND `addtime` < '1553788800' )  AND `a`.`status` = 2 LIMIT 1 [ RunTime:0.000392s ]
+[ sql ] [ SQL ] SELECT `a`.`id`,`a`.`orderid`,`a`.`proxy_id`,`a`.`tax`,`a`.`alipay`,`a`.`name`,`a`.`bank`,`a`.`cardaccount`,`a`.`alipay_name`,`a`.`amount`,`a`.`checktype`,`a`.`status`,`a`.`addtime`,`a`.`createtime`,`a`.`descript`,`c`.`nickname`,`c`.`username`,`a`.`info`,`c`.`password` FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  ( `addtime` > '1551715200' AND `addtime` < '1553788800' )  AND `a`.`status` = 2 LIMIT 0,10 [ RunTime:0.000471s ]
+---------------------------------------------------------------
+[ 2019-03-29T09:31:26+08:00 ] 127.0.0.1 POST /manage/settle/settlePayment
+[ sql ] [ DB ] CONNECT:[ UseTime:0.011457s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `checklog` [ RunTime:0.000862s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  ( `addtime` > '1551715200' AND `addtime` < '1553788800' )  AND `a`.`status` = 2 LIMIT 1 [ RunTime:0.000426s ]
+[ sql ] [ SQL ] SELECT `a`.`id`,`a`.`orderid`,`a`.`proxy_id`,`a`.`tax`,`a`.`alipay`,`a`.`name`,`a`.`bank`,`a`.`cardaccount`,`a`.`alipay_name`,`a`.`amount`,`a`.`checktype`,`a`.`status`,`a`.`addtime`,`a`.`createtime`,`a`.`descript`,`c`.`nickname`,`c`.`username`,`a`.`info`,`c`.`password` FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  ( `addtime` > '1551715200' AND `addtime` < '1553788800' )  AND `a`.`status` = 2 LIMIT 0,10 [ RunTime:0.000510s ]
+---------------------------------------------------------------
+[ 2019-03-29T09:31:36+08:00 ] 127.0.0.1 POST /manage/settle/settlePayment
+[ sql ] [ DB ] CONNECT:[ UseTime:0.001341s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `checklog` [ RunTime:0.000746s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  ( `addtime` > '1551715200' AND `addtime` < '1553788800' )  AND `a`.`status` = 2 LIMIT 1 [ RunTime:0.000405s ]
+[ sql ] [ SQL ] SELECT `a`.`id`,`a`.`orderid`,`a`.`proxy_id`,`a`.`tax`,`a`.`alipay`,`a`.`name`,`a`.`bank`,`a`.`cardaccount`,`a`.`alipay_name`,`a`.`amount`,`a`.`checktype`,`a`.`status`,`a`.`addtime`,`a`.`createtime`,`a`.`descript`,`c`.`nickname`,`c`.`username`,`a`.`info`,`c`.`password` FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  ( `addtime` > '1551715200' AND `addtime` < '1553788800' )  AND `a`.`status` = 2 LIMIT 0,10 [ RunTime:0.000470s ]
+---------------------------------------------------------------
+[ 2019-03-29T09:31:49+08:00 ] 127.0.0.1 POST /manage/settle/settlePayment
+[ sql ] [ DB ] CONNECT:[ UseTime:0.010354s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `checklog` [ RunTime:0.000664s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`status` = 2 LIMIT 1 [ RunTime:0.000436s ]
+[ sql ] [ SQL ] SELECT `a`.`id`,`a`.`orderid`,`a`.`proxy_id`,`a`.`tax`,`a`.`alipay`,`a`.`name`,`a`.`bank`,`a`.`cardaccount`,`a`.`alipay_name`,`a`.`amount`,`a`.`checktype`,`a`.`status`,`a`.`addtime`,`a`.`createtime`,`a`.`descript`,`c`.`nickname`,`c`.`username`,`a`.`info`,`c`.`password` FROM `checklog` `a` LEFT JOIN `proxy` `c` ON `a`.`proxy_id`=`c`.`code` WHERE  `a`.`status` = 2 LIMIT 0,10 [ RunTime:0.000441s ]

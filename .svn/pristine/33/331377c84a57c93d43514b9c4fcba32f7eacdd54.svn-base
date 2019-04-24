@@ -1,0 +1,80 @@
+---------------------------------------------------------------
+[ 2019-04-17T14:32:53+08:00 ] 127.0.0.1 POST /admin/login/auth.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.006245s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `proxy` [ RunTime:0.063174s ]
+[ sql ] [ SQL ] SELECT `salt` FROM `proxy` WHERE  `username` = 'admin' LIMIT 1 [ RunTime:0.000727s ]
+[ sql ] [ SQL ] SELECT * FROM `proxy` WHERE  `username` = 'admin'  AND `password` = '72d1ad20e681c6d07f9e9188a084e183' LIMIT 1 [ RunTime:0.000478s ]
+[ sql ] [ SQL ] UPDATE `proxy`  SET `last_login`=now(),`logtimes`=logtimes+1,`last_ip`='127.0.0.1'  WHERE  `id` = 1 [ RunTime:0.118750s ]
+---------------------------------------------------------------
+[ 2019-04-17T14:32:53+08:00 ] 127.0.0.1 GET /admin/index/index.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.011416s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `proxy` [ RunTime:0.002774s ]
+[ sql ] [ SQL ] SELECT `bind_mobile` FROM `proxy` WHERE  `code` = '1' LIMIT 1 [ RunTime:0.000965s ]
+---------------------------------------------------------------
+[ 2019-04-17T14:32:53+08:00 ] 127.0.0.1 GET /admin/index/main.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.002427s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `message` [ RunTime:0.037872s ]
+[ sql ] [ SQL ] SELECT * FROM `message` ORDER BY `id` DESC [ RunTime:0.000403s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `player` [ RunTime:0.024889s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `player` WHERE  `proxy_id` = '1' OR `parent_id` = '1' LIMIT 1 [ RunTime:0.002188s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `player` WHERE  (  proxy_id='1' and datediff(`regtime`,NOW())=0  ) OR (  parent_id='1' and datediff(`regtime`,NOW())=0  ) LIMIT 1 [ RunTime:0.021821s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `player` WHERE  (  proxy_id='1' and datediff(`regtime`,NOW())=-1  ) OR (  parent_id='1' and datediff(`regtime`,NOW())=-1  ) LIMIT 1 [ RunTime:0.001471s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `playerorder` [ RunTime:0.016576s ]
+[ sql ] [ SQL ] SELECT SUM(a.total_tax) AS tp_sum FROM `playerorder` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (  a.proxy_id='1'   ) OR (  a.parent_id='1'  ) LIMIT 1 [ RunTime:0.097818s ]
+[ sql ] [ SQL ] SELECT `a`.`total_tax`,`b`.`percent`,`b`.`code` FROM `playerorder` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (  a.proxy_id='1' ) OR (  a.parent_id='1' ) [ RunTime:0.013761s ]
+[ sql ] [ SQL ] SELECT * FROM `playerorder` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (  a.proxy_id='1' and datediff(`createtime`,NOW())=-1  ) OR (  a.parent_id='1' and datediff(`createtime`,NOW())=-1  ) [ RunTime:0.010031s ]
+[ sql ] [ SQL ] SELECT * FROM `playerorder` `a` LEFT JOIN `proxy` `b` ON `a`.`proxy_id`=`b`.`code` WHERE  (  a.proxy_id='1' and datediff(`createtime`,NOW())=0  ) OR (  a.parent_id='1' and datediff(`createtime`,NOW())=0  ) [ RunTime:0.010079s ]
+---------------------------------------------------------------
+[ 2019-04-17T14:32:56+08:00 ] 127.0.0.1 GET /admin/template/getindex.html?page=1&limit=10
+[ sql ] [ DB ] CONNECT:[ UseTime:0.010870s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `user_template` [ RunTime:0.033925s ]
+[ sql ] [ SQL ] SELECT * FROM `user_template` WHERE  `proxy_id` = '1' ORDER BY `id` DESC LIMIT 0,10 [ RunTime:0.003887s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `user_template` WHERE  `proxy_id` = '1' LIMIT 1 [ RunTime:0.000806s ]
+---------------------------------------------------------------
+[ 2019-04-17T14:47:17+08:00 ] 127.0.0.1 GET /admin/template/getindex.html?page=1&limit=10
+[ sql ] [ DB ] CONNECT:[ UseTime:0.002386s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `user_template` [ RunTime:0.003180s ]
+[ sql ] [ SQL ] SELECT * FROM `user_template` WHERE  `proxy_id` = '1' ORDER BY `id` DESC LIMIT 0,10 [ RunTime:0.001234s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `user_template` WHERE  `proxy_id` = '1' LIMIT 1 [ RunTime:0.000503s ]
+---------------------------------------------------------------
+[ 2019-04-17T14:47:40+08:00 ] 127.0.0.1 GET /admin/template/getindex.html?page=1&limit=10
+[ sql ] [ DB ] CONNECT:[ UseTime:0.001919s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `user_template` [ RunTime:0.002980s ]
+[ sql ] [ SQL ] SELECT * FROM `user_template` WHERE  `proxy_id` = '1' ORDER BY `id` DESC LIMIT 0,10 [ RunTime:0.000907s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `user_template` WHERE  `proxy_id` = '1' LIMIT 1 [ RunTime:0.000498s ]
+---------------------------------------------------------------
+[ 2019-04-17T14:48:15+08:00 ] 127.0.0.1 GET /admin/template/getindex.html?page=1&limit=10
+[ sql ] [ DB ] CONNECT:[ UseTime:0.001911s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `user_template` [ RunTime:0.002706s ]
+[ sql ] [ SQL ] SELECT * FROM `user_template` WHERE  `proxy_id` = '1' ORDER BY `id` DESC LIMIT 0,10 [ RunTime:0.000924s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `user_template` WHERE  `proxy_id` = '1' LIMIT 1 [ RunTime:0.000504s ]
+---------------------------------------------------------------
+[ 2019-04-17T14:48:22+08:00 ] 127.0.0.1 GET /admin/template/getindex.html?page=1&limit=10
+[ sql ] [ DB ] CONNECT:[ UseTime:0.010242s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `user_template` [ RunTime:0.002637s ]
+[ sql ] [ SQL ] SELECT * FROM `user_template` WHERE  `proxy_id` = '1' ORDER BY `id` DESC LIMIT 0,10 [ RunTime:0.000957s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `user_template` WHERE  `proxy_id` = '1' LIMIT 1 [ RunTime:0.000450s ]
+---------------------------------------------------------------
+[ 2019-04-17T14:49:08+08:00 ] 127.0.0.1 GET /admin/template/getindex.html?page=1&limit=10
+[ sql ] [ DB ] CONNECT:[ UseTime:0.001515s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `user_template` [ RunTime:0.002420s ]
+[ sql ] [ SQL ] SELECT * FROM `user_template` WHERE  `proxy_id` = '1' ORDER BY `id` DESC LIMIT 0,10 [ RunTime:0.000858s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `user_template` WHERE  `proxy_id` = '1' LIMIT 1 [ RunTime:0.000433s ]
+---------------------------------------------------------------
+[ 2019-04-17T14:49:19+08:00 ] 127.0.0.1 GET /admin/template/getindex.html?page=1&limit=10
+[ sql ] [ DB ] CONNECT:[ UseTime:0.001452s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `user_template` [ RunTime:0.002628s ]
+[ sql ] [ SQL ] SELECT * FROM `user_template` WHERE  `proxy_id` = '1' ORDER BY `id` DESC LIMIT 0,10 [ RunTime:0.001194s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `user_template` WHERE  `proxy_id` = '1' LIMIT 1 [ RunTime:0.000391s ]
+---------------------------------------------------------------
+[ 2019-04-17T14:49:31+08:00 ] 127.0.0.1 GET /admin/template/getindex.html?page=1&limit=10
+[ sql ] [ DB ] CONNECT:[ UseTime:0.001366s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `user_template` [ RunTime:0.003275s ]
+[ sql ] [ SQL ] SELECT * FROM `user_template` WHERE  `proxy_id` = '1' ORDER BY `id` DESC LIMIT 0,10 [ RunTime:0.001150s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `user_template` WHERE  `proxy_id` = '1' LIMIT 1 [ RunTime:0.000577s ]
+---------------------------------------------------------------
+[ 2019-04-17T14:49:55+08:00 ] 127.0.0.1 GET /admin/template/getindex.html?page=1&limit=10
+[ sql ] [ DB ] CONNECT:[ UseTime:0.001246s ] mysql:host=127.0.0.1;dbname=fengxiao;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `user_template` [ RunTime:0.002466s ]
+[ sql ] [ SQL ] SELECT * FROM `user_template` WHERE  `proxy_id` = '1' ORDER BY `id` DESC LIMIT 0,10 [ RunTime:0.000766s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `user_template` WHERE  `proxy_id` = '1' LIMIT 1 [ RunTime:0.000391s ]

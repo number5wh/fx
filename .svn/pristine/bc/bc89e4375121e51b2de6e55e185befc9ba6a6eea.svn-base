@@ -1,0 +1,543 @@
+{extend name="common/base" /}
+
+{block name="title"}代理管理{/block}
+{block name="css"}{/block}
+{block name="content"}
+<div class="layui-card">
+    <div class="layui-card-header layuiadmin-card-header-auto">
+        <form class="layui-form" lay-filter="component-form-group">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">封号状态</label>
+                    <div class="layui-input-inline">
+                        <select name="status" id="status">
+                            <option value="">全部</option>
+                            <option value="1">是</option>
+                            <option value="2">否</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">代理ID</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="agentId" name="agentId" placeholder="请输入代理ID"  autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">绑定手机号</label>
+                    <div class="layui-input-inline">
+                        <input type="tel" id="phone" name='phone' placeholder="请输入手机号"  autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-inline">
+                    <label class="layui-form-label">账户余额</label>
+                    <div class="layui-input-inline" style="width: 100px;">
+                        <input type="text" id="minMoney" name='minMoney'  placeholder="￥" autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-form-mid">-</div>
+                    <div class="layui-input-inline" style="width: 100px;">
+                        <input type="text" id="maxMoney" name='maxMoney'  placeholder="￥" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">昵称</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="nickName" name='nickName'
+                               placeholder="请输入代理昵称"  autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">代理账号</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="account" name='account'
+                                placeholder="请输入账号" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">注册时间</label>
+                    <div class="layui-input-inline" style="width: 100px;">
+                        <input type="text" name="startTime" id="LAY-component-form-group-date" autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-form-mid">-</div>
+                    <div class="layui-input-inline" style="width: 100px;">
+                        <input type="text" name="endTime"  id="LAY-component-form-group-date2" autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-input-inline">
+                        <a class="layui-btn" id="search_proxy" data-type="reload">搜索</a>
+                        <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="layui-card-body">
+        <div  style="margin-bottom: 10px;">
+            <a class="layui-btn" data-type="reload" id="add_proxy">新增代理</a>
+        </div>
+        <div id="alllist">
+            <table id="proxylist" lay-filter="proxylist"></table>
+        </div>
+    </div>
+</div>
+
+<div class="layui-row" id="popAdd" style="display:none;">
+    <div class="layui-col-md12">
+        <form class="layui-form" action="{:url('proxy/addProxy')}" method="post" id="addProxy" style="margin-top:20px;margin-right: 20px;" >
+            <div class="layui-form-item">
+                <label class="layui-form-label">代理账号：</label>
+                <div class="layui-input-inline">
+                    <input style="width: 60%;float: left" type="text" id="accountForReg" name='accountForReg' placeholder="请输入账号" lay-verify="required" autocomplete="off" class="layui-input">
+                    <a style="width: 35%;float: right" id="check" class="layui-btn" >检查</a>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">代理密码：</label>
+                <div class="layui-input-inline">
+                    <input type="password" id="passwordForReg" name='passwordForReg' lay-verify="required" placeholder="请输入密码" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">代理昵称：</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="nickNameForReg" name="nickNameForReg" lay-verify="required" placeholder="请输入昵称" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">提成比例：</label>
+                <div class="layui-input-block">
+                    <div class="layui-inline">
+                        <input type="text" id="royaltyRate" name="royaltyRate" lay-verify="required" placeholder="请输入比例" autocomplete="off" class="layui-input {eq name='isadmin' value='1' }layui-disabled{/eq}" value="{eq name='isadmin' value='1' }{$percent}{/eq}" {eq name='isadmin' value='1' }readonly{/eq}>
+                    </div>
+
+                    <div class="layui-inline">
+                        <div class="layui-form-mid layui-word-aux" style="color: red">{$info}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">备注：</label>
+                <div class="layui-input-inline">
+                    <textarea class="layui-textarea" id="remark" name="remark"></textarea>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label"></label>
+                <div class="layui-input-block">
+                    <button type="submit" class="layui-btn layui-btn-radius" id="addit" >新增</button>
+                    <button type="reset" class="layui-btn layui-btn-primary layui-btn-radius">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="layui-row" id="popEdit" style="display:none;">
+    <div class="layui-col-md12">
+        <form class="layui-form" action="{:url('proxy/editProxy')}" method="post" id="editProxy" style="margin-top:20px;margin-right: 20px;" >
+            <div class="layui-form-item">
+                <label class="layui-form-label">代理账号：</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="proxy_code" name='proxy_code' readonly  autocomplete="off" class="layui-input layui-disabled">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">代理密码：</label>
+                <div class="layui-input-inline">
+                    <input type="password" id="proxy_password" name='proxy_password' lay-verify="required" placeholder="请输入密码,留空原密码不变" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">代理昵称：</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="proxy_nickname" name="proxy_nickname" lay-verify="required" placeholder="请输入昵称" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">提成比例：</label>
+                <div class="layui-input-block">
+                    <div class="layui-inline">
+                        <input type="text" id="proxy_rate" name="proxy_rate" lay-verify="required" placeholder="请输入比例" autocomplete="off" class="layui-input">
+                    </div>
+
+                    <div class="layui-inline">
+                        <div class="layui-form-mid layui-word-aux" style="color: red" id="info2"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">备注：</label>
+                <div class="layui-input-inline">
+                    <textarea class="layui-textarea" id="proxy_comment" name="proxy_comment"></textarea>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label"></label>
+                <div class="layui-input-block">
+                    <button type="submit" class="layui-btn layui-btn-radius" id="edit" >修改</button>
+                    <button type="reset" class="layui-btn layui-btn-primary layui-btn-radius">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+{/block}
+{block name="script"}
+<script type="text/html" id="msg-bar">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">修改分成</a>
+</script>
+<script>
+    layui.config({
+        base: '/src/layuiadmin/' //静态资源所在路径
+    }).extend({
+        index: 'lib/index' //主入口模块
+
+    }).use(['index', 'table', 'layer', 'element', 'laydate', 'form', 'jquery'], function() {
+            var element = layui.element
+            ,layer = layui.layer
+            ,laydate = layui.laydate
+                ,table = layui.table
+                ,$ = layui.$
+                ,pattern = new RegExp("^[a-zA-Z][a-zA-Z0-9_]{5,25}")
+            ,form = layui.form;
+
+            init();
+
+            function init() {
+                form.render(null, 'component-form-group');
+                laydate.render({
+                    elem: '#LAY-component-form-group-date'
+                    ,format:'yyyy-MM-dd'
+                });
+                laydate.render({
+                    elem: '#LAY-component-form-group-date2'
+                    ,format:'yyyy-MM-dd'
+                });
+                renderData();
+                $('#search_proxy').on('click', function(e) {
+                    e.preventDefault();
+                    search();
+                });
+                $('#add_proxy').on('click', function(e) {
+                    e.preventDefault();
+                    showAdd();
+                });
+                $('#check').on('click', function(e) {
+                    e.preventDefault();
+                    checkAccount();
+                });
+                $('#addit').on('click', function(e) {
+                    e.preventDefault();
+                    submitForm();
+                });
+                $('#edit').on('click', function(e) {
+                    e.preventDefault();
+                    editForm();
+                });
+            }
+
+            function renderData() {
+                table.render({
+                    elem: '#proxylist'
+                    , height: 1000
+                    , url: "{:url('proxy/getIndex')}" //数据接口
+                    , where: {}
+                    , page: true //开启分页
+                    , cols: [[ //表头
+                        {field: 'code', title: '代理ID'}
+                        , {field: 'lock', title: '封号', width:60}
+                        , {field: 'grade', title: '等级',  width:80,sort:true}
+                        , {field: 'nickname', title: '昵称'}
+                        , {field: 'username', title: '代理账号'}
+                        , {field: 'percent', title: '提成比例%', sort:true}
+                        , {field: 'bind_mobile', title: '绑定手机号', width:120}
+                        , {field: 'bind_ip', title: '绑定ip登录'}
+                        , {field: 'balance', title: '账户余额', sort:true}
+                        , {field: 'historyin', title: '历史总收入', sort:true}
+                        , {field: 'last_login', title: '最后登录', width:160}
+                        , {field: 'regtime', title: '注册时间', width:160}
+                        , {field: 'descript', title: '备注'}
+                        , {fixed: 'right', title:'更多', align:'center', toolbar: '#msg-bar'}
+                    ]]
+                });
+            }
+
+        //搜索
+        var search = function() {
+            var status = $.trim($('#status option:selected').val());
+            var agentId = $.trim($('#agentId').val());
+            var phone = $.trim($('#phone').val());
+            var minMoney = $.trim($('#minMoney').val());
+            var maxMoney = $.trim($('#maxMoney').val());
+            var nickName = $.trim($('#nickName').val());
+            var account = $.trim($('#account').val());
+            var startTime = $.trim($('#LAY-component-form-group-date').val());
+            var endTime = $.trim($('#LAY-component-form-group-date2').val());
+
+            //执行重载
+            table.reload('proxylist', {
+                page: {
+                    curr: 1 //重新从第 1 页开始
+                },
+                where: {
+                    'status':status,
+                    'agentId':agentId,
+                    'phone':phone,
+                    'minMoney':minMoney,
+                    'maxMoney':maxMoney,
+                    'nickName':nickName,
+                    'account':account,
+                    'startTime':startTime,
+                    'endTime':endTime,
+                }
+            });
+        };
+        function checkAccount() {
+            if ($('#accountForReg').val() === '') {
+                layer.msg('输入的账号为空');
+                return false;
+            }
+            if (!pattern.test($('#accountForReg').val())) {
+                layer.msg('账号需以字母开头,并不少于6位');
+                return false;
+            }
+            $.ajax({
+                url: "{:url('proxy/checkexist')}",
+                data: {
+                    account: $('#accountForReg').val()
+                }, success: function (data) {
+                    if (data) {
+                        layer.msg('账号已经存在')
+                        return false;
+                    } else {
+                        layer.msg('账号可用')
+                    }
+                }
+            })
+        }
+
+        function submitForm() {
+            if ($('#passwordForReg').val() === '') {
+                layer.msg('密码不能为空');
+                return false;
+            }
+            if ($('#passwordForReg').val().length < 6) {
+                layer.msg('密码长度需大于6位');
+                return false;
+
+            }
+            if ($("#royaltyRate").val() === '') {
+                layer.msg('提成比例不能为空');
+                return false;
+            }
+            if ($('#accountForReg').val() === '') {
+                layer.msg('账户不能为空');
+                return false;
+
+            }
+            if ($('#nickNameForReg').val() === '') {
+                layer.msg('代理昵称不能为空');
+                return false;
+            }
+            if (!pattern.test($('#accountForReg').val())) {
+                layer.msg('账号需以字母开头,并不少于6位');
+                return false;
+
+            }
+            $.ajax({
+                url: "{:url('proxy/addProxy')}",
+                type: 'post',
+                data: $('#addProxy').serialize(),
+                success: function (response) {
+                    if (response.code !== 0) {
+                        layer.msg('添加成功');
+                        window.setTimeout(function() {
+                            window.location.href = "{:url('proxy/index')}";
+                        },1000)
+
+
+                    } else {
+                        layer.msg(response.msg)
+                    }
+                }, complete: function (x) {
+                    if (x.statusText === 'error') {
+                        layer.msg(x.responseJSON.message)
+                    }
+                }
+            })
+        }
+
+        function showAdd() {
+            index = layer.open({
+                type: 1,
+                title: '新增代理',
+                shadeClose: true,
+                shade: 0.8,
+                content: $('#popAdd')
+            });
+        }
+
+        //编辑
+        table.on('tool(proxylist)', function(obj) {
+            var data = obj.data //获得当前行数据
+                ,layEvent = obj.event; //获得 lay-event 对应的值
+            tr = obj.tr; //获得当前行 tr 的DOM对象
+            if (layEvent === 'edit') {
+                $('#proxy_password').val('');
+                $.ajax({
+                    type: 'post',
+                    url: "{:url('proxy/editProxyInfo')}",
+                    data: {
+                        'code': $.trim(data.code),
+                    },
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.code !== 0) {
+                            $('#proxy_code').val(data.code);
+                            $('#proxy_nickname').val(data.nickname);
+                            $('#proxy_rate').val(data.percent);
+                            $('#proxy_comment').val(data.descript);
+                            $('#info2').html(res.info2);
+                            $('#proxy_rate').removeAttr('readonly');
+                            $('#proxy_rate').removeClass('layui-disabled');
+                            if (res.canset === 0) {
+                                $('#proxy_rate').attr('readonly', 'readonly');
+                                $('#proxy_rate').addClass('layui-disabled');
+                            }
+
+                            index2 = layer.open({
+                                type: 1,
+                                title: '编辑代理',
+                                shadeClose: true,
+                                shade: 0.8,
+                                content: $('#popEdit')
+                            });
+                        } else {
+                            layer.msg(res.msg, {icon: 5});
+                        }
+                    }
+                });
+            }
+        });
+
+        function editForm() {
+            if ($("#proxy_rate").val() === '') {
+                layer.msg('提成比例不能为空');
+                return false;
+            }
+            if ($('#proxy_nickname').val() === '') {
+                layer.msg('代理昵称不能为空');
+                return false;
+            }
+
+            $.ajax({
+                url: "{:url('proxy/editProxy')}",
+                type: 'post',
+                data: $('#editProxy').serialize(),
+                success: function (response) {
+                    if (response.code !== 0) {
+                        layer.msg(response.msg);
+                        window.setTimeout(function() {
+                            window.location.href = "{:url('proxy/index')}";
+                        },1000)
+
+
+                    } else {
+                        layer.msg(response.msg)
+                    }
+                }, complete: function (x) {
+                    if (x.statusText === 'error') {
+                        layer.msg(x.responseJSON.message)
+                    }
+                }
+            })
+        }
+
+        function editMessage() {
+
+            if ($("input[type='checkbox']:checkbox:checked").length > 1) {
+                layer.msg('请选择一项进行修改')
+                return false
+            }
+            if ($("input[type='checkbox']:checkbox:checked").length < 1) {
+                layer.msg('请选择一项进行修改')
+                return false
+            }
+            var list = [{"id":547652,"realMoney":"0.0","realTotalMoney":"0.0","nickName":"marry112","level":5,"brand":1,"isBan":"\u5426","username":"mary12","remark":"aaa","date":"2018.08.12","lastLoginDate":"2018.08.12","isDel":"\u5426","royaltyRate":16,"bindIp":false,"ban":false,"del":false}];
+            var id = $("input[type='checkbox']:checkbox:checked").first().val();
+            var remark;
+            var rate;
+            var status;
+            var accountId;
+            var nickname;
+            list.forEach(function (t) {
+                if (id / 1 === t.id / 1) {
+                    remark = t.remark
+                    rate = t.royaltyRate
+                    status = t.ban === true ? 1 : 0
+                    accountId = t.accountId
+                    nickname = t.nickName
+                }
+            })
+            $('#statusForEdit option').each(function (t) {
+                if (t === 1) ;
+                $(this).attr('selected', true);
+            });
+            $('#royaltyRateForEdit').val(rate);
+            $('#remark1').val(remark);
+            $('#accountId').val(accountId);
+            $('#statusForEdit').val(status);
+            $('#nicknameForEdit').val(nickname);
+
+            $('#exampleModal1').modal('toggle');
+        }
+
+        function changeSuperior() {
+
+            if ($("input[type='checkbox']:checkbox:checked").length > 1) {
+                layer.msg('请选择一项进行修改')
+                return false
+            }
+            if ($("input[type='checkbox']:checkbox:checked").length < 1) {
+                layer.msg('请选择一项进行修改')
+                return false
+            }
+            var list = [{"id":547652,"realMoney":"0.0","realTotalMoney":"0.0","nickName":"marry112","level":5,"brand":1,"isBan":"\u5426","username":"mary12","remark":"aaa","date":"2018.08.12","lastLoginDate":"2018.08.12","isDel":"\u5426","royaltyRate":16,"bindIp":false,"ban":false,"del":false}];
+            var id = $("input[type='checkbox']:checkbox:checked").first().val();
+
+            var username = "";
+            var nickname = "";
+            var accountId = -1;
+            var level = -1;
+            list.forEach(function (t) {
+                if (id / 1 === t.id / 1) {
+                    accountId = t.accountId
+                    username = t.username;
+                    nickname = t.nickName
+                    level = t.level;
+                }
+            })
+
+            if (level !== 3) {
+                layer.msg('选择的代理已有上级，不能修改上级');
+                return false;
+            }
+
+
+            $('#accountIdForChange').val(accountId);
+            $('#agentIDForChange').val(id);
+            $('#usernameForChange').val(username);
+            $('#nicknameForChange').val(nickname);
+
+            $('#exampleModal2').modal('toggle');
+        }
+
+    });
+</script>
+{/block}

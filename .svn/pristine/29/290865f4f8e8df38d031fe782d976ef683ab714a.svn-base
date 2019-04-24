@@ -1,0 +1,216 @@
+{extend name="common/base" /}
+
+{block name="title"}红包奖励配置{/block}
+{block name="content"}
+<div class="layui-card">
+    <div class="layui-card-header">
+        <div class="layui-card-header"><button class="layui-btn layui-btn-sm" id="adddict">新增</button></div>
+
+    </div>
+    <div class="layui-card-body">
+        <table id="rewardlist" lay-filter="rewardlist"></table>
+
+    </div>
+</div>
+
+<div class="layui-row" id="popEditProxy" style="display:none;">
+    <div class="layui-col-md12">
+        <form class="layui-form" action="" method="post" id="editProxy" style="margin-top:20px;margin-right: 20px;" >
+            <div class="layui-form-item">
+                <label class="layui-form-label">ID：</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="id" readonly id="id" lay-verify="required" autocomplete="off" class="layui-input layui-disabled">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">日收益：</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="income" id="income" lay-verify="required|number" placeholder="日收益" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">红包金额：</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="reward" id="reward" lay-verify="required|number" placeholder="红包金额" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label"></label>
+                <div class="layui-input-block">
+                    <button type="submit" class="layui-btn layui-btn-radius" lay-submit="" lay-filter="account-edit">保存</button>
+                    <button type="button" class="layui-btn layui-btn-primary layui-btn-radius" id="edit_reset">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="layui-row" id="popAddProxy" style="display:none;">
+    <div class="layui-col-md12">
+        <form class="layui-form" action="" method="post" id="addProxy" style="margin-top:20px;margin-right: 20px;" >
+            <div class="layui-form-item">
+                <label class="layui-form-label">日收益：</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="income" id="add_income" lay-verify="required|number" placeholder="日收益" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">红包金额：</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="reward" id="add_reward" lay-verify="required|number" placeholder="红包金额" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label"></label>
+                <div class="layui-input-block">
+                    <button type="submit" class="layui-btn layui-btn-radius" lay-submit="" lay-filter="account-add">新增</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+{/block}
+
+{block name="script"}
+<script type="text/html" id="rewardlist-bar">
+    <button class="layui-btn layui-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i><cite></cite></button>
+    <button class="layui-btn layui-btn-xs layui-btn-danger" lay-event="delete"><i class="layui-icon layui-icon-close"></i><cite></cite></button>
+</script>
+<script>
+    layui.use(['layer','table','form','jquery'],function () {
+        var layer = layui.layer
+            , form = layui.form
+            , table = layui.table
+            , $ = layui.$;
+        //用户表格初始化
+        var dataTable = table.render({
+            elem: '#rewardlist'
+            , height: 500
+            , url: "{:url('dayreward/getIndex')}" //数据接口
+            , where: {}
+            , page: false //开启分页,
+            , cols: [[ //表头
+                {field: 'id', title: 'ID', sort:true}
+                , {field: 'income', title: '每日收益', sort:true}
+                , {field: 'reward', title: '红包金额', sort:true}
+                , {fixed: 'right', title:'操作', align:'center', toolbar: '#rewardlist-bar'}
+            ]]
+        });
+
+        //编辑
+        table.on('tool(rewardlist)', function(obj) {
+            var data = obj.data //获得当前行数据
+                ,layEvent = obj.event; //获得 lay-event 对应的值
+            tr = obj.tr; //获得当前行 tr 的DOM对象
+            obj1 = obj;
+            if (layEvent === 'edit') {
+                $('#id').val(data.id);
+                $('#income').val(data.income);
+                $('#reward').val(data.reward);
+                index = layer.open({
+                    type: 1,
+                    title: '红包奖励设置',
+                    shadeClose: true,
+                    shade: 0.8,
+                    content: $('#popEditProxy')
+                });
+           } else if (layEvent === 'delete') {
+                layer.confirm("确认删除这条记录？",{btn: ['确认','取消']}, function() {
+                    $.ajax({
+                        type: 'post',
+                        url: "{:url('dayreward/delete')}",
+                        data: {
+                            'id': data.id
+                        },
+                        dataType: 'json',
+                        success: function (res) {
+                            if (res.code === 0) {
+                                layer.msg(res.msg, {icon: 6});
+                                setTimeout(function(){
+                                    window.location.reload();
+                                },1000);
+                            } else {
+                                layer.msg(res.msg, {icon: 5});
+                            }
+                        }
+                    });
+                });
+            }
+        });
+
+        //更新编辑
+        form.on('submit(account-edit)', function(data) {
+            $.ajax({
+                type: 'post',
+                url: "{:url('dayreward/edit')}",
+                data: {
+                    'id': $.trim(data.field.id),
+                    'income': $.trim(data.field.income),
+                    'reward': $.trim(data.field.reward),
+                },
+                dataType: 'json',
+                success: function (res) {
+                    if (res.code === 0) {
+                        layer.msg(res.msg, {icon: 6});
+                        obj1.update({
+                            income: $.trim(data.field.income),
+                            reward: $.trim(data.field.reward)
+                        });
+                        //更新信息
+                        // $(tr).find("td[data-field='income'] div").html($.trim(data.field.income));
+                        // $(tr).find("td[data-field='reward'] div").html($.trim(data.field.reward));
+
+                        //form.render();
+                        layer.close(index);
+                    } else {
+                        layer.msg(res.msg, {icon: 5});
+                    }
+                }
+            });
+            return false;
+        });
+
+        $('#adddict').on('click', function(e) {
+            e.preventDefault();
+            index2 = layer.open({
+                type: 1,
+                title: '新增红包奖励配置',
+                shadeClose: true,
+                shade: 0.8,
+                content: $('#popAddProxy')
+            });
+        });
+
+        //新增
+        form.on('submit(account-add)', function(data) {
+            $.ajax({
+                type: 'post',
+                url: "{:url('dayreward/add')}",
+                data: {
+                    'add_income': $.trim(data.field.income),
+                    'add_reward': $.trim(data.field.reward),
+                },
+                dataType: 'json',
+                success: function (res) {
+                    if (res.code === 0) {
+                        layer.msg(res.msg, {icon: 6});
+                        //更新信息
+                        layer.close(index2);
+                        setTimeout(function(){
+                            window.location.reload();
+                        },1000);
+                    } else {
+                        layer.msg(res.msg, {icon: 5});
+                    }
+                }
+            });
+            return false;
+        });
+    });
+</script>
+{/block}
+

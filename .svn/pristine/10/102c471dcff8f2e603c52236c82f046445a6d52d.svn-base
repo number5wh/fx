@@ -1,0 +1,129 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>修改密码</title>
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href="__CSS__/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="__CSS__/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="__CSS__/animate.css" rel="stylesheet">
+    <link href="__CSS__/style.css?v=4.1.0" rel="stylesheet">
+    <link href="__CSS__/toastr.min.css" rel="stylesheet">
+
+</head>
+
+<body class="gray-bg">
+<div class="row">
+    <div class="col-lg-12">
+        <div class="wrapper wrapper-content">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5>修改密码</h5>
+                            <div class="ibox-tools">
+                                <a class="collapse-link">
+                                    <i class="fa fa-chevron-up"></i>
+                                </a>
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                    <i class="fa fa-wrench"></i>
+                                </a>
+
+                                <a class="close-link">
+                                    <i class="fa fa-times"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="ibox-content">
+
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <form action="{:url('proxy/savepwd')}" method="post" id="myForm">
+                                        <div class="form-group">
+                                            <label for="oldPassword">原始密码</label>
+                                            <input id="oldPassword" type="password" class="form-control"
+                                                   name="oldPassword" placeholder="请输入原始密码..." required="required"/>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="password">新密码</label>
+                                            <input type="password" class="form-control" id="password" name="password"
+                                                   placeholder="请输入新密码..." minlength=6
+                                                   required="required"/>
+
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="passwordConfirm">确认新密码</label>
+                                            <input type="password" class="form-control" id="passwordConfirm"
+                                                   placeholder="请输入新密码..." minlength=6
+                                                   required="required"/>
+                                            <input type="hidden" name="_csrf"     value="463e94e8-17cb-457a-ab05-e77612b82cd7"/>
+                                        </div>
+                                        <button class="btn btn-primary" type="button" onclick="toSubmit()">确认修改</button>
+                                        <button class="btn btn-primary" type="reset">清空</button>
+
+                                    </form>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- 全局js -->
+<script src="__JS__/jquery.min.js?v=2.1.4"></script>
+<script src="__JS__/bootstrap.min.js?v=3.3.6"></script><!-- 自定义js -->
+<script src="__JS__/content.js?v=1.0.0"></script><!-- Toastr script -->
+<script src="__JS__/toastr.min.js"></script>
+
+<script type="text/javascript">
+    function toSubmit() {
+        if ($('#password').val() !== $('#passwordConfirm').val()) {
+            alert('两次输入密码不一致');
+            return false;
+        }
+        if ($('#password').val().length < 6) {
+            alert('密码至少六位')
+            return false;
+        }
+        if ($('#password').val().length > 15) {
+            alert('密码小于十五位')
+            return false;
+        }
+        $.ajax({
+            url: "{:url('proxy/modifierPassword')}",
+            type: 'post',
+            data: $('#myForm').serialize(),
+            success: function (data) {
+                if (data) {
+                    alert('修改成功');
+                    window.location.href = "{:url('proxy/Changepwd')}";
+                } else {
+                    alert('原始密码不正确');
+                }
+            }
+        })
+    }
+
+    function checkPassword() {
+        if ($('#passwordConfirm').val() === '') {
+            return;
+        }
+        if ($('#password').val() !== $('#passwordConfirm').val()) {
+            alert('两次输入密码不一致');
+        }
+    }
+</script>
+
+</body>
+
+</html>

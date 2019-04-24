@@ -1,0 +1,162 @@
+{extend name="common/base" /}
+
+{block name="title"}{/block}
+{block name="content"}
+<div class="layui-row layui-col-space30">
+
+    <div class="layui-col-md3 layui-col-lg3 layui-col-xs12 layui-col-sm6 ">
+        <div class="layui-card">
+        <div class="layui-card-header">
+            总注册量
+            <span class="layui-badge layui-bg-blue layuiadmin-badge">全部</span>
+        </div>
+        <div class="layui-card-body layuiadmin-card-list">
+            <p class="layuiadmin-big-font">{$regtotal}</p>
+        </div>
+        </div>
+    </div>
+    <div class="layui-col-md3 layui-col-lg3 layui-col-xs12 layui-col-sm6 ">
+        <div class="layui-card">
+        <div class="layui-card-header">
+            昨日注册
+            <span class="layui-badge layui-bg-cyan layuiadmin-badge">昨日</span>
+        </div>
+        <div class="layui-card-body layuiadmin-card-list">
+            <p class="layuiadmin-big-font">{$regzt}</p>
+        </div>
+        </div>
+    </div>
+    <div class="layui-col-md3 layui-col-lg3 layui-col-xs12 layui-col-sm6 ">
+        <div class="layui-card">
+        <div class="layui-card-header">
+            今日注册
+            <span class="layui-badge layui-bg-green layuiadmin-badge">今日</span>
+        </div>
+        <div class="layui-card-body layuiadmin-card-list">
+            <p class="layuiadmin-big-font">{$regtoday}</p>
+        </div>
+        </div>
+    </div>
+    <div class="layui-col-md3 layui-col-lg3 layui-col-xs12 layui-col-sm6 ">
+        <div class="layui-card">
+        <div class="layui-card-header">
+            总税收
+            <span class="layui-badge layui-bg-blue layuiadmin-badge">全部</span>
+        </div>
+        <div class="layui-card-body layuiadmin-card-list">
+            <p class="layuiadmin-big-font">{$totaltax|number_format=2}</p>
+        </div>
+        </div>
+    </div>
+
+    <div class="layui-col-md3 layui-col-lg3 layui-col-xs12 layui-col-sm6 ">
+        <div class="layui-card">
+            <div class="layui-card-header">
+                总收益
+                <span class="layui-badge layui-bg-blue layuiadmin-badge">全部</span>
+            </div>
+            <div class="layui-card-body layuiadmin-card-list">
+                <p class="layuiadmin-big-font">{$alltt|number_format=2}</p>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="layui-col-md3 layui-col-lg3 layui-col-xs12 layui-col-sm6 ">
+        <div class="layui-card">
+            <div class="layui-card-header">
+                昨日收益
+                <span class="layui-badge layui-bg-cyan layuiadmin-badge">昨日</span>
+            </div>
+            <div class="layui-card-body layuiadmin-card-list">
+                <p class="layuiadmin-big-font">{$zrsy|number_format=2}  <a style="float: right" type="button" class="layui-btn {if condition='($getreward == 0)'} layui-btn-danger {else /} layui-btn-disabled {/if}" id="getreward"><i class="layui-icon layui-icon-rmb"></i>
+                    {if condition='($getreward == 0)'} 领取红包 {elseif  condition='($getreward == 1)' /} 未达标 {else /}红包已领取{/if}</a></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-col-md3 layui-col-lg3 layui-col-xs12 layui-col-sm6 ">
+        <div class="layui-card">
+            <div class="layui-card-header">
+                今日收益
+                <span class="layui-badge layui-bg-green layuiadmin-badge">今日</span>
+            </div>
+            <div class="layui-card-body layuiadmin-card-list">
+                <p class="layuiadmin-big-font">{$jrsy|number_format=2}</p>
+            </div>
+        </div>
+    </div>
+    {volist name="list" id="vo"}
+    <div class="layui-col-md12 layui-col-lg12 layui-col-xs12 layui-col-sm12 ">
+        <div class="layui-card">
+            <div class="layui-card-header">
+                {$vo.addtime|date='Y-m-d H:i:s',###}
+                <span class="layui-badge layui-bg-red layuiadmin-badge">{$vo.title}</span>
+            </div>
+            <div class="layui-card-body layuiadmin-card-list">
+                <p class="layuiadmin-small-font">{$vo.content}</p>
+            </div>
+        </div>
+    </div>
+    {/volist}
+
+</div>
+{/block}
+
+
+{block name="script"}
+
+<script>
+    layui.config({
+        base: '/src/layuiadmin/' //静态资源所在路径
+    }).extend({
+        index: 'lib/index' //主入口模块
+
+    }).use(['index', 'jquery'], function() {
+        var $ = layui.$;
+        var main = {
+            bindEvent : function() {
+                $('#getreward').on('click', function(e) {
+                    e.preventDefault();
+                    main.getReward();
+                });
+            },
+            getReward : function() {
+                $.ajax({
+                    type: 'post',
+                    url: "{:url('index/getRewardPre')}",
+                    data: {},
+                    success: function (data) {
+                        if (data.code!==0) {
+                            layer.msg(data.msg,{icon:2});
+                            return false;
+                        } else {
+                            layer.confirm(data.msg+'，领取的奖励会存入您的余额中。', {
+                                btn: ['确认领取','取消'] //按钮
+                            }, function(){
+                                $.ajax({
+                                    type: 'post',
+                                    url: "{:url('index/getReward')}",
+                                    data: {},
+                                    success: function(res) {
+                                        if (res.code === 0) {
+                                            layer.msg(res.msg,{icon:1});
+                                            $('#getreward').removeClass('layui-btn-danger').addClass('layui-btn-disabled').html('<i class="layui-icon layui-icon-rmb"></i>红包已领取')
+                                        } else {
+                                            layer.msg(res.msg,{icon:2});
+                                            return false;
+                                        }
+                                    }
+                                });
+                            });
+                        }
+                    }
+                })
+            }
+        };
+        main.bindEvent();
+    });
+</script>
+{/block}
+
+

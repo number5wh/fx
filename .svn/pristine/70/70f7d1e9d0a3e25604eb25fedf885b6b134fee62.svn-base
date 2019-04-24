@@ -1,0 +1,218 @@
+<?php if (!defined('THINK_PATH')) exit(); /*a:2:{s:78:"C:\Users\Administrator\Desktop\fx/./application/admin\view\template\index.html";i:1553737843;s:73:"C:\Users\Administrator\Desktop\fx\application\admin\view\common\base.html";i:1553670084;}*/ ?>
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="/src/layuiadmin/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="/src/layuiadmin/style/admin.css" media="all">
+    
+
+<style type="text/css">
+#popDown .layui-table-body .layui-table-cell{
+    height:180px;
+    line-height:180px;
+}
+#alllist .layui-table-body .layui-table-cell{
+    height:160px;
+    line-height: 160px;
+}
+</style>
+
+
+</head>
+<body>
+
+<div class="layui-fluid">
+    
+<div class="layui-card">
+    <div class="layui-card-header layuiadmin-card-header-auto">
+        <h2>推广配置</h2>
+    </div>
+
+    <div class="layui-card-body">
+        <div class="search-proxy" style="margin-bottom: 10px;">
+            <button class="layui-btn" data-type="reload" id="downcode">下载二维码</button>
+            <button class="layui-btn layui-btn-danger" id="resetcode" data-type="reload">重新生成</button>
+        </div>
+        <h5 style="color: red">提示：
+            请复制列表中推广宣传地址或二维码分享他人！</h5>
+        <div id="alllist">
+            <table id="tglist" lay-filter="tglist"></table>
+        </div>
+
+
+    </div>
+</div>
+<div class="layui-row" id="popDown" style="display:none;width: 1000px">
+    <table id="downlist" lay-filter="downlist"></table>
+</div>
+
+</div>
+
+<script src="/src/layuiadmin/layui/layui.js?t=1"></script>
+<script src="/public/static/js/jquery.min.js?v=2.1.4"></script>
+
+<script type="text/html" id="test-table-radio-toolbarDemo">
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-sm" lay-event="getCheckData">下载选中行数据</button>
+    </div>
+</script>
+<script>
+    layui.config({
+        base: '/src/layuiadmin/' //静态资源所在路径
+    }).extend({
+        index: 'lib/index' //主入口模块
+
+    }).use(['index', 'table', 'layer'], function() {
+        var table = layui.table
+            , layer = layui.layer
+            , $ = layui.$;
+        $('#downcode').on('click', function(e) {
+            e.preventDefault();
+            addMessage();
+        });
+        $('#resetcode').on('click', function(e) {
+            e.preventDefault();
+            resetPromotionSetting();
+        });
+
+        init();
+        function init() {
+            refresh();
+            renderData();
+        }
+
+        function renderData() {
+            table.render({
+                elem: '#tglist'
+                , height: 1000
+                , url: "<?php echo url('template/getIndex'); ?>" //数据接口
+                , where: {}
+                , page: true //开启分页
+                , cols: [[ //表头
+                    {field: 'config_name', title: '配置名称'}
+                    , {field: 'template_name', title: '推广模板'}
+                    , {field: 'image_url', title: '推广二维码', templet:function (d) {
+                            return "<img class=\"img-responsive img-thumbnail\" src=\""+d.image_url+"\"><a href=\""+d.image_url+"\" target=\"_blank\"> 查看大图</a>"
+                        }}
+                    , {field: 'down_url', title: '推广宣传地址', templet:function (d) {
+                            return "<a href='"+d.down_url+"'>"+d.down_url+"</a>"
+                        }}
+                    , {field: 'descript', title: '备注'}
+                ]]
+            });
+        }
+
+        function resetPromotionSetting() {
+            layer.confirm('确认重新生成？此操作将会使所有的已经在用的二维码失效。', {
+                btn: ['确认','取消'] //按钮
+            }, function(){
+                $.ajax({
+                    url: 'resetPromotionSetting',
+                    type: 'post',
+                    async: false,
+                    data: $("#addPromotionSetting").serialize(),
+                    success: function (response) {
+                        if (response.code !== 0 || response === true) {
+                            layer.msg("生成成功");
+                            window.setTimeout(function() {
+                                window.location.href = "<?php echo url('template/index'); ?>";
+                            }, 1000);
+
+                        } else {
+                            layer.msg(response.msg)
+                        }
+                    }
+
+                })
+            }, function(){
+
+            });
+        }
+
+
+        function addMessage() {
+            table.render({
+                elem: '#downlist'
+                , height: 1000
+                ,width:350
+                ,size:'lg'
+                , url: "<?php echo url('template/getTemplate'); ?>" //数据接口
+                ,toolbar: '#test-table-radio-toolbarDemo'
+                , where: {}
+                , page: false //开启分页
+                , cols: [[ //表头
+                    {type:'radio', fixed: 'left'}
+                    ,{field: 'id', title: 'ID'}
+                    , {field: 'num', title: '编号'}
+                    , {field: 'path', title: '模板图片',templet:function (d) {
+                            return "<img  src=\""+d.path+"\">"
+                        }}
+                ]]
+            });
+            index = layer.open({
+                type: 1,
+                title: '下载',
+                shadeClose: true,
+                shade: 0.8,
+                content: $('#popDown')
+            });
+        }
+        //头工具栏事件
+        table.on('toolbar(downlist)', function(obj){
+            var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
+            switch(obj.event){
+                case 'getCheckData':
+                    var data = checkStatus.data;  //获取选中行数据
+
+                    //layer.msg(dd.id);return;
+                    $.ajax({
+                        url: "<?php echo url('template/checkDownload'); ?>",
+                        type: 'get',
+                        success: function (response) {
+                            if (response.code !== 0 || response === true) {
+                                window.location.href = "download/id/" + data[0].id
+                            } else {
+                                layer.msg(response.msg)
+                            }
+                        }
+
+                    });
+                    //layer.alert(JSON.stringify(data));
+                    break;
+            }
+        });
+
+        function refresh() {
+            $.ajax({
+                url: 'autoResetPromotionSetting',
+                type: 'get',
+                async: false,
+                cache: false,
+                success: function (response) {
+                    if (response === false) {
+
+                    } else if (response === true) {
+                        window.location.href = 'promotionConfig?random=' + Math.random();
+                    } else if (response.code !== 0) {
+                        alert(response.msg)
+
+                    }
+                }
+
+            })
+        }
+
+
+    });
+</script>
+
+</body>
+</html>
+

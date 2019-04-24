@@ -1,0 +1,174 @@
+{extend name="common/base" /}
+
+{block name="title"}推广统计{/block}
+{block name="css"}
+<link href="__CSS__/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+<link href="__CSS__/font-awesome.min.css?v=4.4.0" rel="stylesheet">
+<link href="__CSS__/datepicker3.css" rel="stylesheet"/>
+<link href="__CSS__/animate.css" rel="stylesheet">
+<link href="__CSS__/style.css?v=4.1.0" rel="stylesheet">
+<link href="__CSS__/bootstrap-table.css" type="text/css" rel="stylesheet">
+{/block}
+{block name="content"}
+<div class="layui-card">
+    <div class="layui-card-header layuiadmin-card-header-auto">
+        <form class="layui-form" action="{:url('distribute/index')}" id="myForm" method="post">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">代理ID</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="agentId" name="agentId" value="{$agentid}" placeholder="请输入代理ID"  autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-inline">
+                    <label class="layui-form-label">时间</label>
+                    <div class="layui-input-inline" style="width: 100px;">
+                        <input type="text" name="startTime" value="{$regstart}" id="LAY-component-form-group-date" autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-form-mid">-</div>
+                    <div class="layui-input-inline" style="width: 100px;">
+                        <input type="text" name="endTime" value="{$regend}" id="LAY-component-form-group-date2" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-inline">
+                    <div class="layui-input-inline">
+                        <input type="checkbox" id="inlineCheckbox3" name="month" {if condition="$month eq 'on'"}checked="true"{/if} lay-skin="primary" title="按月">
+                        <!--<input type="checkbox" id="inlineCheckbox3" name="month" value="1" style="height: auto"  lay-skin="switch" lay-text="按月|不按月">-->
+                    </div>
+                </div>
+                <div class="layui-inline" style="text-align: center">
+                    <button class="layui-btn" type="submit" id="search_tg">搜索</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="layui-card-body">
+        <h5>推广统计 &nbsp;<small style="color: red">(注：推广数据更新间隔5分钟)</small></h5>
+
+        <table id="tglist" lay-filter="tglist" >
+            <thead id="hlist">
+            <tr>
+            <th >时间</th>
+            <th>代理名称</th>
+            <th >代理ID</th>
+            <th >代理级别</th>
+            <th >统计项目</th>
+            <th >注册人数</th>
+            <th >绑定手机</th>
+            <th >充值总次数</th>
+            <th >提现总次数</th>
+            <th >产生税收</th>
+            </tr>
+
+            </thead>
+            <tbody>
+            {volist name="list" id="vo"}
+            <div>
+                <tr>
+
+                    <td rowspan="{$vo.rows}">{$vo.dt}</td>
+                    <td rowspan="{$vo.rows}"></td>
+                    <td rowspan="{$vo.rows}">{$vo['parent_id']}</td>
+                    <td rowspan="{$vo.rows}"></td>
+
+                    <td>
+                        总和：
+                    </td>
+                    <td>{$vo.total}</td>
+                    <td>{$vo.totalbind}</td>
+                    <td>{$vo.paytimes}</td>
+                    <td>{$vo.totalcheck}</td>
+                    <td>{$vo.totaltaxs}</td>
+                </tr>
+
+                {volist name="$vo.child" id="v"}
+                <tr>
+                    <td>({$v.proxy_id}){$v.nickname}</td>
+                    <td>{$v.total}</td>
+                    <td>{$v.bindnum}</td>
+                    <td>{$v.paytime}</td>
+                    <td>{$v.checknum}</td>
+                    <td>{$v.totaltax}</td>
+                </tr>
+                {/volist}
+
+            </div>
+            {/volist}
+            </tbody>
+            <tfoot>
+            <tr>
+                <td id="pageTd" rowspan="5">
+                    <nav aria-label="Page navigation ">
+                        {$list->render()}
+                    </nav>
+                </td>
+            </tr>
+            </tfoot>
+        </table>
+        <input type="hidden" name="pageNum" id="pageNum"/>
+        <input type="hidden" name="pageSize" id="pageSize" value="20"/>
+    </div>
+</div>
+
+{/block}
+{block name="script"}
+<script src="__JS__/jquery.min.js?v=2.1.4"></script>
+<script src="__JS__/bootstrap.min.js?v=3.3.6"></script>
+<script src="__JS__/bootstrap-datepicker.js"></script>
+<script src="__JS__/bootstrap-table.js"></script>
+<!-- 自定义js -->
+<script src="__JS__/content.js?v=1.0.0"></script>
+<script src="__JS__/common.js?v=1.0"></script>
+<script>
+    layui.config({
+        base: '/src/layuiadmin/' //静态资源所在路径
+    }).extend({
+        index: 'lib/index' //主入口模块
+
+    }).use(['index', 'table', 'layer', 'element', 'laydate', 'form', 'jquery'], function() {
+        var laydate=layui.laydate;
+        laydate.render({
+            elem: '#LAY-component-form-group-date'
+            ,format:'yyyy-MM-dd'
+        });
+        laydate.render({
+            elem: '#LAY-component-form-group-date2'
+            ,format:'yyyy-MM-dd'
+        });
+    });
+    $(document).ready(function () {
+
+        $('#pageTd').attr('colspan', 11)
+
+    });
+
+    function checkWidth() {
+        var windowsize = $(window).width();
+        try {
+            if (windowsize >= 440) {
+                $('table').bootstrapTable({
+                    cardView: false
+                });
+                $('table').bootstrapTable('resetView');
+
+            }
+            else {
+                $('table').bootstrapTable({
+                    cardView: true,
+                    columns: {
+                        field: 'member_id',
+                        sortable: true
+                    }
+                });
+                $('table').bootstrapTable('resetView');
+            }
+        } catch (err) {
+
+        }
+    }
+</script>
+{/block}

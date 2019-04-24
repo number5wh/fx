@@ -1,0 +1,135 @@
+{extend name="common/base" /}
+
+{block name="title"}玩家明细{/block}
+{block name="css"}
+<link rel="shortcut icon" href="favicon.ico">
+<link href="__CSS__/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+<link href="__CSS__/font-awesome.min.css?v=4.4.0" rel="stylesheet">
+<link href="__CSS__/footable.core.css" rel="stylesheet">
+<link href="__CSS__/datepicker3.css" rel="stylesheet"/>
+<link href="__CSS__/animate.css" rel="stylesheet">
+<link href="__CSS__/style.css?v=4.1.0" rel="stylesheet">
+<link href="__CSS__/bootstrap-table.css" type="text/css" rel="stylesheet">
+{/block}
+{block name="content"}
+<div class="layui-card">
+    <div class="layui-card-header layuiadmin-card-header-auto">
+        <form class="layui-form" action="playerdetail" id="myForm" method="post">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">玩家ID</label>
+                    <div class="layui-input-inline">
+                        <input type="number" id="gamerID" name="gamerId"
+                               placeholder="请输入玩家ID" value="{$gamerid}"  autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-inline">
+                    <label class="layui-form-label" style="width: 100px">注册时间</label>
+                    <div class="layui-input-inline" style="width: 100px;">
+                        <input type="text" name="startTime" value="{$starttime}" id="LAY-component-form-group-date" autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-form-mid">-</div>
+                    <div class="layui-input-inline" style="width: 100px;">
+                        <input type="text" name="endTime" value="{$endTime}" id="LAY-component-form-group-date2" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline" style="text-align: center">
+                    <button class="layui-btn" type="submit" id="search_tg">搜索</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="layui-card-body">
+        <table id="tglist" lay-filter="tglist">
+            <thead id="hlist">
+            <tr>
+                <th data-toggle="true">代理Id</th>
+                <th>代理名称</th>
+                <th>玩家ID</th>
+                <th>玩家昵称</th>
+                <th>是否绑定手机</th>
+                <th>注册时间</th>
+            </tr>
+            </thead>
+            <tbody>
+            <div>
+                {volist name="list" id="vo"}
+                <tr>
+                    <td >{$vo.proxy_id}</td>
+                    <td >{$vo.proxy_name}</td>
+                    <td >{$vo.userid}</td>
+                    <td>{$vo.nickname}</td>
+                    <td>
+                        {if condition="$vo.ismobile eq 1"}
+                        是
+                        {else/}
+                        否
+                        {/if}
+                    </td>
+                    <td>{$vo.regtime}</td>
+                </tr>
+                {/volist}
+            </div>
+
+
+            </tbody>
+            <tfoot>
+            <div>
+                <td id="pageTd" rowspan="5">
+                    <nav aria-label="Page navigation ">
+                        {$list->render()}
+                    </nav>
+                </td>
+            </div>
+            </tfoot>
+        </table>
+    </div>
+
+</div>
+
+{/block}
+
+{block name="script"}
+<script src="__JS__/jquery.min.js?v=2.1.4"></script>
+<script src="__JS__/bootstrap.min.js?v=3.3.6"></script>
+<script src="__JS__/footable.all.min.js"></script>
+<script src="__JS__/bootstrap-datepicker.js"></script>
+
+<!-- 自定义js -->
+<script src="__JS__/content.js?v=1.0.0"></script>
+<script src="__JS__/bootstrap-table.js"></script>
+<script src="__JS__/common.js?v=1.0"></script>
+<script>
+    layui.config({
+        base: '/src/layuiadmin/' //静态资源所在路径
+    }).extend({
+        index: 'lib/index' //主入口模块
+
+    }).use(['index', 'table', 'layer', 'element', 'laydate', 'form', 'jquery'], function() {
+        var laydate=layui.laydate;
+        laydate.render({
+            elem: '#LAY-component-form-group-date'
+            ,format:'yyyy-MM-dd'
+        });
+        laydate.render({
+            elem: '#LAY-component-form-group-date2'
+            ,format:'yyyy-MM-dd'
+        });
+    });
+    $(document).ready(function () {
+        $('#pageTd').attr('colspan', 8);
+
+
+    });
+
+    function changeGameType(url) {
+        window.location.href = "incomeDetail?gameType=" + url.value;
+
+    }
+
+</script>
+{/block}
+

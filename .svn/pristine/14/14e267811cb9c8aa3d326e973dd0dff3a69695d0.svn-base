@@ -1,0 +1,258 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>推广代理后台 - 登录</title>
+    <meta name="keywords" content="推广代理后台">
+    <meta name="description" content="推广代理后台">
+
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href="__CSS__/bootstrap.min.css" rel="stylesheet">
+    <link href="__CSS__/font-awesome.min.css?v=4.4.0" rel="stylesheet">
+
+    <link href="__CSS__/animate.css" rel="stylesheet">
+    <link href="__CSS__/style.css?v=4.1.0" rel="stylesheet">
+    <!--[if lt IE 9]>
+    <meta http-equiv="refresh" content="0;ie.html"/>
+    <![endif]-->
+    <script>if (window.top !== window.self) {
+        window.top.location = window.location;
+    }</script>
+</head>
+
+<body class="gray-bg">
+
+<div class="middle-box text-center loginscreen   fadeInDown">
+    <div>
+        <div>
+
+            <h1 class="logo-name">MG</h1>
+
+        </div>
+        <h3>总管理后台</h3>
+
+        <form class="m-t" role="form" action="{:url('manage/login/Auth')}" method="post" id="loginForm">
+            <div class="input-group">
+                <span class="input-group-addon" id="basic-addon1">账&nbsp;&nbsp;&nbsp;&nbsp;号</span>
+                <input type="text" class="form-control" id="name" name="userName" placeholder="用户名"
+                       required="required">
+            </div>
+            <div class="input-group">
+                <span class="input-group-addon" id="basic-addon2">密&nbsp;&nbsp;&nbsp;&nbsp;码</span>
+                <input type="password" class="form-control" id="password" name="password" placeholder="密码"
+                       required="required" value="">
+            </div>
+
+
+            <div class="input-group">
+                <span class="input-group-addon" id="captcha-addon2">验证码</span>
+                <input type="text" class="form-control captcha" name="captcha" placeholder="请输入验证码" required="required">
+                <span class="input-group-addon" id="basic-addon3">
+                    </span>
+
+            </div>
+
+
+            <div class="input-group">
+                <img class="imgCaptcha" src="{:url('login/verifycode')}" onclick="changeCode()"/>
+            </div>
+
+            <br/>
+            <button type="submit" class="btn btn-primary block full-width m-b">登 录</button>
+            <!--<p class="text-muted text-center"><a data-toggle="modal" data-target="#myModal2">-->
+                <!--<small>忘记密码了？</small>-->
+            <!--</a> | -->
+            <!--</p>-->
+            {$error}
+
+        </form>
+    </div>
+</div>
+
+
+<div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel2">找回密码-验证身份</h4>
+            </div>
+            <div class="ibox-content">
+                <div class="modal-body">
+                    账号：<input type="text" class="form-control" id="userNameForFind" name='userName'
+                              placeholder="请输入账号" required="required">
+                </div>
+                <div class="modal-body">
+                    新密码：<input type="password" class="form-control" id="passwordForFind" name='password'
+                               placeholder="请输入新密码" required="required">
+                </div>
+
+
+                <div class="modal-body">
+                    <label for="phoneNumForFind">手机号：</label>
+                    <input type="text" id="phoneNumForFind" class="form-control phoneNumForFind"
+                           required="required"/>
+                    <button class="btn btn-primary sendCode"
+                            onclick="sendCodeBefore('phoneNumForFind')" type="button">获取验证码
+                    </button>
+
+
+                    <div class="form-group">
+                        <label for="codeForFind">验证码</label>
+                        <input type="text" class="form-control" id="codeForFind" name="account.code"
+                               placeholder="请输入手机验证码..."
+                               required="required"/>
+                    </div>
+                    <input type="hidden" id="captcha"/>
+                </div>
+
+
+                <div class="modal-footer">
+                    <button class="btn btn-primary" type="button" onclick="modifierPassword()">修改</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="myModal3" tabindex="1000" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">输入验证码</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="input-group">
+                        <span class="input-group-addon" id="captcha-addon21">验证码</span>
+                        <input type="text" class="form-control captcha" id="captcha2" name="captcha"
+                               placeholder="请输入图片验证码" required="required" aria-describedby="basic-addon31">
+                        <span class="input-group-addon" id="basic-addon31">
+                            <img class="imgCaptcha" src=""   onclick="changeCode()"/>
+                    </span>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" type="button" onclick="addCaptcha()">确认</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 全局js -->
+<script src="__JS__/jquery.min.js?v=2.1.4"></script>
+<script src="__JS__/cache.js"></script>
+<script src="__JS__/bootstrap.min.js?v=3.3.6"></script>
+<script src="__JS__/common.js?v=1.0"></script>
+<script type="text/javascript">
+
+    $(function () {
+        var error = null;
+        var login = null;
+        if (error !== '' && login === 1) {
+            alert(error);
+        }
+        cache.initCode('loginCode');
+
+          // 刷新验证码
+            var verifyimg = $(".imgCaptcha").attr("src");
+            // $(".imgCaptcha").click(function(){
+            //     console.log(verifyimg);
+            //     if( verifyimg.indexOf('?')>0){
+            //         $(".imgCaptcha").attr("src", verifyimg+'&random='+Math.random());
+            //     }else{
+            //         $(".imgCaptcha").attr("src", verifyimg.replace(/\?.*$/,'')+'?'+Math.random());
+            //     }
+            // });
+        $("#loginForm").submit(function () {
+            cookie.clear();
+            return true;
+        })
+    });
+
+
+    function modifierPassword() {
+        var token = $("meta[name='_csrf']").attr("content");
+        var header = $("meta[name='_csrf_header']").attr("content");
+        $.ajax({
+            url: 'findPassword',
+            type: 'post',
+            beforeSend: function (request) {
+                request.setRequestHeader(header, token);
+            },
+            data: {
+                userName: $('#userNameForFind').val(),
+                password: $('#passwordForFind').val(),
+                phone: $('#phoneNumForFind').val(),
+                code: $('#codeForFind').val(),
+                captcha: $('#captcha2').val()
+            },
+            success: function (response) {
+                if (response.code !== 0 || response === true) {
+                    alert('密码修改成功');
+                    cache.removeItem('loginCode');
+                    window.location.href = '/';
+                } else {
+                    alert(response.msg)
+                }
+            }, complete: function (xhr) {
+                console.log(xhr)
+            }
+
+        })
+    }
+
+    function sendCodeBefore() {
+        $('#myModal3').modal('toggle');
+
+    }
+
+    function addCaptcha() {
+        $('#myModal3').modal('hide');
+        sendCode($('#captcha2').val())
+    }
+
+    function sendCode(captcha) {
+        var phoneNum = $('#phoneNumForFind').val();
+        if (phoneNum === '') {
+            alert('手机号码不能为空')
+            return false;
+        }
+
+        $.ajax({
+            url: "sendCodeNoAuth",
+            type: 'get',
+            data: {
+                mobile: phoneNum,
+                captcha: captcha
+            },
+            success: function (response) {
+                if (response.code !== 0 || response === true) {
+                    alert('发送成功');
+                    cache.setItem('loginCode', phoneNum);
+                    cache.createTimeOut();
+                } else {
+                    alert(response.msg)
+                }
+            }
+        })
+    }
+
+    // 点击验证码图片
+    function changeCode() {
+        $('.imgCaptcha').attr('src', "{:url('login/verifycode')}?random=" + Math.random());
+        $(".captcha").val("")
+    }
+
+    $(function () {
+        changeCode()
+    })
+</script>
+</body>
+
+</html>

@@ -1,0 +1,146 @@
+{extend name="common/base" /}
+
+{block name="title"}{/block}
+{block name="css"}
+
+<style type="text/css">
+#popDown .layui-table-body .layui-table-cell{
+    height:180px;
+    line-height:180px;
+}
+#alllist .layui-table-body .layui-table-cell{
+    height:278px;
+    line-height: 278px;
+}
+</style>
+
+{/block}
+
+{block name="content"}
+<div class="layui-card">
+    <div class="layui-card-header layuiadmin-card-header-auto">
+        <h2>推广配置</h2>
+    </div>
+
+    <div class="layui-card-body">
+        <!--<div class="search-proxy" style="margin-bottom: 10px;">-->
+            <!--<button class="layui-btn" data-type="reload" id="downcode">下载二维码</button>-->
+            <!--<button class="layui-btn layui-btn-danger" id="resetcode" data-type="reload">重新生成</button>-->
+        <!--</div>-->
+        <h5 style="color: red">提示：
+            请复制列表中推广宣传地址或二维码分享他人！</h5>
+        <div id="alllist">
+            <table id="tglist" lay-filter="tglist"></table>
+        </div>
+
+
+    </div>
+</div>
+<div class="layui-row" id="popDown" style="display:none;width: 1000px">
+    <table id="downlist" lay-filter="downlist"></table>
+</div>
+{/block}
+
+{block name="script"}
+<script type="text/html" id="test-table-radio-toolbarDemo">
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-sm" lay-event="getCheckData">下载选中行数据</button>
+    </div>
+</script>
+<script>
+    layui.config({
+        base: '/src/layuiadmin/' //静态资源所在路径
+    }).extend({
+        index: 'lib/index' //主入口模块
+
+    }).use(['index', 'table', 'layer'], function() {
+        var table = layui.table
+            , layer = layui.layer
+            , $ = layui.$;
+        $('#downcode').on('click', function(e) {
+            e.preventDefault();
+            addMessage();
+        });
+        $('#resetcode').on('click', function(e) {
+            e.preventDefault();
+            resetPromotionSetting();
+        });
+
+        init();
+        function init() {
+            refresh();
+            renderData();
+        }
+
+        function renderData() {
+            table.render({
+                elem: '#tglist'
+                , height: 1000
+                , url: "{:url('template/getIndex')}" //数据接口
+                , where: {}
+                , page: true //开启分页
+                , cols: [[ //表头
+                    {field: 'template_code', title: '配置名称'}
+                    , {field: 'template_name', title: '推广模板'}
+                    , {field: 'template_image', title: '推广二维码', templet:function (d) {
+                            return "<img class=\"img-responsive img-thumbnail\" src=\""+d.template_image+"\">"
+                        }}
+                    , {field: 'distribute_url', title: '推广宣传地址'}
+                    , {field: 'x', title: 'X轴'}
+                    , {field: 'y', title: 'Y轴'}
+                    , {field: 'isdel', title: '状态'}
+                ]]
+            });
+        }
+
+        function resetPromotionSetting() {
+            layer.confirm('确认重新生成？此操作将会使所有的已经在用的二维码失效。', {
+                btn: ['确认','取消'] //按钮
+            }, function(){
+                $.ajax({
+                    url: 'resetPromotionSetting',
+                    type: 'post',
+                    async: false,
+                    data: $("#addPromotionSetting").serialize(),
+                    success: function (response) {
+                        if (response.code !== 0 || response === true) {
+                            layer.msg("生成成功");
+                            window.setTimeout(function() {
+                                window.location.href = "{:url('template/index')}";
+                            }, 1000);
+
+                        } else {
+                            layer.msg(response.msg)
+                        }
+                    }
+
+                })
+            }, function(){
+
+            });
+        }
+
+        function refresh() {
+            $.ajax({
+                url: 'autoResetPromotionSetting',
+                type: 'get',
+                async: false,
+                cache: false,
+                success: function (response) {
+                    if (response === false) {
+
+                    } else if (response === true) {
+                        window.location.href = 'promotionConfig?random=' + Math.random();
+                    } else if (response.code !== 0) {
+                        alert(response.msg)
+
+                    }
+                }
+
+            })
+        }
+
+
+    });
+</script>
+{/block}

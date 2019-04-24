@@ -1,0 +1,96 @@
+function formatSeconds(value) {
+    var s = parseInt(value) % 60;// 需要转换的时间秒
+    var h = parseInt(value) / 60;// 分
+    var result = '';
+    if (s > 0) {
+        result = "" + parseInt(s) + "秒";
+    }
+    if (h > 0) {
+        result = "" + parseInt(h) + "分" + result;
+    }
+
+    return result;
+}
+
+function changeNum(data) {
+    $("#pageNum").val(data.attributes['data'].value);
+    $('#myForm').submit();
+
+}
+
+function addPageSize() {
+    $('#pageSize').remove()
+    var s = "<input type='hidden' name='pageSize'  value='" + $('#pageSizeP').val() + "'/>";
+    $('#pageNum').append(s);
+    $('#myForm').submit();
+
+
+}
+
+window.onresize = function () {
+    checkWidth()
+};
+
+if (document.createEvent) {
+    var event = document.createEvent("HTMLEvents");
+    event.initEvent("resize", true, true);
+    window.dispatchEvent(event);
+} else if (document.createEventObject) {
+    window.fireEvent("onresize");
+}
+
+function checkWidth() {
+    var windowsize = $(window).width();
+    try {
+        if (windowsize >= 440) {
+            $('table').bootstrapTable({
+                cardView: false
+            });
+            $('table').bootstrapTable('resetView');
+
+        }
+        else {
+            $('table').bootstrapTable({
+                cardView: true
+            });
+            $('table').bootstrapTable('resetView');
+        }
+    } catch (err) {
+
+    }
+}
+
+// 通用排序  使用方法
+function orderByTime(dom) {
+    if ($(dom).attr("data-d") === "desc") {
+        $('#d').val("desc");
+    } else {
+        $('#d').val("asc");
+    }
+    $('#o').val($(dom).attr("data-type"));
+    $('#myForm').submit();
+}
+
+
+
+
+var countdown = 1800;
+
+function settime(obj) {
+
+    if (countdown === 0) {
+        $(".sendCode").attr("disabled", false);
+        $(".sendCode").html("免费获取验证码");
+        countdown = 1800;
+        return;
+    } else {
+        $(".sendCode").attr("disabled", true);
+        $(".sendCode").html("重新发送(" + formatSeconds(countdown) + ")");
+        countdown--;
+    }
+    setTimeout(function () {
+            settime(this)
+        }
+        , 1000)
+
+}

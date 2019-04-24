@@ -1,0 +1,550 @@
+<?php if (!defined('THINK_PATH')) exit(); /*a:2:{s:85:"C:\Users\Administrator\Desktop\fx/./application/manage\view\settle\settlementlog.html";i:1553767352;s:74:"C:\Users\Administrator\Desktop\fx\application\manage\view\common\base.html";i:1553670084;}*/ ?>
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>收入详情</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="/src/layuiadmin/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="/src/layuiadmin/style/admin.css" media="all">
+    
+<link rel="shortcut icon" href="favicon.ico">
+<link href="/public/static/css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+<link href="/public/static/css/font-awesome.min.css?v=4.4.0" rel="stylesheet">
+<link href="/public/static/css/footable.core.css" rel="stylesheet">
+<link href="/public/static/css/datepicker3.css" rel="stylesheet"/>
+<link href="/public/static/css/animate.css" rel="stylesheet">
+<link href="/public/static/css/style.css?v=4.1.0" rel="stylesheet">
+<link href="/public/static/css/bootstrap-table.css" type="text/css" rel="stylesheet">
+
+</head>
+<body>
+
+<div class="layui-fluid">
+    
+<div class="layui-card">
+    <div class="layui-card-header layuiadmin-card-header-auto">
+        <form class="layui-form" action="settlementLog" id="myForm" method="post">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <div class="layui-input-inline">
+                        <select name="condition" id="condition" onchange="changeByCondition(this)">
+                            <option value="" <?php if($status == ''): ?>selected="true"<?php endif; ?>>全部</option>
+                            <option value="1" <?php if($status == 1): ?>selected="true"<?php endif; ?>>审核中</option>
+                            <option value="2" <?php if($status == 2): ?>selected="true"<?php endif; ?>>审核完成</option>
+                            <option value="3" <?php if($status == 3): ?>selecteded="true"<?php endif; ?>>支付驳回</option>
+                            <option value="4" <?php if($status == 4): ?>selected="true"<?php endif; ?>>已完成</option>
+                            <option value="5" <?php if($status == 5): ?>selected="true"<?php endif; ?>>作废</option>
+                            <option value="6" <?php if($status == 6): ?>selected="true"<?php endif; ?>>新支付审核</option>
+                            <option value="7" <?php if($status == 7): ?>selected="true"<?php endif; ?>>订单失败</option>
+                            <option value="8" <?php if($status == 8): ?>selected="true"<?php endif; ?>>老支付审核</option>
+                            <option value="9" <?php if($status == 9): ?>selected="true"<?php endif; ?>>处理中</option>
+                            <option value="10" <?php if($status == 10): ?>selected="true"<?php endif; ?>>银行卡审核</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">时间</label>
+                    <div class="layui-input-inline" style="width: 100px;">
+                        <input type="text" name="startTime" value="<?php echo $starttime; ?>"  id="LAY-component-form-group-date" autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-form-mid">-</div>
+                    <div class="layui-input-inline" style="width: 100px;">
+                        <input type="text" name="endTime" value="<?php echo $endtime; ?>" id="LAY-component-form-group-date2" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">支付宝</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="alipayAccount" name="alipayAccount" value="<?php echo $alipay; ?>" placeholder="请输入支付宝账户"  autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">姓名</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="realName" name="realName" value="<?php echo $alipayname; ?>"
+                               placeholder="请输入支付宝真实姓名"  autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">代理ID</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="agentId" name="agentId" value="<?php echo $agentid; ?>" placeholder="请输入代理ID"  autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-inline" style="text-align: center">
+                    <button class="layui-btn" type="submit" id="search_tg">搜索</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="layui-card-body">
+        <div  style="margin-bottom: 10px;">
+            <a class="layui-btn" data-type="reload" id="pass">批量通过</a>
+            <a class="layui-btn" data-type="reload" id="refu">批量拒绝</a>
+            <a class="layui-btn" data-type="reload" id="refu2">拒绝并封号</a>
+            <a class="layui-btn" data-type="reload" id="back">恢复订单</a>
+        </div>
+        <table id="tglist" lay-filter="tglist" >
+            <thead id="hlist">
+            <tr>
+                <th></th>
+
+                <th data-toggle="true">结算单id</th>
+                <th>时间 &nbsp;<p class="glyphicon glyphicon-menu-up" data-d='desc'
+                                data-type="time"
+                                onclick="orderByTime(this)">
+
+                </th>
+                <th>状态</th>
+                <th>类型</th>
+                <th>结算金额</th>
+                <th>税收</th>
+                <th>账号</th>
+                <th>姓名</th>
+                <th>代理ID</th>
+                <th>备注</th>
+                <th>信息</th>
+                <th>操作</th>
+            </tr>
+
+            </thead>
+            <tbody id="plist">
+            <?php if(is_array($list) || $list instanceof \think\Collection || $list instanceof \think\Paginator): $i = 0; $__LIST__ = $list;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?>
+            <tr>
+
+                <td>
+                    <label>
+                        <input  type="checkbox" class="" value="<?php echo $vo['id']; ?>" <?php if($vo['status'] > 1): ?> disabled="readonly"<?php endif; ?>>
+                    </label>
+                </td>
+                <td><?php echo $vo['orderid']; ?></td>
+                <td><?php echo date("Y-m-d H:i:s",$vo['createtime']); ?></td>
+                <td>
+                    <?php if($vo['status'] == 1): ?>
+                    审核中
+                    <?php elseif($vo['status'] == 2): ?>
+                    审核完成
+                    <?php elseif($vo['status'] == 3): ?>
+                    支付驳回
+                    <?php elseif($vo['status'] == 4): ?>
+                    已完成
+                    <?php elseif($vo['status'] == 5): ?>
+                    作废
+                    <?php elseif($vo['status'] == 6): ?>
+                    新支付审核
+                    <?php elseif($vo['status'] == 7): ?>
+                    订单失败
+                    <?php elseif($vo['status'] == 8): ?>
+                    老支付审核
+                    <?php elseif($vo['status'] == 9): ?>
+                    处理中
+                    <?php elseif($vo['status'] == 10): ?>
+                    银行卡审核
+                    <?php else: ?>
+                    系统处理
+                    <?php endif; ?>
+
+                </td>
+                <td>
+                    <?php if($vo['checktype'] == 1): ?>
+                    支付宝
+                    <?php else: ?>
+                    银行卡
+                    <?php endif; ?>
+                <td><?php echo $vo['amount']; ?></td>
+                <td><?php echo $vo['tax']; ?></td>
+                <td>
+                    <?php if($vo['checktype'] == 1): ?>
+                    <?php echo $vo['alipay']; else: ?>
+                    <?php echo $vo['bank']; ?>-<?php echo $vo['cardaccount']; endif; ?>
+                </td>
+                <td> <?php if($vo['checktype'] == 1): ?>
+                    <?php echo $vo['alipay_name']; else: ?>
+                    <?php echo $vo['name']; endif; ?></td>
+                <td><?php echo $vo['proxy_id']; ?></td>
+                <td><?php echo $vo['descript']; ?></td>
+                <td><?php echo $vo['info']; ?></td>
+                <td><a href="javascript:;" class="layui-btn detailinf" data="<?php echo $vo['proxy_id']; ?>" data-order="<?php echo $vo['orderid']; ?>" data-money="<?php echo $vo['amount']; ?>">
+                    代理详情</a></td>
+            </tr>
+            <?php endforeach; endif; else: echo "" ;endif; ?>
+            </tbody>
+            <tfoot>
+            <div>
+                <?php echo $list->render(); ?>
+            </div>
+            </tfoot>
+
+        </table>
+        <input type="hidden" name="pageNum" id="pageNum"/>
+        <input type="hidden" name="pageSize" id="pageSize" value="10"/>
+        <input type="hidden" name="o" id="o" value=""/>
+        <input type="hidden" name="d" id="d" value=""/>
+        <input type="hidden" name="_csrf" value="edc8cd42-0c33-418c-bd1d-0c921c48e763"/>
+    </div>
+</div>
+
+<div class="layui-row" id="popRefu" style="display:none;">
+    <div class="layui-col-md12">
+        <form class="layui-form" id="addNotice" method="post"  style="margin-top:20px;margin-right: 20px;" >
+            <div class="layui-form-item">
+                <label class="layui-form-label"></label>
+                <div class="layui-input-inline">
+
+                    <input  type="text" name="msg" id="msg" placeholder="请输入拒绝原因" autocomplete="off" class="layui-input">
+                    <input type="hidden" name="orderId" id="orderId"/>
+                </div>
+
+            </div>
+            <div class="layui-form-item"><label class="layui-form-label"></label>  <div class="layui-input-inline">
+                <a class="layui-btn option" href="javascript:;">支付宝账号错误</a>
+            </div></div>
+            <div class="layui-form-item"><label class="layui-form-label"></label><div class="layui-input-inline">
+                <a class="layui-btn option" href="javascript:;">渠道异常，存在刷量现象</a>
+            </div></div>
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label"></label>
+                <div class="layui-input-block">
+                    <button type="submit" class="layui-btn layui-btn-radius" id="refusure" >确认</button>
+                    <button type="reset" class="layui-btn layui-btn-primary layui-btn-radius">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="layui-row" id="popDetail">
+    <table id="detail" lay-filter="detail" class="layui-table">
+        <tbody class="layui-table-body" id="detailb"></tbody>
+    </table>
+</div>
+
+
+</div>
+
+<script src="/src/layuiadmin/layui/layui.js?t=1"></script>
+<script src="/public/static/js/jquery.min.js?v=2.1.4"></script>
+
+<script src="/public/static/js/jquery.min.js?v=2.1.4"></script>
+<script src="/public/static/js/bootstrap.min.js?v=3.3.6"></script>
+<script src="/public/static/js/bootstrap-datepicker.js"></script>
+<script src="/public/static/js/bootstrap-table.js"></script>
+<script src="/public/static/js/common.js?v=1.1"></script>
+<script src="/public/static/js/sweetalert.min.js"></script>
+<script src="/public/static/js/toastr.min.js"></script>
+<script>
+    layui.config({
+        base: '/src/layuiadmin/' //静态资源所在路径
+    }).extend({
+        index: 'lib/index' //主入口模块
+
+    }).use(['index', 'table', 'layer', 'element', 'laydate', 'form', 'jquery'], function() {
+        var laydate=layui.laydate;
+        var form   =layui.form;
+        var $ = layui.$;
+
+        laydate.render({
+            elem: '#LAY-component-form-group-date'
+            ,format:'yyyy-MM-dd'
+        });
+        laydate.render({
+            elem: '#LAY-component-form-group-date2'
+            ,format:'yyyy-MM-dd'
+        });
+        $('#pass').on('click',function(e) {
+            e.preventDefault();
+            permitOrder(this.parentNode)
+        });
+        $('#refu').on('click',function(e) {
+            e.preventDefault();
+            refuse()
+        });
+        $('#refusure').on('click',function(e) {
+            e.preventDefault();
+            refuseOrder();
+        });
+        $('#refu2').on('click',function(e) {
+            e.preventDefault();
+            refuseAndBan();
+        });
+        $('#back').on('click',function(e) {
+            e.preventDefault();
+            repairOrder();
+        });
+        $('.detailinf').on('click',function(e) {
+            e.preventDefault();
+            getDetail(this);
+        });
+
+        $('#pageTd').attr('colspan', 11);
+        $('.option').click(function () {
+            $('#msg').val($(this).text());
+        });
+        function permitOrder(dom) {
+            if ($("input[type='checkbox']:checkbox:checked").length < 1) {
+                layer.msg('请至少选择一项进行操作');
+                return false
+            }
+
+            layer.confirm("确认通过",{btn: ['确认','取消']}, function() {
+                permit()
+            });
+        }
+        function Order(key, value) {
+            this.id = key;
+            this.type = value;
+        }
+
+        function permit() {
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+            var args = [];
+
+            $("input[type='checkbox']:checkbox:checked").each(function () {
+                var id = $(this).val();
+                var type = $(this).attr("data-type");
+                var order = new Order(id, type);
+                args.push(order)
+            });
+            if (args.length === 0) {
+                layer.msg('请至少选择一项进行操作');
+                return false
+            }
+            args = JSON.stringify(args);
+            $.ajax({
+                    url: "permitOrder",
+                    method: "post",
+                    beforeSend: function (request) {
+                        //request.setRequestHeader(header, token);
+                    },
+                    data: {args: args},
+                    success: function (response) {
+                        if (response === true && response.code !== 0) {
+
+                            location.reload();
+                        }
+
+                        else {
+                            layer.msg('处理失败');
+                        }
+                    }
+                }
+            );
+        }
+
+        function refuse() {
+            if ($("input[type='checkbox']:checkbox:checked").length < 1) {
+                layer.msg('请至少选择一项进行操作');
+                return false
+            }
+
+            layer.open({
+                type: 1,
+                title: '拒绝通过',
+                shadeClose: true,
+                shade: 0.8,
+                content: $('#popRefu')
+            });
+
+        }
+
+
+        function refuseOrder() {
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+            var id;
+            var type;
+            var args = [];
+            $("input[type='checkbox']:checkbox:checked").each(function () {
+                id = $(this).val();
+                type = $(this).attr("data-type");
+                var order = new Order(id, type);
+                args.push(order)
+            });
+            args = JSON.stringify(args);
+            $.ajax({
+                url: "refuseOrder",
+                method: "put",
+                beforeSend: function (request) {
+                    //request.setRequestHeader(header, token);
+                },
+                data: {args: args, msg: $('#msg').val()},
+                success: function (response) {
+                    if (response === true && response.code !== 0) {
+                        location.reload();
+
+                    } else {
+                        layer.msg('处理失败');
+                    }
+                }
+            })
+        }
+
+
+        function refuseAndBan() {
+            if ($("input[type='checkbox']:checkbox:checked").length < 1) {
+                layer.msg('请至少选择一项进行操作');
+                return false
+            }
+
+            layer.confirm("确认拒绝并封号？",{btn: ['确认','取消']}, function() {
+
+                var id;
+                var type;
+                var args = [];
+                $("input[type='checkbox']:checkbox:checked").each(function () {
+                    id = $(this).val();
+                    type = $(this).attr("data-type");
+                    var order = new Order(id, type);
+                    args.push(order)
+                });
+                if (args.length < 1) {
+                    return false
+                }
+                args = JSON.stringify(args);
+                var token = $("meta[name='_csrf']").attr("content");
+                var header = $("meta[name='_csrf_header']").attr("content");
+                $.ajax({
+                    url: "refuseAndBan",
+                    method: "post",
+                    beforeSend: function (request) {
+                        //request.setRequestHeader(header, token);
+                    },
+                    data: {args: args},
+                    success: function (response) {
+                        if (response === true && response.code !== 0) {
+                            location.reload();
+                        } else {
+                            layer.msg('处理失败');
+                        }
+                    }
+                })
+            });
+        }
+
+        //修复订单
+        function repairOrder() {
+            if ($("input[type='checkbox']:checkbox:checked").length < 1) {
+                layer.msg('请至少选择一项进行操作');
+                return false
+            }
+            var args = [];
+            $("input[type='checkbox']:checkbox:checked").each(function () {
+                var id = $(this).val();
+                var type = $(this).attr("data-type");
+                var order = new Order(id, type);
+                args.push(order)
+            });
+
+            layer.confirm("确认恢复订单？恢复的订单将直接进入支付环节！",{btn: ['确认','取消']}, function() {
+                if (args.length < 1) {
+                    return false
+                }
+                args = JSON.stringify(args);
+                var token = $("meta[name='_csrf']").attr("content");
+                var header = $("meta[name='_csrf_header']").attr("content");
+                $.ajax({
+                    url: "repairOrder",
+                    method: "Post",
+                    beforeSend: function (request) {
+                        // request.setRequestHeader(header, token);
+                    },
+                    data: {args: args},
+                    success: function (response) {
+                        if (response === true && response.code !== 0) {
+                            location.reload();
+                        } else {
+                            layer.msg('处理失败');
+                        }
+                    }
+                })
+            });
+        }
+
+        function getDetail(dom) {
+            var id = dom.attributes['data'].value;
+            $.ajax({
+                url: "<?php echo url('proxy/getAgentDetail'); ?>",
+                data: {id: id},
+                success: function (response) {
+                    var orderId = dom.attributes['data-order'].value;
+                    var money = dom.attributes['data-money'].value;
+                    if (response.code !== 0 || response !== true) {
+                        var result = response.data;
+                        var str = "<tr>";
+                        str += "<th >代理id</th>";
+                        str += "<th >" + result.agentId + "</th>";
+                        str += "</tr><tr>";
+                        str += "<th>订单id</th>";
+                        str += "<th>" + orderId + "</th>";
+                        str += "</tr><tr>";
+
+                        str += "<th class='success'>总充值</th>";
+                        str += "<th >" + result.recharge  + "</th>";
+                        str += "</tr><tr>";
+                        str += "<th class='success'>总兑换金额</th>";
+                        str += "<th >" + result.extractSum  + "</th>";
+                        str += "</tr><tr>";
+                        str += "<th class='warning'>税收</th>";
+                        str += "<th>" + result.revenue + "</th>";
+                        str += "</tr><tr>";
+                        str += "<th class='warning'>总收入</th>";
+                        str += "<th>" + result.income  + "</th>";
+
+                        str += "</tr><tr>";
+                        str += "<th>总注册量</th>";
+                        str += "<th>" + result.reg + "</th>";
+                        str += "</tr><tr>";
+                        str += "<th>总提现金额</th>";
+                        str += "<th>" + result.withdrawDeposit + "</th>";
+                        str += "</tr><tr>";
+                        str += "<th>收益比例(现在/最高)</th>";
+                        str += "<th>" + result.royaltyRate + "%/" + result.maxRoyaltyRate + "%" + "</th>";
+                        str += "</tr><tr>";
+                        str += "<th class='success'>账户余额</th>";
+                        str += "<th>" + result.money  + "</th>";
+                        str += "</tr><tr>";
+                        str += "<th >本次提现金额</th>";
+                        str += "<th>" + money + "</th>";
+                        str += "</tr><tr>";
+
+                        str += "<th >信息</th>";
+                        str += "<th>" + result.msg + "</th>";
+                        str += "</tr>";
+                        $('#detailb').html(str);
+                        // id = dom.attributes['data-order'].value;
+                        // $("[data-order='" + id + "']").prop('checked', true)
+                        // table.init('detail');
+                        layer.open({
+                            type: 1,
+                            title: '详情',
+                            shadeClose: true,
+                            shade: 0.8,
+                            content: $('#popDetail')
+                        });
+
+
+                    } else {
+                        layer.msg('获取详情失败');
+                    }
+                }
+            });
+
+        }
+
+    });
+
+</script>
+
+</body>
+</html>
+

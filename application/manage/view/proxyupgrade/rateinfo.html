@@ -1,0 +1,70 @@
+{extend name="common/base" /}
+
+{block name="title"}总代理，一级代理比例设置{/block}
+{block name="content"}
+<div class="layui-card">
+    <div class="layui-card-header layuiadmin-card-header-auto">
+        <h2>总代理，一级代理比例设置</h2>
+    </div>
+
+    <div class="layui-card-body">
+        <form class="layui-form" action="{:url('proxyupgrade/setrate')}" method="post">
+            <div class="layui-form-item">
+                <label class="layui-form-label">总代理提成比例：</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="rate1" name="rate1" lay-verify="required|number" value="{$rateData['general_rate']}" placeholder="总代理提成比例" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">一级代理最高比例：</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="rate2" name="rate2" lay-verify="required|number" value="{$rateData['level1_rate']}" placeholder="可设置一级代理最高比例" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label"></label>
+                <div class="layui-input-inline">
+                    <button type="submit" class="layui-btn" lay-submit="" lay-filter="setrate">确认修改</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+{/block}
+
+{block name="script"}
+<script>
+    layui.use(['layer','table','form', 'jquery'],function () {
+        var layer = layui.layer
+            ,form = layui.form
+            ,table = layui.table
+            ,$    = layui.$;
+        //用户表格初始化
+        form.on('submit(setrate)', function(data) {
+            var rate1 = $.trim(data.field.rate1)
+                ,rate2 = $.trim(data.field.rate2);
+            $.ajax({
+                type:'post',
+                url:data.form.action,
+                data:{
+                    'rate1' : rate1,
+                    'rate2' : rate2,
+                },
+                dataType:'json',
+                success: function(res) {
+                    if (res.code === 0) {
+                        layer.msg(res.msg,{icon:6});
+                    } else {
+                        layer.msg(res.msg, {icon:5});
+                    }
+                }
+            });
+            return false;
+        });
+    });
+</script>
+{/block}
+

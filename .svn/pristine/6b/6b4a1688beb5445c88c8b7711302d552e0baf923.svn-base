@@ -1,0 +1,210 @@
+{extend name="common/base" /}
+
+{block name="title"}代理分成比例升级设置{/block}
+{block name="content"}
+<div class="layui-card">
+    <div class="layui-card-header">
+        <div class="layui-card-header"><button class="layui-btn layui-btn-sm" id="adddict">新增</button></div>
+
+    </div>
+    <div class="layui-card-body">
+        <table id="proxyupgradelist" lay-filter="proxyupgradelist"></table>
+
+    </div>
+</div>
+
+<div class="layui-row" id="popEditProxy" style="display:none;">
+    <div class="layui-col-md12">
+        <form class="layui-form" action="" method="post" id="editProxy" style="margin-top:20px;margin-right: 20px;" >
+            <div class="layui-form-item">
+                <label class="layui-form-label">ID：</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="id" readonly id="id" lay-verify="required" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">分成比例：</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="percent" id="percent" lay-verify="required|number" placeholder="分成比例" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">一周累计税收：</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="profit" id="profit" lay-verify="required|number" placeholder="请输入一周累计税收" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label"></label>
+                <div class="layui-input-block">
+                    <button type="submit" class="layui-btn layui-btn-radius" lay-submit="" lay-filter="account-edit">保存</button>
+                    <button type="button" class="layui-btn layui-btn-primary layui-btn-radius" id="edit_reset">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="layui-row" id="popAddProxy" style="display:none;">
+    <div class="layui-col-md12">
+        <form class="layui-form" action="" method="post" id="addProxy" style="margin-top:20px;margin-right: 20px;" >
+            <div class="layui-form-item">
+                <label class="layui-form-label">分成比例：</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="percent" id="add_percent" lay-verify="required|number" placeholder="分成比例" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">一周累计税收：</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="profit" id="add_profit" lay-verify="required|number" placeholder="请输入一周累计税收" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label"></label>
+                <div class="layui-input-block">
+                    <button type="submit" class="layui-btn layui-btn-radius" lay-submit="" lay-filter="account-add">新增</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+{/block}
+
+{block name="script"}
+<script type="text/html" id="proxyupgradelist-bar">
+    <button class="layui-btn layui-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i><cite></cite></button>
+    <button class="layui-btn layui-btn-xs layui-btn-danger" lay-event="delete"><i class="layui-icon layui-icon-close"></i><cite></cite></button>
+</script>
+<script>
+    layui.use(['layer','table','form','jquery'],function () {
+        var layer = layui.layer
+            , form = layui.form
+            , table = layui.table
+            , $ = layui.$;
+        //用户表格初始化
+        var dataTable = table.render({
+            elem: '#proxyupgradelist'
+            , height: 500
+            , url: "{:url('proxyupgrade/getIndex')}" //数据接口
+            , where: {}
+            , page: false //开启分页,
+            , cols: [[ //表头
+                {field: 'id', title: 'ID', sort:true}
+                , {field: 'percent', title: '分成比例'}
+                , {field: 'profit', title: '所需一周累计税收'}
+                , {fixed: 'right', title:'操作', align:'center', toolbar: '#proxyupgradelist-bar'}
+            ]]
+        });
+
+
+        //编辑
+        table.on('tool(proxyupgradelist)', function(obj) {
+            var data = obj.data //获得当前行数据
+                ,layEvent = obj.event; //获得 lay-event 对应的值
+            tr = obj.tr; //获得当前行 tr 的DOM对象
+            if (layEvent === 'edit') {
+                $('#id').val(data.id);
+                $('#percent').val(data.percent);
+                $('#profit').val(data.profit);
+                index = layer.open({
+                    type: 1,
+                    title: '代理分成比例升级设置',
+                    shadeClose: true,
+                    shade: 0.8,
+                    content: $('#popEditProxy')
+                });
+           } else if (layEvent === 'delete') {
+                layer.confirm("确认删除这条记录？",{btn: ['确认','取消']}, function() {
+                    $.ajax({
+                        type: 'post',
+                        url: "{:url('proxyupgrade/delete')}",
+                        data: {
+                            'id': data.id
+                        },
+                        dataType: 'json',
+                        success: function (res) {
+                            if (res.code === 0) {
+                                layer.msg(res.msg, {icon: 6});
+                                setTimeout(function(){
+                                    window.location.reload();
+                                },1000);
+                            } else {
+                                layer.msg(res.msg, {icon: 5});
+                            }
+                        }
+                    });
+                });
+            }
+        });
+
+        //更新编辑
+        form.on('submit(account-edit)', function(data) {
+            $.ajax({
+                type: 'post',
+                url: "{:url('proxyupgrade/edit')}",
+                data: {
+                    'id': $.trim(data.field.id),
+                    'profit': $.trim(data.field.profit),
+                    'percent': $.trim(data.field.percent),
+                },
+                dataType: 'json',
+                success: function (res) {
+                    if (res.code === 0) {
+                        layer.msg(res.msg, {icon: 6});
+                        //更新信息
+                        $(tr).find("td[data-field='percent'] div").html($.trim(data.field.percent));
+                        $(tr).find("td[data-field='profit'] div").html($.trim(data.field.profit));
+                        layer.close(index);
+                    } else {
+                        layer.msg(res.msg, {icon: 5});
+                    }
+                }
+            });
+            return false;
+        });
+
+        $('#adddict').on('click', function(e) {
+            e.preventDefault();
+            index2 = layer.open({
+                type: 1,
+                title: '代理分成比例升级新增',
+                shadeClose: true,
+                shade: 0.8,
+                content: $('#popAddProxy')
+            });
+        });
+
+        //新增
+        form.on('submit(account-add)', function(data) {
+            $.ajax({
+                type: 'post',
+                url: "{:url('proxyupgrade/add')}",
+                data: {
+                    'add_profit': $.trim(data.field.profit),
+                    'add_percent': $.trim(data.field.percent),
+                },
+                dataType: 'json',
+                success: function (res) {
+                    if (res.code === 0) {
+                        layer.msg(res.msg, {icon: 6});
+                        //更新信息
+                        layer.close(index2);
+                        setTimeout(function(){
+                            window.location.reload();
+                        },1000);
+                    } else {
+                        layer.msg(res.msg, {icon: 5});
+                    }
+                }
+            });
+            return false;
+        });
+    });
+</script>
+{/block}
+

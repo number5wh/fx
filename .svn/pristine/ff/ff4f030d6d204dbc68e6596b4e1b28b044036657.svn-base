@@ -1,0 +1,645 @@
+<?php
+
+namespace app\admin\controller;
+
+use app\admin\controller\Base;
+use think\captcha\Captcha;
+use think\Db;
+use think\model;
+use think\Paginator;
+use think\log;
+use app\admin\model\Sms;
+
+
+class Proxy extends Base
+{
+
+    public function index()
+    {
+//        p(strtotime(date('Y-m-d 00:00:00')));
+//        $levelData = config('proxy_rate.levelup');
+//        $todayMoney=500000;
+//        $levelup = 0;
+//        foreach ($levelData as $key => $value) {
+//            if ($todayMoney < $value['need']) {
+//                if ($key > 0) {
+//                    $levelup = $levelData[$key-1]['level'];
+//                }
+//                break;
+//            }
+//        }
+//        p($levelup);
+        $proxy = session("proxy");
+        $isadmin = 0;
+        if ($proxy['grade'] == 1) {//管理员
+            $percent = config('proxy_rate.general_proxy');
+            $info = '可设值为：'.$percent;
+            $isadmin=1;
+        } elseif ($proxy['grade'] == 2) {//总代理
+            $percent = config('proxy_rate.level1_proxy');
+            $info = '可设最大值为：'.$percent;
+        } else {
+            $percent = $proxy['percent'] >= config('proxy_rate.level1_proxy') ? config('proxy_rate.level1_proxy') : ($proxy['percent']);
+            $info = '可设最大值为：'.$percent;
+        }
+
+        $this->assign('info', $info);
+        $this->assign('percent', $percent);
+        $this->assign('isadmin', $isadmin);
+        return $this->fetch();
+    }
+
+    public function getIndex()
+    {
+        $status = input("status");
+        $agentid = input("agentId");
+        $phone = input("phone");
+        $regstart = input("startTime");
+        $regend = input("endTime");
+        $proxy = session("proxy");
+        $minmoney = input("minMoney");
+        $maxmoney = input("maxMoney");
+        $nickname = input("nickName");
+        $username = input("account");
+        $page  = intval(input('page')) > 0 ? intval(input('page')) : 1;
+        $limit = intval(input('limit')) > 0 ? intval(input('limit')) : 10;
+
+        $where = array();
+        $where["parent_id"] =  $proxy["code"];
+        if (!empty($status)) {
+            $where["lock"] = $status;
+        } else {
+            $status = "";
+        }
+
+
+        if (!empty($agentid)) {
+            $where['code'] = $agentid;
+        }
+
+        if (!empty($phone)) {
+            $where['bind_mobile'] = $phone;
+        }
+
+        if (!empty($regstart)) {
+            if (!empty($regend)) {
+                $where['regtime'] = array(array('gt', $regstart), array('lt', $regend));
+            } else {
+                $where['regtime'] = array('gt', $regstart);
+            }
+        }
+
+        if (!empty($minmoney)) {
+            if (!empty($maxmoney)) {
+                $where['balance'] = array(array('gt', $minmoney), array('lt', $maxmoney));
+            } else {
+                $where['balance'] = array('gt', $minmoney);
+            }
+        }
+
+        if (!empty($nickname)) {
+            $where["nickname"] = ['like', '%' . $nickname . '%'];;
+        }
+
+        if (!empty($username)) {
+            $where["username"] = ['like', '%' . $username . '%'];;
+        }
+        //print_r($where);
+
+        //查询满足要求的总的记录数
+        $count = Db::table('proxy')->where($where)->count();
+
+        $list = Db::table('proxy')->where($where)->order('id desc ')->page($page, $limit)->select();
+        foreach ($list as &$item) {
+            if ($item["bind_ip"] == '')
+                $item["bind_ip"] = "否";
+            else
+                $item["bind_ip"] = "是";
+
+            if ($item["bind_mobile"] == '')
+                $item["bind_mobile"] = "否";
+            else
+                $item["bind_mobile"] = "是";
+
+            if ($item["lock"] == '1')
+                $item["lock"] = "是";
+            else
+                $item["lock"] = "否";
+        }
+
+        unset($item);
+        return json(['code' => 0, 'count' => $count, 'data' => $list]);
+    }
+
+
+    public function checkexist()
+    {
+        $accountname = input("account");
+        $where = array('username' => $accountname);
+        $ret = Db::name("proxy")->where($where)->count();
+        if ($ret > 0) {
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
+    public function editProxyInfo()
+    {
+        $code = input("code");
+        $proxy = session("proxy");
+        if (!$code) {
+            return $this->showmsg(0, "参数为空", '', '', null);
+        }
+        $proxyInfo = Db::name("proxy")->where("code", $code)->find();
+        if (!$proxyInfo) {
+            return $this->showmsg(0, "找不到该代理信息", '', '', null);
+        }
+        //判断当前代理是否是编辑人下级
+        if ($proxyInfo['parent_id'] != $proxy['code']) {
+            return $this->showmsg(0, "无权限修改此代理信息", '', '', null);
+        }
+
+        $canset = 0; //能否设置比例
+        if ($proxy['grade'] == 1) {//管理员
+            $percent = config('proxy_rate.general_proxy');
+            $info = '可设值为：'.$percent;
+        } else {
+            if ($proxyInfo['percent'] >= config('proxy_rate.level1_proxy')) {//下级代理是否已超出限定值
+                $info = '';
+            } else {
+                $percent = $proxy['percent'] > config('proxy_rate.level1_proxy') ? config('proxy_rate.level1_proxy') : $proxy['percent'];
+                $info = '可设最大值为：'.$percent;
+                $canset = 1;
+            }
+        }
+
+        return json(['code'=>1, 'info2'=>$info,'canset'=>$canset]);
+
+    }
+
+    public function editProxy()
+    {
+        $code = input("proxy_code");
+        $passord = input("proxy_password");
+        $nickname = input("proxy_nickname");
+        $percent = intval(input("proxy_rate"));
+        $remark = input("proxy_comment");
+        $proxy = session("proxy");
+        if (!$code  || $nickname == '' || $percent == '') {
+            return $this->showmsg(0, "参数为空", '', '', null);
+        }
+        $proxyInfo = Db::name("proxy")->where("code", $code)->find();
+        if (!$proxyInfo) {
+            return $this->showmsg(0, "找不到该代理信息", '', '', null);
+        }
+        //判断当前代理是否是编辑人下级
+        if ($proxyInfo['parent_id'] != $proxy['code']) {
+            return $this->showmsg(0, "无权限修改此代理信息", '', '', null);
+        }
+        //昵称
+        $data = Db::name("proxy")->where("nickname", $nickname)->find();
+        if ($data && $data['code'] !=$code) {
+            return $this->showmsg(0, "昵称已存在", '', '', null);
+        }
+
+        //分成比例的判断
+        if ($proxy['grade'] == 1) {//管理员只能设置65
+            $percent = config('proxy_rate.general_proxy');
+            if ($percent != config('proxy_rate.general_proxy')) {
+                return $this->showmsg(0, "提成比例必须为" . config('proxy_rate.general_proxy'), '', '', null);
+            }
+        } else {
+            if ($proxyInfo['percent'] >= config('proxy_rate.level1_proxy')) {//下级代理是否已超出限定值55
+                if ($percent != $proxyInfo['percent']) {
+                    return $this->showmsg(0, "当前提成比例不能修改", '', '', null);
+                }
+            } else {
+                //可设置最大值
+                $maxPercent = $proxy['percent'] > config('proxy_rate.level1_proxy') ? config('proxy_rate.level1_proxy') : $proxy['percent'];
+                if ($percent < $proxyInfo['percent']) {
+                    return $this->showmsg(0, "设置的提成比例不能小于原有的提成比例", '', '', null);
+                }
+                if ($percent > $maxPercent) {
+                    return $this->showmsg(0, "设置的提成比例不能大于".$maxPercent, '', '', null);
+                }
+            }
+        }
+
+        $update = [
+            'nickname' => $nickname,
+            'percent' => $percent
+        ];
+        if ($passord) {
+            $salt = strtolower(generateSalt());
+            $update['password'] = md5($salt.$passord);
+            $update['salt'] = $salt;
+        }
+        if ($remark) {
+            $update['descript'] = $remark;
+        }
+        $res = Db::name("proxy")->where('code',$code)->update($update);
+        if ($res) {
+            return $this->showmsg(1, "更新成功", '', '', null);
+        } else {
+            return $this->showmsg(1, "更新失败", '', '', null);
+        }
+
+    }
+
+//{"code":0,"msg":"昵称重复","error":null,"hasMore":false,"data":null}
+    public function addProxy()
+    {
+
+        $proxy = session("proxy");
+        $username = input("accountForReg");
+        $passord = input("passwordForReg");
+        $nickname = input("nickNameForReg");
+        $percent = input("royaltyRate");
+        $remark = input("remark");
+
+        if ($username == '' || $passord == '' || $nickname == '' || $percent == '') {
+            return $this->showmsg(0, "参数为空", '', '', null);
+        }
+
+        $data = Db::name("proxy")->where("username", $username)->count();
+        if ($data > 0) {
+            return $this->showmsg(0, "用户名已存在", '', '', null);
+        }
+
+        $data = Db::name("proxy")->where("nickname", $nickname)->count();
+        if ($data > 0) {
+            return $this->showmsg(0, "昵称已存在", '', '', null);
+        }
+
+        if (!is_numeric($percent)) {
+            return $this->msg(0, "比例有误",  null);
+        }
+        //判断分成比例
+        $grade = $proxy["grade"];
+        if ($grade == 1) { //管理员
+            if ($percent != config('proxy_rate.general_proxy')) {
+                return $this->showmsg(0, "提成比例必须为" . config('proxy_rate.general_proxy'), '', '', null);
+            }
+        } elseif ($grade == 2) {//总代理
+            if ($percent > config('proxy_rate.level1_proxy')) {
+                return $this->showmsg(0, "提成比例不能超过" . config('proxy_rate.level1_proxy'), '', '', null);
+            }
+        }
+
+        if ($percent > $proxy["percent"]) {
+            return $this->showmsg(0, "提成比例不能大于" . $proxy["percent"], '', '', null);
+        }
+
+
+        $salt = strtolower(generateSalt());
+
+        $data = array(
+            "username" => $username,
+            "salt" => $salt,
+            "password" => md5($salt . $passord),
+            "nickname" => $nickname,
+            "regtime" => date("Y-m-d H:i:s"),
+            "balance" => 0,
+            "lock" => 0,
+            "historyin" => 0,
+            "percent" => $percent,
+            "descript" => $remark,
+            "last_ip" => get_ip(),
+            "grade" => $grade + 1,
+            "parent_id" => $proxy['code']
+        );
+
+        $ret = Db::name("proxy")->insertGetId($data);
+        if ($ret) {
+            $proxy_code = sprintf("WZ%07d", $ret);
+            Db::name("proxy")->where('id',$ret)->update(["code"=>$proxy_code]);
+            //$template = Db::name('template')->where('template_code',1)->find();
+            $arrTemplate = Db::name('template')->select();
+
+            $usertemp = new \app\admin\model\UserTemplate();
+            $usertemp->Qrcode($proxy_code);
+            $qrcode = '/public/upload/Qrcode/' . $proxy_code . '.png';
+
+            foreach($arrTemplate as $k=>$template){
+                if (!empty($template)) {
+                    $cfgname = $username . $template['template_code'];
+
+
+                    $tagetimg = "." . $qrcode;// str_replace("/public/","./",$qrcode);
+                    $bigimg = "." . $template["template_image"];//str_replace("/public/","./",$template["template_image"]);
+
+                    $qrcode_url = "./public/upload/Qrcode/proxy_" . $proxy_code .$template['template_code']. '.png';
+                    $ret = combinePic($bigimg, $tagetimg, $template["x"], $template["y"], $qrcode_url);
+                    Log::write($ret . ':生成二维码状态', "ERROR");
+                    $qrcode2 = '/public/upload/Qrcode/proxy_' . $proxy_code .$template['template_code']. '.png';
+
+
+                    $template = array("proxy_id" => $proxy_code, "config_name" => $cfgname, "template_code" => $template['template_code'],
+                        "template_name" => $template['template_name'], "qrcode" => $qrcode2, "image_url" => $qrcode2,
+                        "down_url" => $template['distribute_url'] . urlencode(compile($proxy_code)), "descript" => '');
+                    $status = Db::name("user_template")->insert($template);
+                } else {
+                    //return $this->msg(0, "模板不存在", null);
+                }
+            }
+            return $this->msg(1, "提交成功", null);
+
+        } else {
+            return $this->msg(0, "提交失败", null);
+        }
+    }
+
+
+    public function Changepwd()
+    {
+        return $this->fetch();
+    }
+
+
+    public function retrievepassword()
+    {
+        $proxyid = session("proxy_id");
+        $proxy = Db::name('proxy')->where('code',$proxyid)->find();
+        if($proxy){
+            $this->assign("mobile",$proxy['bind_mobile']);
+        }
+        return $this->fetch();
+    }
+
+
+    public function checkpass()
+    {
+        return $this->fetch();
+    }
+
+
+    /*
+     * 修改支付账户信息
+     */
+    public function checkaccount()
+    {
+        $proxy = session("proxy");
+        $data = Db::name("proxy")->where('code',$proxy['code'])->find();
+        $bankinfo = Db::name("bankinfo")->where("proxy_id",$proxy['code'])->find();
+        $this->assign("proxy",$data);
+        $this->assign("bankinfo",$bankinfo);
+        return $this->fetch();
+    }
+
+
+
+    public function bindmobile()
+    {
+        $proxy_id = session("proxy_id");
+        $data = Db::name("proxy")->field("code,bind_mobile")->where('code', $proxy_id)->find();
+        if (empty($data['bind_mobile'])) {
+            return $this->fetch();
+        } else {
+            $this->assign("phone", $data["bind_mobile"]);
+            return $this->fetch("proxy/unbindmobile");
+        }
+    }
+
+
+    /*
+     * 绑定手机号
+     */
+    public function bindMobileSave()
+    {
+        $mobile = input("phone");
+        $code = input("code");
+        if (empty($mobile) || empty($code)) {
+            return false;
+        }
+
+        $total = Db::name("proxy")->where("bind_mobile", $mobile)->count();
+        if ($total > 0) {
+            return $this->msg(0, "该手机号码已经存在，请更换号码绑定！", null);
+        }
+
+        $sms = new Sms();
+        $smsmodel = config('smsmodel');
+        if ($smsmodel == "self") {
+            $status = $sms->checkcode($mobile, $code, 'bindmobile');
+        } else if ($smsmodel == "hff") {
+            $ret = $sms->validateSms($mobile, $code);
+            $status = $ret->code == 0 ? true : false;
+        }
+        if (!$status) {
+            return $this->msg(0, "短信验证码不正确，请重新输入", null);
+        } else {
+
+            $proxy = session("proxy");
+            $data = array("bind_mobile" => $mobile);
+            $ret = Db::name("proxy")->where("code", $proxy['code'])->update($data);
+            if ($ret) {
+                return $this->msg(1, "绑定成功", null);
+            } else {
+                return $this->msg(0, "更新失败，请重新输入", null);
+
+            }
+        }
+
+    }
+
+
+    /*
+     * 解绑手机号
+     */
+    public  function unbindmobilesave(){
+        $mobile = input("phone");
+        $code = input("code");
+        if(empty($mobile) || empty($code)){
+            return false;
+        }
+        $sms = new Sms();
+        $smstype = config("smsmodel");
+        if($smstype=="self"){
+            $status = $sms->checkcode($mobile,$code,'bindmobile');
+        }
+        else if($smstype=="hff"){
+            $ret = $sms->validateSms($mobile,$code);
+            if($ret->code==0){
+                $status =true;
+            }
+            else{
+                $status =false;
+            }
+        }
+        if(!$status){
+            return $this->msg(0, "短信验证码不正确，请重新输入", null);
+        }
+
+        if($status){
+            $proxy = session("proxy");
+            $data = array("bind_mobile"=>'');
+            $ret =Db::name("proxy")->where("code",$proxy['code'])->update($data);
+            if($ret){
+                return $this->msg(1, "解绑成功",  null);
+            }
+            else
+            {
+                return $this->msg(0, "解绑失败，请重试",  null);
+
+            }
+        }
+
+    }
+
+
+
+
+    /*
+     * 修改账号密码
+     */
+    public function modifierPassword()
+    {
+        $oldPwd = input('oldPassword');
+        $newPwd = input("password");
+        $confirmPwd = input('passwordConfirm');
+
+        $proxy = session("proxy");
+        $decrytPwd = md5($proxy['salt'] . $oldPwd);
+        if ($decrytPwd === $proxy['password']) {
+            $newPwd = md5($proxy['salt'] . $newPwd);
+            $data = array('password' => $newPwd);
+            Db::name("proxy")->where('id', $proxy['id'])->update($data);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
+    ///修改结算密码
+    public function modifycheckpass()
+    {
+        $oldPwd = input('oldPassword');
+        $newPwd = input("password");
+        $confirmPwd = input('passwordConfirm');
+
+        $proxy = session("proxy");
+        $decrytPwd = md5($proxy['salt'] . $oldPwd);
+        if ($decrytPwd === $proxy['password']) {
+            $newPwd = md5($proxy['salt'] . $newPwd);
+            $data = array('check_pass' => $newPwd);
+            Db::name("proxy")->where('id', $proxy['id'])->update($data);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
+    /*
+     * 检查验证码发送短信
+     */
+    public function checkmobile()
+    {
+
+        $phone = input("phone");
+        $captcha = input("captcha");
+
+        if (empty($phone) || empty($captcha)) {
+            return $this->showmsg(0, "必须输入手机号码与图片验证码", "", false, null);
+        }
+        if (!$this->check($captcha, "bindphone")) {
+            return $this->showmsg(0, "输入图片验证码不正确", "", false, null);
+        }
+        return false;
+    }
+    public function check($code = '',$id='')
+    {
+        if(trim($code)!=''){
+            $captcha = new Captcha();
+            return $captcha->check($code,$id);
+        }
+        else
+        {
+            return false;
+        }
+
+    }
+
+
+//    public function sendcode()
+//    {
+//        $mobile = input("mobile");
+//        if(!$mobile){
+//            return $this->showmsg(0, "参数错误", "", false, null);
+//        }
+//
+//        $sms =new Sms();
+//        $smsmodel = config("smsmodel");
+//        $code =rand(1000,9999);
+//        if($smsmodel=="self"){
+//            $ret = $sms->checkandsend($mobile,$code,'bindmobile',get_ip());
+//        }
+//        else if($smsmodel=="hff")
+//        {
+//
+//        }
+//
+//        if(!$ret){
+//            return $this->showmsg(0, "短信发送频率过快", "", false, null);
+//        }
+//        return $this->showmsg(1, "短信发送成功", "", false, null);
+//    }
+
+
+    public function checkresetpassword(){
+        $code = input("code");
+        $mobile = input("codeMsg");
+        
+        if(empty($code) || empty($mobile)){
+            return $this->showmsg(0, "参数错误", "", false, null);
+        }
+
+        $sms = new Sms();
+        $status = $sms->validateSms($mobile,$code);//$sms->checkcode($mobile,$code,'resetpwd');
+        //print_r($status);
+        $status->code=0;
+        if($status->code==0){
+            session("resetcheckpass","isPass");
+            return json(['code' => 1, 'msg' => "checkpasssave"]);
+        }
+        else
+        {
+            return $this->error("验证码不正确");
+        }
+    }
+
+    public function checkpasssave()
+    {
+         return  $this->fetch();
+    }
+
+
+    public function resetSettlementPassword(){
+        $passord = input("password");
+        $flag = session("resetcheckpass");
+        if(isset($flag))
+        {
+            $proxy = session("proxy");
+            $checkpass = md5($proxy['salt'].$passord);
+            $data = array('check_pass'=>$checkpass,"updatetime"=>time());
+            $status = Db::name("proxy")->where(['code'=>$proxy['code']])->update($data);
+
+            if($status){
+                return $this->success("验证密码修改成功",url("index/main"));
+            }
+            else
+            {
+                return $this->error("验证密码修改失败，请重试");
+            }
+        }
+    }
+
+
+
+
+
+
+}

@@ -1,0 +1,68 @@
+<?php
+namespace app\manage\controller;
+
+use app\manage\controller\Base;
+use think\Db;
+use think\model;
+use think\Paginator;
+
+class Template extends Base{
+
+    public function _initialize() {
+        $roleid = session("RoleId");
+        if($roleid!=1){
+            $this->error('您没有权限','index/index');
+        }
+    }
+    public function index(){
+//        $proxy_id = session("proxy_id");
+//        //查询满足要求的总的记录数
+//        $list= Db::name("template")->order('id desc ')->paginate(3);
+//        $this->assign('list',$list);
+//        //赋值分页输出
+//        //$this->assign("status",$status);
+        return $this->fetch();
+    }
+
+    public function getIndex()
+    {
+        $page  = intval(input('page')) > 0 ? intval(input('page')) : 1;
+        $limit = intval(input('limit')) > 0 ? intval(input('limit')) : 10;
+        $proxy_id     = session("proxy_id");
+        $list = Db::table('template')->order('id desc ')->page($page, $limit)->select();
+        $count = Db::table('template')->count();
+        return json(['code' => 0, 'data' => $list, 'count' => $count]);
+    }
+
+
+    public function getTemplate(){
+        $data = Db::name("template")->where('isdel',0)->select();
+        $ret = array();
+        $num = sizeof($data);
+        foreach($data as $key=>$val){
+            $ret['id']=$val["id"];
+            $ret['num']=$num;
+            $ret['path']=$val["template_image"];
+            $ret['x']=$val["x"];
+            $ret['y']=$val["y"];
+            $ret['isDel']=$val["isdel"];
+        }
+        return json($ret);
+    }
+
+
+
+        public function checkDownload(){
+            //print_r($this->request);
+
+
+
+            return false;
+
+
+        }
+
+
+
+
+}

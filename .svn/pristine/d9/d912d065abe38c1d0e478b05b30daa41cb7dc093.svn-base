@@ -1,0 +1,232 @@
+<?php
+
+namespace app\admin\controller;
+use app\admin\model;
+/**
+ * 手机短信接口
+ */
+class Sms extends Base
+{
+
+    public function _initialize()
+    {
+        parent::_initialize();
+    }
+
+
+
+    public function sendcode()
+    {
+        $mobile = input("mobile");
+        if(!$mobile){
+            return $this->showmsg(0, "参数错误", "", false, null);
+        }
+
+        $sms =new model\Sms();
+        $smsmodel = config('smsmodel');
+        if($smsmodel=='self') {
+            $code = rand(1000, 9999);
+            $ret = $sms->checkandsend($mobile, $code, 'bindmobile', get_ip());
+            if (!$ret) {
+                return $this->showmsg(0, "短信发送频率过快", "", false, null);
+            }
+        }
+        else if($smsmodel=='hff'){
+           $ret = $sms->send_sms($mobile);
+           if($ret->code!=0){
+               return $this->showmsg(0, $ret->message, "", false, null);
+           }
+
+        }
+        return $this->showmsg(1, "短信发送成功", "", false, null);
+    }
+
+
+    public function sendcode1()
+    {
+        $mobile = input("mobile");
+        if(!$mobile){
+            return $this->showmsg(0, "参数错误", "", false, null);
+        }
+
+        $sms =new model\Sms();
+        $smsmodel = config('smsmodel');
+        if($smsmodel=='self') {
+            $code = rand(1000, 9999);
+            $ret = $sms->checkandsend($mobile, $code, 'resetpwd', get_ip());
+            if (!$ret) {
+                return $this->showmsg(0, "短信发送频率过快", "", false, null);
+            }
+        }
+        else if($smsmodel=='hff'){
+            $ret = $sms->send_sms($mobile);
+            if($ret->code!=0){
+                return $this->showmsg(0, $ret->message, "", false, null);
+            }
+        }
+        return $this->showmsg(1, "短信发送成功", "", false, null);
+    }
+
+
+    public function sendcode2()
+    {
+        $mobile = input("mobile");
+        if(!$mobile){
+            return $this->showmsg(0, "参数错误", "", false, null);
+        }
+
+        $sms =new model\Sms();
+        $smsmodel = config('smsmodel');
+        if($smsmodel=='self') {
+            $code = rand(1000, 9999);
+            $ret = $sms->checkandsend($mobile, $code, 'setaccount', get_ip());
+            if (!$ret) {
+                return $this->showmsg(0, "短信发送频率过快", "", false, null);
+            }
+        }
+        else if($smsmodel=='hff'){
+            $ret = $sms->send_sms($mobile);
+            if($ret->code!=0){
+                return $this->showmsg(0, $ret->message, "", false, null);
+            }
+        }
+        return $this->showmsg(1, "短信发送成功", "", false, null);
+    }
+
+
+    public function sendcode3()
+    {
+        $mobile = input("mobile");
+        if(!$mobile){
+            return $this->showmsg(0, "参数错误", "", false, null);
+        }
+
+        $sms =new model\Sms();
+        $smsmodel = config('smsmodel');
+        if($smsmodel=='self') {
+            $code = rand(1000, 9999);
+            $ret = $sms->checkandsend($mobile, $code, 'checkout', get_ip());
+            if (!$ret) {
+                return $this->showmsg(0, "短信发送频率过快", "", false, null);
+            }
+        }
+        else if($smsmodel=='hff'){
+            $ret = $sms->send_sms($mobile);
+            if($ret->code!=0){
+                return $this->showmsg(0, $ret->message, "", false, null);
+            }
+        }
+        return $this->showmsg(1, "短信发送成功", "", false, null);
+    }
+
+
+    public function sendcode4()
+    {
+        $mobile = input("mobile");
+        if(!$mobile){
+            return $this->showmsg(0, "参数错误", "", false, null);
+        }
+
+        $sms =new model\Sms();
+        $smsmodel = config('smsmodel');
+        if($smsmodel=='self') {
+            $code = rand(1000, 9999);
+            $ret = $sms->checkandsend($mobile, $code, 'bindmobile', get_ip());
+            if (!$ret) {
+                return $this->showmsg(0, "短信发送频率过快", "", false, null);
+            }
+        }
+        else if($smsmodel=='hff'){
+            $ret = $sms->send_sms($mobile);
+            if($ret->code!=0){
+                return $this->showmsg(0, $ret->message, "", false, null);
+            }
+        }
+        return $this->showmsg(1, "短信发送成功", "", false, null);
+    }
+
+
+
+    /**
+     * 发送验证码
+     *
+     * @param string $mobile 手机号
+     * @param string $event 事件名称
+
+    public function send()
+    {
+        $mobile = $this->request->request("mobile");
+        $event = $this->request->request("event");
+        $event = $event ? $event : 'register';
+
+        if (!$mobile || !\think\Validate::regex($mobile, "^1\d{10}$")) {
+            $this->error(__('手机号不正确'));
+        }
+        $last = Smslib::get($mobile, $event);
+        if ($last && time() - $last['createtime'] < 60) {
+            $this->error(__('发送频繁'));
+        }
+        $ipSendTotal = \app\common\model\Sms::where(['ip' => $this->request->ip()])->whereTime('createtime', '-1 hours')->count();
+        if ($ipSendTotal >= 5) {
+            $this->error(__('发送频繁'));
+        }
+        if ($event) {
+            $userinfo = User::getByMobile($mobile);
+            if ($event == 'register' && $userinfo) {
+                //已被注册
+                $this->error(__('已被注册'));
+            } else if (in_array($event, ['changemobile']) && $userinfo) {
+                //被占用
+                $this->error(__('已被占用'));
+            } else if (in_array($event, ['changepwd', 'resetpwd']) && !$userinfo) {
+                //未注册
+                $this->error(__('未注册'));
+            }
+        }
+        $ret = Smslib::send($mobile, NULL, $event);
+        if ($ret) {
+            $this->success(__('发送成功'));
+        } else {
+            $this->error(__('发送失败'));
+        }
+    } */
+
+    /**
+     * 检测验证码
+     *
+     * @param string $mobile 手机号
+     * @param string $event 事件名称
+     * @param string $captcha 验证码
+
+    public function check()
+    {
+        $mobile = $this->request->request("mobile");
+        $event = $this->request->request("event");
+        $event = $event ? $event : 'register';
+        $captcha = $this->request->request("captcha");
+
+        if (!$mobile || !\think\Validate::regex($mobile, "^1\d{10}$")) {
+            $this->error(__('手机号不正确'));
+        }
+        if ($event) {
+            $userinfo = User::getByMobile($mobile);
+            if ($event == 'register' && $userinfo) {
+                //已被注册
+                $this->error(__('已被注册'));
+            } else if (in_array($event, ['changemobile']) && $userinfo) {
+                //被占用
+                $this->error(__('已被占用'));
+            } else if (in_array($event, ['changepwd', 'resetpwd']) && !$userinfo) {
+                //未注册
+                $this->error(__('未注册'));
+            }
+        }
+        $ret = Smslib::check($mobile, $captcha, $event);
+        if ($ret) {
+            $this->success(__('成功'));
+        } else {
+            $this->error(__('验证码不正确'));
+        }
+    }*/
+
+}

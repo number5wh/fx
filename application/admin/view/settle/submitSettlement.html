@@ -1,0 +1,214 @@
+{extend name="common/base" /}
+
+{block name="title"}{/block}
+{block name="content"}
+<div class="layui-card">
+    <div class="layui-card-header layuiadmin-card-header-auto">
+        <h2>提交结算</h2>
+        <p style="color: red"> 提交结算后，申请的金额将在账户中扣除 </p>
+    </div>
+    <div class="layui-card-body">
+        <form action="applySettlement" method="post" id="myForm">
+            <div class="layui-form-item">
+                <label class="layui-form-label">结算余额</label>
+                <div class="layui-input-inline">
+                    <input id="balance" type="text" class="layui-input"
+                           value="{$proxy.balance}元" disabled/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">结算金额</label>
+
+                <div class="layui-input-inline">
+                    <input id="money" name="money" onkeyup="checkValue(this);if(!/^\d+$/.test(this.value)){value = value.replace(/[^\d]/g,'');}" placeholder="¥" type="text" class="layui-input"/>
+                </div>
+                <div class="layui-form-mid layui-word-aux" ><span style="color: red">单次最低提现100元，最高50000元</span></div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label"></label>
+                <div class="layui-tab layui-tab-brief" lay-filter="dev_tab">
+                    <ul class="layui-tab-title">
+                        <li class="layui-this" id="bindali">支付宝</li>
+                        <li>银行卡</li>
+                    </ul>
+                    <div class="layui-tab-content">
+                        <div class="layui-tab-item layui-show">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">支付宝账户</label>
+                                <div class="layui-input-inline">
+                                    <input id="aliAccount" type="text" class="layui-input"
+                                           value="{$bankinfo.alipay}" placeholder="请输入支付宝账号"
+                                           name="aliAccount" disabled/>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">真实姓名</label>
+                                <div class="layui-input-inline">
+                                    <input id="realName" disabled
+                                           value="{$bankinfo.alipay_name}" name="realName"
+                                           placeholder="请输入支付宝真实姓名" type="text" class="layui-input"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-tab-item">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">银行卡账号</label>
+                                <div class="layui-input-inline">
+                                    <input id="cardAccount" type="text" class="layui-input" disabled
+                                           value="{$bankinfo.cardaccount}"
+                                           name="cardAccount"
+                                           placeholder="请输入银行卡账号"/>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">开户行</label>
+                                <div class="layui-input-inline">
+                                    <input id="bank" disabled
+                                           value="{$bankinfo.bank}" name="bank" type="text" class="layui-input"
+                                           placeholder="请输入开户行"/>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">姓名</label>
+                                <div class="layui-input-inline">
+                                    <input id="name" type="text" class="layui-input" disabled
+                                           value="{$bankinfo.name}" name="name"
+                                           placeholder="请输入持卡人姓名"
+                                    />
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">结算密码</label>
+                <div class="layui-input-inline">
+                    <input name="settlementPassword" id="settlementPassword"
+                           placeholder="请输入结算密码" type="password" class="layui-input"
+                           lay-verify="required"/>
+                    <input type="hidden" id="type" name="type" required="required"/>
+                </div>
+
+
+                <div class="layui-form-mid layui-word-aux" >
+                    <h5 style="color: red">提现手续费：提现总额的2%,最低为3元。</h5>
+                </div>
+
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label"></label>
+                <div class="layui-input-inline" >
+                    <button class="layui-btn" id="sure"  lay-submit lay-filter="safeset-changeMobile">提交结算</button>
+                </div>
+            </div>
+
+
+        </form>
+    </div>
+</div>
+{/block}
+
+{block name="script"}
+<script src="__JS__/bootstrap.min.js?v=3.3.6"></script>
+<script src="__JS__/cache.js"></script>
+
+
+<!-- 自定义js -->
+<script src="__JS__/content.js?v=1.0.0"></script>
+
+
+<!-- Toastr script -->
+<script src="__JS__/toastr.min.js"></script>
+<script>
+    function checkValue(dom) {
+        if (Number(dom.value) > Number({$proxy.balance})) {
+            dom.value = Math.floor({$proxy.balance})
+        }
+
+        if (dom.value < 0) {
+            dom.value = 0;
+        }
+        if (dom.value >50000){
+            dom.value = 50000;
+        }
+    }
+
+
+</script>
+<script>
+    layui.use(['layer','table','form', 'jquery', 'element'],function () {
+        var layer = layui.layer
+            , form = layui.form
+            , table = layui.table
+            , element = layui.element
+            , $ = layui.$;
+        $('#sure').on('click', function(e) {
+            e.preventDefault();
+            submitForm();
+        });
+
+        function submitForm() {
+            if ($('#money').val() === '') {
+                layer.msg('金额不能为空');
+                return false
+            }
+            if ($('#money').val() < 100) {
+                layer.msg('提现金额最低一百元起');
+                return false;
+            }
+            if ($('#money').val() > 50000) {
+                layer.msg('单次提现金额最高五万元');
+                return false;
+            }
+            if ($('#money').val() <= 0) {
+                layer.msg('请填写正确的金额')
+                return false;
+            }
+            if ($('#settlementPassword').val() === '') {
+                layer.msg("结算密码不能为空");
+                return false;
+            }
+            // if ($('#code').val() === '') {
+            //     layer.msg("验证码不正确");
+            //     return false;
+            // }
+            // if ($('#code').val().length < 4) {
+            //     layer.msg('验证码不正确');
+            //     return false
+            //
+            // }
+            var aliType = $("#bindali");
+            var isAlibind = true;
+            if (aliType.hasClass('layui-this')) {
+                $('#type').val('1');
+            } else {
+                $('#type').val('2');
+            }
+            $.ajax({
+                url: "{:url('settle/applySettlement')}",//'applySettlement',
+                data: $("#myForm").serialize(),
+                method: 'post',
+                success: function (response) {
+                    if (response.code !== 0 || response === true) {
+                        layer.msg('提交结算成功');
+                        cache.removeItem('submitCode');
+                        window.setTimeout(function() {
+                            window.location.reload();
+                        }, 1000);
+
+                    } else {
+                        cache.removeItem('submitCode');
+                        layer.msg(response.msg)
+
+                    }
+                }
+            })
+        }
+    });
+</script>
+{/block}

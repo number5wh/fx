@@ -1,0 +1,764 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" content="edc8cd42-0c33-418c-bd1d-0c921c48e763"/>
+    <!-- default header name is X-CSRF-TOKEN -->
+    <meta name="_csrf_header" content="X-CSRF-TOKEN"/>
+    <title>结算日志</title>
+
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href="__CSS__/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="__CSS__/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="__CSS__/footable.core.css" rel="stylesheet">
+    <link href="__CSS__/datepicker3.css" rel="stylesheet"/>
+    <link href="__CSS__/animate.css" rel="stylesheet">
+    <link href="__CSS__/style.css?v=4.1.0" rel="stylesheet">
+    <link href="__CSS__/bootstrap-table.css" type="text/css" rel="stylesheet">
+    <link href="__CSS__/sweetalert.css" rel="stylesheet">
+    <link href="__CSS__/toastr.min.css" rel="stylesheet">
+
+    <style type="text/css">
+        td {
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        th {
+            vertical-align: middle;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content  fadeInRight">
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <form class="form-inline" id="myForm" action="settlementLog" method="post">
+
+                    <div class="ibox-content">
+
+                        <div class="col-md-2">
+                            <span class="form-group-btn ">
+                                         <button type="submit" class="btn btn-primary "><i
+                                                 class="fa fa-refresh"></i> 刷新</button>
+                                     </span>
+
+                            <div class="form-group">
+                                <div class="col-sm-10">
+                                    <select class="form-control m-b" name="condition"
+                                            onchange="changeByCondition(this)">
+                                        <option value="" {if condition="$status eq ''"}selected="true"{/if}>全部</option>
+                                        <option value="1" {if condition="$status eq 1"}selected="true"{/if}>
+                                            审核中
+                                        </option>
+                                        <option value="2" {if condition="$status eq 2"}selected="true"{/if}>
+                                            审核完成
+                                        </option>
+
+                                        <option value="3" {if condition="$status eq '3'"}selected="true"{/if}>
+                                            支付驳回
+                                        </option>
+                                        <option value="4" {if condition="$status eq 4"}selected="true"{/if}>
+                                            已完成
+                                        </option>
+                                        <option value="5" {if condition="$status eq 5"}selected="true"{/if}>
+                                            作废
+                                        </option>
+                                        <option value="6" {if condition="$status eq 6"}selected="true"{/if}>
+                                            新支付审核
+                                        </option>
+                                        <option value="7" {if condition="$status eq 7"}selected="true"{/if}>
+                                            订单失败
+                                        </option>
+                                        <option value="8" {if condition="$status eq 8"}selected="true"{/if}>
+                                            老支付审核
+                                        </option>
+                                        <option value="9" {if condition="$status eq 9"}selected="true"{/if}>
+                                            处理中
+                                        </option>
+                                        <option value="10" {if condition="$status eq 10"}selected="true"{/if}>
+                                            银行卡审核
+                                        </option>
+                                    </select>
+
+                                </div>
+                            </div>
+                        </div>
+                        时间
+                        <div class="input-group date" data-provide="datepicker">
+                            <input type="text" class="form-control" name="startTime" value="{$starttime}">
+                            <div class="input-group-addon">
+                                <span class="glyphicon glyphicon-th"></span>
+                            </div>
+                        </div>
+                        <div class="input-group date" data-provide="datepicker">
+                            <input type="text" class="form-control" name="endTime" value="{$endtime}">
+                            <div class="input-group-addon">
+                                <span class="glyphicon glyphicon-th"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="alipayAccount">支付宝账户</label>
+                            <input type="text" class="form-control" id="alipayAccount" name="alipayAccount" value="{$alipay}"
+                                   placeholder="请输入支付宝账户">
+                        </div>
+                        <div class="form-group">
+                            <label for="realName">支付宝姓名</label>
+                            <input type="text" class="form-control" id="realName" name="realName" value="{$alipayname}"
+                                   placeholder="请输入支付宝真实姓名">
+                        </div>
+                        <div class="form-group">
+                            <label for="agentId">代理ID</label>
+                            <input type="text" class="form-control" id="agentId" name="agentId"
+                                   placeholder="请输入代理ID" value="{$agentid}">
+                        </div>
+
+                        <div class="form-group">
+                                    <span class="form-group-btn ">
+                                         <button type="submit" class="btn btn-primary">搜索</button>
+                                     </span>
+                        </div>
+
+                        <div class="row m-b-sm m-t-sm">
+                        </div>
+
+                    </div>
+                    <div class="ibox-title">
+                        <h5>结算日志</h5>                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                <i class="fa fa-wrench"></i>
+                            </a>
+                            <a class="close-link">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+
+                        <div class="">
+                            <a onclick="permitOrder(this.parentNode);" href="javascript:void(0);" class="btn btn-primary ">批量通过</a>
+                            <a onclick="refuse();" href="javascript:void(0);" class="btn btn-primary ">批量拒绝</a>
+                            <a onclick="refuseAndBan();" href="javascript:void(0);" class="btn btn-primary ">拒绝并封号</a>
+                            <a onclick="repairOrder();" href="javascript:void(0);" class="btn btn-primary ">恢复订单</a>
+
+                        </div>
+
+                        <table class=" table table-stripped toggle-arrow-tiny"  >
+                            <thead>
+                            <tr>
+                                <th></th>
+
+                                <th data-toggle="true">结算单id</th>
+                                <th>时间 &nbsp;<p class="glyphicon glyphicon-menu-up" data-d='desc'
+                                                data-type="time"
+                                                onclick="orderByTime(this)">
+
+                                </th>
+                                <th>状态</th>
+                                <th>类型</th>
+                                <th>提现金额</th>
+                                <th>税收</th>
+                                <th>账号</th>
+                                <th>姓名</th>
+                                <th>代理ID</th>
+                                <th>备注</th>
+                                <th>信息</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {volist name="list" id="vo"}
+                            <tr>
+                                <td>
+                                    <label>
+                                        <input type="checkbox"  value="{$vo.id}" {if condition="$vo.status gt 1"}disabled="readonly"{/if}>
+                                    </label>
+                                </td>
+                                <td>{$vo.orderid}</td>
+                                <td>{$vo.createtime|date="Y-m-d H:i:s",###}</td>
+                                <td>
+                                    {if condition='$vo.status eq 1'}
+                                    审核中
+                                    {elseif condition='$vo.status eq 2'/}
+                                    审核完成
+                                    {elseif condition='$vo.status eq 3'/}
+                                    支付驳回
+                                    {elseif condition='$vo.status eq 4'}
+                                    已完成
+                                    {elseif condition='$vo.status eq 5'}
+                                    作废
+                                    {elseif condition='$vo.status eq 6'}
+                                    新支付审核
+                                    {elseif condition='$vo.status eq 7'}
+                                    订单失败
+                                    {elseif condition='$vo.status eq 8'}
+                                    老支付审核
+                                    {elseif condition='$vo.status eq 9'}
+                                    处理中
+                                    {elseif condition='$vo.status eq 10'}
+                                    银行卡审核
+                                    {else/}
+                                     系统处理
+                                    {/if}
+
+                                </td>
+                                <td>
+                                    {if condition='$vo.checktype eq 1'}
+                                    支付宝
+                                    {else/}
+                                    银行卡
+                                    {/if}
+                                <td>{$vo.amount}</td>
+                                <td>{$vo.tax}</td>
+                                <td>
+                                    {if condition='$vo.checktype eq 1'}
+                                    {$vo.alipay}
+                                    {else/}
+                                    {$vo.bank}-{$vo.cardaccount}
+                                    {/if}
+                                </td>
+                                <td>
+                                    {if condition='$vo.checktype eq 1'}
+                                    {$vo.alipay_name}
+                                    {else/}
+                                    {$vo.name}
+                                    {/if}
+                                </td>
+                                <td>{$vo.proxy_id}</td>
+                                <td>{$vo.descript}</td>
+                                <td>{$vo.info}</td>
+                                <td><a href="javascript:;" onclick="getDetail(this)" data="{$vo.proxy_id}" data-order="{$vo.orderid}" data-money="{$vo.amount}">
+                                    代理详情</a></td>
+                            </tr>
+                            {/volist}
+                            </tbody>
+                            <tfoot>
+                            <div>
+                                {$list->render()}
+                            </div>
+                            </tfoot>
+                        </table>
+
+                        <input type="hidden" name="o" id="o" value=""/>
+                        <input type="hidden" name="d" id="d" value=""/>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">代理详情</h4>
+            </div>
+            <div class="modal-body">
+                <table class="table ">
+                    <tbody id="detail">
+
+                    </tbody>
+
+                </table>
+                <span class="form-group-btn ">
+                </span>
+            </div>
+            <div class="modal-footer">
+
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="myModal2" tabindex="-2" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="text" name="msg" id="msg" placeholder="请输入拒绝原因"/>
+                <input type="hidden" name="orderId" id="orderId"/>
+                <button class="btn btn-primary btn-xs option">支付宝账号错误</button>
+                <button class="btn btn-primary btn-xs option">渠道异常，存在刷量现象</button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="refuseOrder()" data-dismiss="modal">确认</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="__JS__/jquery.min.js?v=2.1.4"></script>
+<script src="__JS__/bootstrap.min.js?v=3.3.6"></script>
+<script src="__JS__/bootstrap-datepicker.js"></script>
+<script src="__JS__/bootstrap-table.js"></script>
+<script src="__JS__/common.js?v=1.1"></script>
+<script src="__JS__/sweetalert.min.js"></script>
+<script src="__JS__/toastr.min.js"></script>
+
+<!-- 自定义js -->
+<script>
+    $(document).ready(function () {
+
+        $('#pageTd').attr('colspan', 11);
+        $('.option').click(function () {
+
+            $('#msg').val($(this).text());
+        })
+
+    });
+
+
+    function changeByCondition(url) {
+        window.location.href = "settlementLog?condition=" + url.value;
+    }
+
+    function resubmit(dom) {
+        if (confirm("确认提交？") === false) {
+            return false;
+        }
+        $.ajax({
+            url: dom.attributes['data'].value,
+            method: 'get',
+            success: function (response) {
+                if (response === true && response.code !== 0) {
+                    swal({
+                            title: "提交成功!",
+                            type: "success"
+                        },
+                        function () {
+                            location.reload();
+                        }
+                    );
+                } else {
+                    swal({
+                            title: response.msg === undefined ? response : response.msg,
+                            text: '失败',
+                            type: "error"
+                        },
+                        function () {
+                            location.reload();
+                        }
+                    );
+                }
+            }
+        })
+    }
+
+
+    //审核通过
+    function permitOrder(dom) {
+        if ($("input[type='checkbox']:checkbox:checked").length < 1) {
+            swal({
+                    title: "请选择一项进行操作!",
+                    type: "error"
+                }
+            );
+            return false
+        }
+        swal({
+            title: "确认通过?",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: '#DD6B55',
+            confirmButtonText: '确定!',
+            cancelButtonText: "取消!",
+            closeOnConfirm: true,
+            closeOnCancel: false
+        }, function (isConfirm) {
+
+            if (isConfirm) {
+                permit()
+
+            } else {
+                swal("已取消");
+            }
+        })
+        ;
+
+    }
+
+    function Order(key, value) {
+        this.id = key;
+        this.type = value;
+    }
+
+    function permit() {
+        var args = [];
+
+        $("input[type='checkbox']:checkbox:checked").each(function () {
+            var id = $(this).val();
+            var type = $(this).attr("data-type");
+            var order = new Order(id, type);
+            args.push(order)
+        });
+        if (args.length === 0) {
+            swal({
+                    title: "请选择一项进行操作!",
+                    type: "error"
+                }
+            );
+            return false;
+        }
+        args = JSON.stringify(args);
+        $.ajax({
+                url: "permitOrder",
+                method: "post",
+                beforeSend: function (request) {
+                  // request.setRequestHeader(header, token);
+                },
+                data: {args: args},
+                success: function (response) {
+                    if (response === true && response.code !== 0) {
+                        location.reload();
+                    }
+                    else {
+                        if (response.code === 0) {
+                            toastr["error"](" ", response.msg)
+
+                        } else {
+                            toastr["error"](" ", "失败");
+
+                            toastr.options = {
+                                "closeButton": false,
+                                "debug": true,
+                                "newestOnTop": false,
+                                "progressBar": false,
+                                "positionClass": "toast-top-right",
+                                "preventDuplicates": false,
+                                "showDuration": "300",
+                                "hideDuration": "1000",
+                                "timeOut": "5000",
+                                "extendedTimeOut": "1000",
+                                "showEasing": "swing",
+                                "hideEasing": "linear",
+                                "showMethod": "fadeIn",
+                                "hideMethod": "fadeOut"
+                            }
+                        }
+                    }
+                }
+            }
+        )
+        ;
+
+    }
+
+
+    //拒绝审核
+    function refuse() {
+        if ($("input[type='checkbox']:checkbox:checked").length < 1) {
+            swal({
+                    title: "请选择一项进行操作!",
+                    type: "error"
+                }
+            );
+            return false
+        }
+
+        $('#myModal2').modal('toggle');
+
+    }
+
+
+    //修复订单
+    function repairOrder() {
+        if ($("input[type='checkbox']:checkbox:checked").length < 1) {
+            swal({
+                    title: "请选择一项进行操作!",
+                    type: "error"
+                }
+            );
+            return false
+        }
+        var args = [];
+        $("input[type='checkbox']:checkbox:checked").each(function () {
+            var id = $(this).val();
+            var type = $(this).attr("data-type");
+            var order = new Order(id, type);
+            args.push(order)
+        });
+        if (confirm("确认恢复订单？恢复的订单将直接进入支付环节！") === false) {
+            return false;
+        }
+        if (args.length < 1) {
+            return false
+        }
+        args = JSON.stringify(args);
+        var token = $("meta[name='_csrf']").attr("content");
+        var header = $("meta[name='_csrf_header']").attr("content");
+        $.ajax({
+            url: "repairOrder",
+            method: "Post",
+            beforeSend: function (request) {
+               // request.setRequestHeader(header, token);
+            },
+            data: {args: args},
+            success: function (response) {
+                if (response === true && response.code !== 0) {
+                    swal({
+                            title: '已恢复',
+                            type: "success"
+                        },
+                        function () {
+                            location.reload();
+                        }
+                    );
+                } else {
+                    if (response.code === 0) {
+                        toastr["error"](" ", response.msg)
+
+                    } else {
+                        toastr["error"](" ", "失败");
+
+                        toastr.options = {
+                            "closeButton": false,
+                            "debug": true,
+                            "newestOnTop": false,
+                            "progressBar": false,
+                            "positionClass": "toast-top-right",
+                            "preventDuplicates": false,
+                            "showDuration": "300",
+                            "hideDuration": "1000",
+                            "timeOut": "5000",
+                            "extendedTimeOut": "1000",
+                            "showEasing": "swing",
+                            "hideEasing": "linear",
+                            "showMethod": "fadeIn",
+                            "hideMethod": "fadeOut"
+                        }
+                    }
+                }
+            }
+        })
+
+    }
+
+    function refuseAndBan() {
+        if ($("input[type='checkbox']:checkbox:checked").length < 1) {
+            swal({
+                    title: "请选择一项进行操作!",
+                    type: "error"
+                }
+            );
+            return false
+        }
+        if (confirm("确认拒绝并封号？") === false) {
+            return false;
+        }
+
+        var id;
+        var type;
+        var args = [];
+        $("input[type='checkbox']:checkbox:checked").each(function () {
+            id = $(this).val();
+            type = $(this).attr("data-type");
+            var order = new Order(id, type);
+            args.push(order)
+        });
+        if (args.length < 1) {
+            return false
+        }
+        args = JSON.stringify(args);
+        var token = $("meta[name='_csrf']").attr("content");
+        var header = $("meta[name='_csrf_header']").attr("content");
+        $.ajax({
+            url: "refuseAndBan",
+            method: "Post",
+            beforeSend: function (request) {
+                request.setRequestHeader(header, token);
+            },
+            data: {args: args},
+            success: function (response) {
+                if (response === true && response.code !== 0) {
+                    swal({
+                            title: '已拒绝并封号',
+                            type: "success"
+                        },
+                        function () {
+                            location.reload();
+                        }
+                    );
+                } else {
+                    if (response.code === 0) {
+                        toastr["error"](" ", response.msg)
+
+                    } else {
+                        toastr["error"](" ", "失败");
+
+                        toastr.options = {
+                            "closeButton": false,
+                            "debug": true,
+                            "newestOnTop": false,
+                            "progressBar": false,
+                            "positionClass": "toast-top-right",
+                            "preventDuplicates": false,
+                            "showDuration": "300",
+                            "hideDuration": "1000",
+                            "timeOut": "5000",
+                            "extendedTimeOut": "1000",
+                            "showEasing": "swing",
+                            "hideEasing": "linear",
+                            "showMethod": "fadeIn",
+                            "hideMethod": "fadeOut"
+                        }
+                    }
+                }
+            }
+        })
+    }
+
+    function refuseOrder() {
+        var id;
+        var type;
+        var args = [];
+        $("input[type='checkbox']:checkbox:checked").each(function () {
+            id = $(this).val();
+            type = $(this).attr("data-type");
+            var order = new Order(id, type);
+            args.push(order)
+        });
+        args = JSON.stringify(args);
+        $.ajax({
+            url: "refuseOrder",
+            method: "Post",
+            beforeSend: function (request) {
+                //request.setRequestHeader(header, token);
+            },
+            data: {args: args, msg: $('#msg').val()},
+            success: function (response) {
+                if (response === true && response.code !== 0) {
+                    swal({
+                            title: '已拒绝',
+                            type: "success"
+                        },
+                        function () {
+                            location.reload();
+                        }
+                    );
+                } else {
+                    if (response.code === 0) {
+                        toastr["error"](" ", response.msg)
+
+                    } else {
+                        toastr["error"](" ", "失败");
+
+                        toastr.options = {
+                            "closeButton": false,
+                            "debug": true,
+                            "newestOnTop": false,
+                            "progressBar": false,
+                            "positionClass": "toast-top-right",
+                            "preventDuplicates": false,
+                            "showDuration": "300",
+                            "hideDuration": "1000",
+                            "timeOut": "5000",
+                            "extendedTimeOut": "1000",
+                            "showEasing": "swing",
+                            "hideEasing": "linear",
+                            "showMethod": "fadeIn",
+                            "hideMethod": "fadeOut"
+                        }
+                    }
+                }
+            }
+        })
+    }
+
+    function getDetail(dom) {
+        var id = dom.attributes['data'].value;
+        $.ajax({
+            url: "{:url('proxy/getAgentDetail')}",
+            data: {id: id},
+            success: function (response) {
+                var orderId = dom.attributes['data-order'].value;
+                var money = dom.attributes['data-money'].value;
+                if (response.code !== 0 || response !== true) {
+                    var result = response.data;
+                    var str = "<tr>";
+                    str += "<th >代理id</th>";
+                    str += "<th >" + result.agentId + "</th>";
+                    str += "<th>订单id</th>";
+                    str += "<th>" + orderId + "</th>";
+                    str += "</tr><tr>";
+
+                    str += "<th class='success'>总充值</th>";
+                    str += "<th >" + result.recharge  + "</th>";
+                    str += "<th class='success'>总兑换金额</th>";
+                    str += "<th >" + result.extractSum  + "</th>";
+                    str += "</tr><tr>";
+                    str += "<th class='warning'>税收</th>";
+                    str += "<th>" + result.revenue + "</th>";
+
+                    str += "<th class='warning'>总收入</th>";
+                    str += "<th>" + result.income  + "</th>";
+
+                    str += "</tr><tr>";
+                    str += "<th>总注册量</th>";
+                    str += "<th>" + result.reg + "</th>";
+
+                    str += "<th>总提现金额</th>";
+                    str += "<th>" + result.withdrawDeposit + "</th>";
+                    str += "</tr><tr>";
+                    str += "<th>收益比例(现在/最高)</th>";
+                    str += "<th>" + result.royaltyRate + "%/" + result.maxRoyaltyRate + "%" + "</th>";
+                    str += "</tr><tr>";
+                    str += "<th class='success'>账户余额</th>";
+                    str += "<th>" + result.money  + "</th>";
+                    str += "<th >本次提现金额</th>";
+                    str += "<th>" + money + "</th>";
+
+
+                    str += "</tr><tr>";
+                    str += "<th >信息</th>";
+                    str += "<th>" + result.msg + "</th>";
+                    str += "</tr>";
+                    $('#detail').html(str);
+                    id = dom.attributes['data-order'].value;
+                    $("[data-order='" + id + "']").prop('checked', true);
+                    $("#getChannel").attr("href", "getChannel?agentId=" + result.agentId);
+
+                } else {
+                    swal({
+                            title: response.msg === undefined ? response : response.msg,
+                            text: '失败',
+                            type: "error"
+                        },
+                        function () {
+                            location.reload();
+                        }
+                    );
+                }
+            }
+        });
+        $('#myModal').modal('toggle');
+    }
+
+</script>
+
+</body>
+
+</html>

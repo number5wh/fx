@@ -1,0 +1,175 @@
+{extend name="common/base" /}
+
+{block name="title"}绑定手机号{/block}
+{block name="content"}
+<div class="layui-card">
+    <div class="layui-card-header layuiadmin-card-header-auto">
+        <h2>绑定手机号</h2>
+    </div>
+
+    <div class="layui-card-body">
+        <form class="layui-form" id="myForm" method="post">
+            <div class="layui-form-item">
+                <label class="layui-form-label">图片验证码：</label>
+                <div id="de111" style="float: left;" class="layui-input-inline">
+                    <input type="text" name="captcha"  id="captcha" lay-verify="required" placeholder="图片验证码" class="layui-input">
+                </div>
+                <div id="de222" >
+                    {:captcha_img('bindphone')}
+                </div>
+            </div>
+            <div class="layui-form-item" >
+                <label class="layui-form-label">绑定手机号：</label>
+                <div class="layui-input-inline">
+                    <input type="number" id="phone"
+                           name="phone" lay-verify="required" placeholder="请输入手机号..."  autocomplete="off" class="layui-input">
+                </div>
+                <div class="layui-input-inline">
+                    <button id="sendCode" class="layui-btn sendCode" type="button">获取验证码</button>
+                </div>
+            </div>
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">验证码：</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="code" name="code"
+                           placeholder="请输入验证码..." lay-verify="required" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item" >
+                <label class="layui-form-label"></label>
+                <div class="layui-input-inline">
+                    <button id="bind" class="layui-btn" >确认绑定</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{/block}
+
+{block name="script"}
+<script src="__JS__/jquery.min.js?v=2.1.4"></script>
+<script src="__JS__/cache.js"></script>
+<script src="__JS__/bootstrap.min.js?v=3.3.6"></script>
+
+
+<!-- 自定义js -->
+<script src="__JS__/content.js?v=1.0.0"></script>
+
+
+<!-- Toastr script -->
+<script src="__JS__/toastr.min.js"></script>
+<script src="__JS__/bootstrap-table.js"></script>
+<script src="__JS__/common.js?v=1.0"></script>
+<script>
+    layui.use(['layer','table','form', 'jquery'],function () {
+        var layer = layui.layer
+            ,form = layui.form
+            ,table = layui.table
+            ,$    = layui.$;
+        //用户表格初始化
+        $('#de222 img').width($('#de111').width()*0.5).height($('#de111').height());
+        $('#bind').on('click', function(e) {
+            e.preventDefault();
+            submitForm();
+        });
+        $('#sendCode').on('click', function(e) {
+            e.preventDefault();
+            sendCode1($('#captcha').val());
+        });
+        var phonePattern = new RegExp('^(13[0-9]|14[0-9]|15[0-9]|166|17[0-9]|18[0-9]|19[8|9])\\d{8}$');
+
+        function sendCode1(captcha) {
+            if ($('#phone').val() === null || $('#phone').val() === '') {
+                layer.msg('请填写手机号')
+                return false
+            }
+            if (!phonePattern.test($('#phone').val())) {
+                layer.msg('请填写正确的手机号格式');
+                return false
+            }
+            $.ajax({
+                url: "{:url('proxy/checkmobile')}",
+                data: {phone: $('#phone').val(),
+                    captcha: captcha
+                },
+                async: false,
+                success: function (data) {
+                    if (data && data.code!=0) {
+                        layer.msg('手机号已被其他账号绑定')
+                        return false;
+                    } else if(data.code == 0){
+                        layer.msg(data.msg);
+                        return false;
+                    }else{
+                        $.ajax({
+                            url: "{:url('sms/sendcode4')}",
+                            type: 'get',
+                            data: {mobile: $('#phone').val()},
+                            success: function (response) {
+                                if (response.code !== 0 || response === true) {
+                                    layer.msg('发送成功')
+                                    cache.setItem('bindphoneCode',$('#phone').val());
+                                    cache.createTimeOut()
+                                } else {
+                                    layer.msg(response.msg)
+                                }
+
+                            }
+                        })
+                    }
+                }
+            });
+
+        }
+
+
+        function submitForm() {
+            if ($('#phone').val() === '') {
+                layer.msg('手机号不能为空')
+                return false;
+            }
+
+            if ($('#code').val() === '') {
+                layer.msg('验证码不能为空')
+                return false;
+            }
+            if ($('#code').val().length < 4) {
+                layer.msg('验证码不正确')
+                return false;
+            }
+            $.ajax({
+                url: "{:url('proxy/bindMobileSave')}",
+                data: $('#myForm').serialize(),
+                type: 'post',
+                beforeSend: function (request) {
+                    // request.setRequestHeader(header, token);
+                },
+                success: function (response) {
+                    if (response.code !== 0 || response === true) {
+                        layer.msg('绑定成功');
+                        cache.removeItem('bindphoneCode');
+                        window.location.href = "{:url('index/main')}";
+
+                    } else {
+                        layer.msg(response.msg)
+                    }
+                }
+            })
+        }
+
+        // 点击验证码图片
+        function changeCode() {
+            $('.imgCaptcha').attr('src', "/public/index.php/captcha.html?random=" + Math.random());
+            $(".captcha").val("")
+        }
+
+        $(function () {
+            changeCode()
+        })
+    });
+</script>
+{/block}
+
