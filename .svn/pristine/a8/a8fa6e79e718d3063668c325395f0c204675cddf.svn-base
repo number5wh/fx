@@ -1,0 +1,36 @@
+<?php
+namespace app\admin\controller;
+
+use think\Request;
+
+class Playergame extends Base
+{
+    public function _initialize()
+    {
+        parent::_initialize();
+        if (session('proxy')['type'] == 0) {
+            return $this->showmsg(10,"您没有权限",'',false,null);
+        }
+    }
+
+    //玩家游戏记录
+    public function index()
+    {
+        if (Request::instance()->isAjax()) {
+
+        } else {
+            return $this->fetch();
+        }
+    }
+
+    //每日玩家输赢
+    public function playerlog()
+    {
+        if (Request::instance()->isAjax()) {
+
+        } else {
+            return $this->fetch();
+        }
+    }
+
+}

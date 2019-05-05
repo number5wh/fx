@@ -1,0 +1,354 @@
+<?php
+use think\log;
+
+//转化为元单位
+if (!function_exists('change_to_yuan')) {
+    function change_to_yuan($money, $decimals = 2)
+    {
+        //money厘  decimals 保留几位小数
+        return round($money/1000, $decimals);
+    }
+}
+//记录log
+if (!function_exists('save_log')) {
+    function save_log($path, $content, $mode = 'day')
+    {
+        $path = strval($path);
+        $path = str_replace('\\', '/', trim($path, '/'));
+
+        $content = strval($content);
+
+        if (!$path || !$content) {
+            return false;
+        }
+        $mode = in_array($mode, array('day', 'month', 'year')) ? $mode : 'day';
+        $tempPath = config('log_dir') . '/' . $path . '/';
+
+        if ($mode == 'day') {
+            $tempPath .= date('Y') . '/' . date('m') . '/';
+            $fileName  = date('d'). '.log';
+        } elseif ($mode == 'month') {
+            $tempPath .= date('Y') . '/';
+            $fileName  = date('m'). '.log';
+        } else {
+            $fileName = date('Y') . 'log';
+        }
+
+        if (!file_exists($tempPath)) {
+            if (!mkdir($tempPath, 0777, true)) {
+                return false;
+            }
+        }
+
+        $file    = $tempPath . $fileName;
+        $content = date('Y-m-d H:i:s') . '#' . $content . "\r\n";
+        $res     = @file_put_contents($file, $content, FILE_APPEND);
+        if ($res) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+}
+///生成合并后的图片
+function combinePic($dstimg,$srcimg,$x,$y,$outimg){
+    try {
+        $bigImgPath = $dstimg;
+        $qCodePath = $srcimg;
+        $bigImg = imagecreatefromstring(file_get_contents($bigImgPath));
+        $qCodeImg = imagecreatefromstring(file_get_contents($qCodePath));
+
+        list($qCodeWidth, $qCodeHight, $qCodeType) = getimagesize($qCodePath);
+        imagecopymerge($bigImg, $qCodeImg, $x, $y,0, 0, $qCodeWidth, $qCodeHight, 100);
+        list($bigWidth, $bigHight, $bigType) = getimagesize($bigImgPath);
+        $ret = imagejpeg($bigImg, $outimg);
+        if($ret) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }catch(Exception $e){
+        Log::write($e->getMessage(),"ERROR");
+        return false;
+    }
+}
+
+
+
+function data_signature($data = [])
+{
+    if (!is_array($data)) {
+        $data = (array)$data;
+    }
+    ksort($data);
+    $code = http_build_query($data);
+    $sign = sha1($code);
+    return $sign;
+}
+
+/*
+ * 生成随机数
+ */
+function randomkeys($length,$isnumber=false)
+{
+    $pattern = '1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLOMNOPQRSTUVWXYZ';
+    if($isnumber){
+        $pattern = '1234567890';
+    }
+    $key ="";
+    for($i=0;$i<$length;$i++)
+    {
+        $key .= $pattern{mt_rand(0, 35)};    //生成php随机数
+    }
+    return $key;
+}
+
+
+// 应用公共文件
+function createNoncestr( $length = 32 )
+{
+    $chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+    $str ="";
+    for ( $i = 0; $i < $length; $i++ )  {
+        $str.= substr($chars, mt_rand(0, strlen($chars)-1), 1);
+    }
+    return $str;
+}
+
+
+/*
+ * 解密
+ * */
+function decrepyt($txt, $key = null)
+{
+    empty($key) && $key = config('data_auth_key');
+    $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-=_";
+    $ch    = $txt[0];
+    $nh    = strpos($chars, $ch);
+    $mdKey = md5($key . $ch);
+    $mdKey = substr($mdKey, $nh % 8, $nh % 8 + 7);
+    $txt   = substr($txt, 1);
+    $tmp   = '';
+    $k     = 0;
+    for ($i = 0; $i < strlen($txt); $i++) {
+        $k = $k == strlen($mdKey) ? 0 : $k;
+        $j = strpos($chars, $txt[$i]) - $nh - ord($mdKey[$k++]);
+        while ($j < 0) {
+            $j += 64;
+        }
+        $tmp .= $chars[$j];
+    }
+    return base64_decode($tmp);
+}
+
+
+function do_hash($psw) {
+    $salt = 'aFXBxYmkClsw47b8C5qN56zs'; //定义一个salt值，最好够长，或者随机
+    return md5($psw,$salt); //返回加salt后的散列
+}
+
+
+function generateSalt()
+{
+    $str = 'qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890';
+    $salt = substr(str_shuffle($str),10,6);
+    return $salt;
+}
+
+
+function get_ip() {
+    //strcasecmp 比较两个字符，不区分大小写。返回0，>0，<0。
+    if(getenv('HTTP_CLIENT_IP') && strcasecmp(getenv('HTTP_CLIENT_IP'), 'unknown')) {
+        $ip = getenv('HTTP_CLIENT_IP');
+    } elseif(getenv('HTTP_X_FORWARDED_FOR') && strcasecmp(getenv('HTTP_X_FORWARDED_FOR'), 'unknown')) {
+        $ip = getenv('HTTP_X_FORWARDED_FOR');
+    } elseif(getenv('REMOTE_ADDR') && strcasecmp(getenv('REMOTE_ADDR'), 'unknown')) {
+        $ip = getenv('REMOTE_ADDR');
+    } elseif(isset($_SERVER['REMOTE_ADDR']) && $_SERVER['REMOTE_ADDR'] && strcasecmp($_SERVER['REMOTE_ADDR'], 'unknown')) {
+        $ip = $_SERVER['REMOTE_ADDR'];
+    }
+    $res =  preg_match ( '/[\d\.]{7,15}/', $ip, $matches ) ? $matches [0] : '';
+    return $res;
+}
+
+
+/**
+ * 发送HTTP请求方法
+ * @param  string $url    请求URL
+ * @param  array  $params 请求参数
+ * @param  string $method 请求方法GET/POST
+ * @return array  $data   响应数据
+ */
+function httpPost($url, $params, $method = 'GET', $header = array(), $multi = false){
+    $opts = array(
+        CURLOPT_TIMEOUT        => 30,
+        CURLOPT_RETURNTRANSFER => 1,
+        CURLOPT_SSL_VERIFYPEER => false,
+        CURLOPT_SSL_VERIFYHOST => 2,
+        CURLOPT_HTTPHEADER     => $header
+    );
+    /* 根据请求类型设置特定参数 */
+    switch(strtoupper($method)){
+        case 'GET':
+            $opts[CURLOPT_URL] = $url . '?' . http_build_query($params);
+            break;
+        case 'POST':
+            //判断是否传输文件
+            $params = $multi ? $params : http_build_query($params);
+            $opts[CURLOPT_URL] = $url;
+            $opts[CURLOPT_POST] = 1;
+            $opts[CURLOPT_POSTFIELDS] = $params;
+            break;
+        default:
+            throw new Exception('不支持的请求方式！');
+    }
+    /* 初始化并执行curl请求 */
+    $ch = curl_init();
+    curl_setopt_array($ch, $opts);
+    $data  = curl_exec($ch);
+    $error = curl_error($ch);
+    curl_close($ch);
+    if($error) throw new Exception('请求发生错误：' . $error);
+    return  $data;
+}
+
+/* PHP CURL HTTPS POST */
+function curl_post_https($url,$data,$header){ // 模拟提交数据函数
+    $curl = curl_init(); // 启动一个CURL会话
+    curl_setopt($curl, CURLOPT_URL, $url); // 要访问的地址
+    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0); // 对认证证书来源的检查
+    curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 2); // 从证书中检查SSL加密算法是否存在
+    curl_setopt($curl, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']); // 模拟用户使用的浏览器
+    curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1); // 使用自动跳转
+    curl_setopt($curl, CURLOPT_AUTOREFERER, 1); // 自动设置Referer
+    curl_setopt($curl, CURLOPT_POST, 1); // 发送一个常规的Post请求
+    curl_setopt($curl,CURLOPT_HTTPHEADER,$header);
+    curl_setopt($curl, CURLOPT_POSTFIELDS, $data); // Post提交的数据包
+    curl_setopt($curl, CURLOPT_TIMEOUT, 30); // 设置超时限制防止死循环
+    curl_setopt($curl, CURLOPT_HEADER, 0); // 显示返回的Header区域内容
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1); // 获取的信息以文件流的形式返回
+    $tmpInfo = curl_exec($curl); // 执行操作
+    if (curl_errno($curl)) {
+        echo 'Errno'.curl_error($curl);//捕抓异常
+    }
+    curl_close($curl); // 关闭CURL会话
+    return $tmpInfo; // 返回数据，json格式
+}
+
+
+function getservertime(){
+    vendor('Hprose.Hprose');
+    $ServiceUrl = config('ServiceUrl');
+    $client = \Hprose\Client::create($ServiceUrl,false);
+    try {
+        $client->addFilter(new \Hprose\SizeFilter('Non compressed'))
+            ->addFilter(new \Hprose\CompressFilter())
+            ->addFilter(new \Hprose\SizeFilter('Compressed'));
+        return $client->getServerTime(new \Hprose\InvokeSettings(array('timeout'=>30000)));
+    }catch (Exception $e) {
+        return '';
+    }
+}
+
+function array_sort($array, $on, $order=SORT_ASC)
+{
+    $new_array = array();
+    $sortable_array = array();
+
+    if (count($array) > 0) {
+        foreach ($array as $k => $v) {
+            if (is_array($v)) {
+                foreach ($v as $k2 => $v2) {
+                    if ($k2 == $on) {
+                        $sortable_array[$k] = $v2;
+                    }
+                }
+            } else {
+                $sortable_array[$k] = $v;
+            }
+        }
+
+        switch ($order) {
+            case SORT_ASC:
+                asort($sortable_array);
+                break;
+            case SORT_DESC:
+                arsort($sortable_array);
+                break;
+        }
+
+        foreach ($sortable_array as $k => $v) {
+            $new_array[$k] = $array[$k];
+        }
+    }
+
+    return $new_array;
+}
+
+
+function compile($str)
+{
+    $strlen = strlen($str);
+    $result = chr(ord($str[0])+$strlen);
+    for($i = 1; $i < $strlen; $i++)
+        $result .= chr(ord($str[$i])+ord($str[$i-1]));
+    return  $result;
+}
+
+/**
+ * 对象 转 数组
+ *
+ * @param object $obj 对象
+ * @return array
+ */
+function object_to_array($obj) {
+    $obj = (array)$obj;
+    foreach ($obj as $k => $v) {
+        if (gettype($v) == 'resource') {
+            return null;
+        }
+        if (gettype($v) == 'object' || gettype($v) == 'array') {
+            $obj[$k] = (array)object_to_array($v);
+        }
+    }
+
+    return $obj;
+}
+
+
+/**
+ * 数组 转 对象 *
+ * @param array $arr 数组
+ * @return object
+ */
+function array_to_object($arr) {
+    if (gettype($arr) != 'array') {
+        return;
+    }
+    foreach ($arr as $k => $v) {
+        if (gettype($v) == 'array' || getType($v) == 'object') {
+            $arr[$k] = (object)array_to_object($v);
+        }
+    }
+    return (object)$arr;
+}
+
+function p($data){
+    // 定义样式
+    $str='<pre style="display: block;padding: 9.5px;margin: 44px 0 0 0;font-size: 13px;line-height: 1.42857;color: #333;word-break: break-all;word-wrap: break-word;background-color: #F5F5F5;border: 1px solid #CCC;border-radius: 4px;">';
+    // 如果是boolean或者null直接显示文字；否则print
+    if (is_bool($data)) {
+        $show_data=$data ? 'true' : 'false';
+    }elseif (is_null($data)) {
+        $show_data='null';
+    }else{
+        $show_data=print_r($data,true);
+    }
+    $str.=$show_data;
+    $str.='</pre>';
+    echo $str;
+}
+
+
+

@@ -1,0 +1,18 @@
+{extend name="common/base" /}
+
+{block name="title"}玩家游戏记录{/block}
+{block name="css"}{/block}
+{block name="content"}
+
+{/block}
+{block name="script"}
+<script>
+    layui.config({
+        base: '/src/layuiadmin/' //静态资源所在路径
+    }).extend({
+        index: 'lib/index' //主入口模块
+    }).use(['index', 'table', 'layer', 'element', 'laydate', 'form', 'jquery'], function() {
+
+    });
+</script>
+{/block}

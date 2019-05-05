@@ -1,0 +1,612 @@
+<?php
+
+namespace app\admin\controller;
+use think\Db;
+use app\admin\controller\Base;
+use think\session;
+
+class Distribute extends  Base{
+
+
+        public function index(){
+            $agentid = input("agentId");
+            $regstart = input("startTime");
+            $regend = input("endTime");
+            $month = input("month");
+            $proxy = session("proxy");
+
+            $where = array();
+            $strwhere =" 1=1 ";
+            if (!empty($agentid)) {
+                $where['proxy_id'] = $agentid;
+                $where['parent_id'] = $proxy['code'];
+                $strwhere.=" and parent_id='".$proxy["code"]."'";
+            }
+            else
+            {
+                $where['proxy_id'] = $proxy['code'];
+                $strwhere.=" and parent_id='".$proxy["code"]."'";
+            }
+
+            if (!empty($regstart)) {
+                if (!empty($regend)) {
+                    $where['addtime'] = array(array('gt', $regstart), array('lt', $regend));
+                    $strwhere.=" and addtime>'".$regstart."' and addtime<='".$regend."'";
+                } else {
+                    $where['addtime'] = array('gt', $regstart);
+                    $strwhere.=" and addtime>'".$regstart."'";
+                }
+            }
+
+            $proxylist = Model("player");
+            if(empty($month)) {
+                //查询满足要求的总的记录数
+                $list = $proxylist->field(" date_format(`addtime`,'%Y-%m-%d') as dt,count(id) as total,parent_id ")
+                    ->where($where)
+                    ->whereor($strwhere)
+                    ->group(" date_format(`addtime`,'%Y-%m-%d')  ")
+                    ->order("dt desc")
+                    ->paginate()
+                    ->each(function ($item, $key) {
+                        $select_id = session("proxy_id");
+                        $totalbind =0;
+                        $totaltaxs =0;
+                        $totalcheck =0;
+                        $totalpay =0;
+                        $child0 = Db::name("player")->field("date_format(`addtime`,'%Y-%m-%d') as cdate,count(*) as total, a.proxy_id,b.nickname")
+                            ->alias('a')->join('proxy b',' a.proxy_id=b.code ',"LEFT")
+                            ->where(" date_format(`addtime`,'%Y-%m-%d')='".$item['dt']."' and a.proxy_id='".$select_id."'")
+                            ->group(" a.proxy_id")->select();
+
+                        foreach ($child0 as $key=>$value) {
+                            $bindnum = Db::name("player")->field("count(*) as total")
+                                ->where(" date_format(`addtime`,'%Y-%m-%d')='".$item['dt']."' and proxy_id='".$value["proxy_id"]."' and ismobile=1 ")
+                                ->count();
+                            if(!isset($bindnum))
+                            {
+                                $bindnum =0;
+                            }
+                            $child0[$key]["bindnum"] =$bindnum;
+                            $totalbind = $totalbind+$bindnum;
+
+                        }
+
+
+                        $child = Db::name("player")->field("date_format(`addtime`,'%Y-%m-%d') as cdate,count(*) as total, a.proxy_id,b.nickname")
+                            ->alias('a')->join('proxy b',' a.proxy_id=b.code ',"LEFT")
+                            ->where(" date_format(`addtime`,'%Y-%m-%d')='".$item['dt']."' and a.parent_id='".$select_id."' ")
+                            ->group(" a.proxy_id")->select();
+
+                        foreach ($child as $key=>$value) {
+                             $bindnum = Db::name("player")->field("count(*) as total")
+                                ->where(" date_format(`addtime`,'%Y-%m-%d')='".$item['dt']."' and parent_id='".$value["proxy_id"]."' and ismobile=1 ")
+                                ->count();
+                            if(!isset($bindnum))
+                            {
+                                $bindnum =0;
+                            }
+                             $child[$key]["bindnum"] =$bindnum;
+                            $totalbind = $totalbind+$bindnum;
+                        }
+
+                        $child=array_merge($child0,$child);
+
+                        foreach ($child as $key =>$v){
+                            $paytime = Db::name("playerorder")
+                            ->where(" date_format(`addtime`,'%Y-%m-%d')='".$v['cdate']."' and proxy_id='".$v['proxy_id']."'")
+                            ->count();
+                            if(!isset($paytime)) {
+                                $paytime=0;
+                            }
+                            $totalpay=$totalpay+$paytime;
+                            $child[$key]["paytime"] =$paytime;
+
+
+                            //提现次数
+
+                            $checknum = Db::name("checklog")
+                                ->where(" date_format(`addtime`,'%Y-%m-%d')='".$v['cdate']."' and proxy_id='".$v['proxy_id']."'")
+                                ->count();
+
+                            if(!isset($checknum)) {
+                                $checknum=0;
+                            }
+
+                            $totalcheck =$totalcheck+$checknum;
+
+                            $child[$key]["checknum"] =$checknum;
+                            //税收总额
+
+                            $totaltax = Db::name("playerorder")
+                                ->where(" date_format(`addtime`,'%Y-%m-%d')='".$v['cdate']."' and proxy_id='".$v['proxy_id']."'")
+                                ->sum("total_tax");
+
+                            if(!isset($totaltax)) {
+                                $totaltax=0;
+                            }
+                            $totaltaxs=$totaltaxs+ $totaltax;
+                            $child[$key]["totaltax"] =$totaltax;
+
+
+                        }
+                        $item['child'] = $child;
+                        $item["rows"] =count($child)+1;
+                        $item["totalbind"] = $totalbind;
+                        $item["totalcheck"] = $totalcheck;
+                        $item["totaltaxs"] = $totaltaxs;
+                        $item["paytimes"] = $totalpay;
+
+                    });
+            }
+            else
+            {
+                $list = $proxylist->field(" date_format(`addtime`,'%Y-%m') as dt,count(id) as total,parent_id ")
+                    ->where($where)
+                    ->whereor($strwhere)
+                    ->group(" date_format(`addtime`,'%Y-%m')  ")
+                    ->order("dt desc")
+                    ->paginate()
+                    ->each(function ($item, $key) {
+                        $select_id = session("proxy_id");
+                        $totalbind =0;
+                        $totaltaxs =0;
+                        $totalcheck =0;
+                        $totalpay =0;
+                        $child0 = Db::name("player")->field("date_format(`addtime`,'%Y-%m') as cdate,count(*) as total, a.proxy_id,b.nickname")
+                            ->alias('a')->join('proxy b',' a.proxy_id=b.code ',"LEFT")
+                            ->where(" date_format(`addtime`,'%Y-%m')='".$item['dt']."' and a.proxy_id='".$select_id."'")
+                            ->group(" a.proxy_id")->select();
+
+                        foreach ($child0 as $key=>$value) {
+                            $bindnum = Db::name("player")->field("count(*) as total")
+                                ->where(" date_format(`addtime`,'%Y-%m')='".$item['dt']."' and proxy_id='".$value["proxy_id"]."' and ismobile=1 ")
+                                ->count();
+                            if(!isset($bindnum))
+                            {
+                                $bindnum =0;
+                            }
+                            $child0[$key]["bindnum"] =$bindnum;
+                            $totalbind = $totalbind+$bindnum;
+
+                        }
+
+
+                        $child = Db::name("player")->field("date_format(`addtime`,'%Y-%m') as cdate,count(*) as total, a.proxy_id,b.nickname")
+                            ->alias('a')->join('proxy b',' a.proxy_id=b.code ',"LEFT")
+                            ->where(" date_format(`addtime`,'%Y-%m')='".$item['dt']."' and a.parent_id='".$select_id."' ")
+                            ->group(" a.proxy_id")->select();
+
+                        foreach ($child as $key=>$value) {
+                            $bindnum = Db::name("player")->field("count(*) as total")
+                                ->where(" date_format(`addtime`,'%Y-%m')='".$item['dt']."' and parent_id='".$value["proxy_id"]."' and ismobile=1 ")
+                                ->count();
+                            if(!isset($bindnum))
+                            {
+                                $bindnum =0;
+                            }
+                            $child[$key]["bindnum"] =$bindnum;
+                            $totalbind = $totalbind+$bindnum;
+                        }
+
+                        $child=array_merge($child0,$child);
+
+                        foreach ($child as $key =>$v){
+                            $paytime = Db::name("playerorder")
+                                ->where(" date_format(`addtime`,'%Y-%m')='".$v['cdate']."' and proxy_id='".$v['proxy_id']."'")
+                                ->count();
+                            if(!isset($paytime)) {
+                                $paytime=0;
+                            }
+                            $totalpay=$totalpay+$paytime;
+                            $child[$key]["paytime"] =$paytime;
+
+
+                            //提现次数
+
+                            $checknum = Db::name("checklog")
+                                ->where(" date_format(`addtime`,'%Y-%m')='".$v['cdate']."' and proxy_id='".$v['proxy_id']."'")
+                                ->count();
+
+                            if(!isset($checknum)) {
+                                $checknum=0;
+                            }
+
+                            $totalcheck =$totalcheck+$checknum;
+
+                            $child[$key]["checknum"] =$checknum;
+                            //税收总额
+
+                            $totaltax = Db::name("playerorder")
+                                ->where(" date_format(`addtime`,'%Y-%m')='".$v['cdate']."' and proxy_id='".$v['proxy_id']."'")
+                                ->sum("total_tax");
+
+                            if(!isset($totaltax)) {
+                                $totaltax=0;
+                            }
+                            $totaltaxs=$totaltaxs+ $totaltax;
+                            $child[$key]["totaltax"] =$totaltax;
+
+
+                        }
+                        $item['child'] = $child;
+                        $item["rows"] =count($child)+1;
+                        $item["totalbind"] = $totalbind;
+                        $item["totalcheck"] = $totalcheck;
+                        $item["totaltaxs"] = $totaltaxs;
+                        $item["paytimes"] = $totalpay;
+
+                    });
+            }
+
+           // $list = array_sort($list,'dt',SORT_DESC);
+            //赋值数据集
+            $this->assign('list', $list);
+            $this->assign("agentid", $agentid);
+            $this->assign("regstart", $regstart);
+            $this->assign("regend", $regend);
+            $this->assign("proxy",$proxy);
+            $this->assign("month",$month);
+             return $this->fetch('distribute/index');
+        }
+
+        /*
+         * 收入统计
+         */
+        public function incomeSum(){
+
+            $agentid = input("agentId");
+            $starttime = input("startTime");
+            $endtime = input("endTime");
+            $month = input("month");
+            $proxy = session("proxy");
+
+
+            $where = array();
+            $strwhere =" 1=1 ";
+            if (!empty($agentid)) {
+                $where['proxy_id'] = $agentid;
+                $where['parent_id'] = $proxy["code"];
+                $strwhere.=" and proxy_id='".$agentid."'";
+            }
+            else
+            {
+                $where["proxy_id"] = $proxy["code"];
+                $strwhere.=" and parent_id='".$proxy["code"]."'";
+            }
+
+            if (!empty($starttime)) {
+                if (!empty($endtime)) {
+                    $where['addtime'] = array(array('egt', $starttime), array('elt', $endtime));
+                    $strwhere.=" and addtime>='".$starttime."' and addtime<='".$endtime."'";
+                } else {
+                    $where['addtime'] = array('egt', $starttime);
+                    $strwhere.=" and addtime>='".$starttime."'";
+                }
+            }
+
+            $PlayerOrder = Model("PlayerOrder");
+            if(empty($month))
+            {
+                $listdata = $PlayerOrder
+                    ->field(" date_format(`addtime`,'%Y-%m-%d') dt,sum(total_tax) as totaltax")
+                    ->where($where)
+                    ->whereor($strwhere)
+                    ->group("date_format(`addtime`,'%Y-%m-%d')  ")
+                    ->order("dt desc")
+                    ->paginate(20)
+                    ->each(function ($item, $key) {
+                        $select_id = session("proxy_id");
+                        $child = Db::name("playerorder")
+                            ->field("date_format(`addtime`,'%Y-%m-%d') as cdate,sum(total_tax) as total, a.proxy_id,b.nickname,b.percent")
+                            ->alias('a')->join('proxy b',' a.proxy_id=b.code ',"LEFT")
+                            ->where(" date_format(`addtime`,'%Y-%m-%d')='".$item['dt']."' and a.parent_id='".$select_id."' ")
+                            ->group(" a.proxy_id")->select();
+
+
+                        $child0 = Db::name("playerorder")
+                            ->field("date_format(`addtime`,'%Y-%m-%d') as cdate,sum(total_tax) as total, a.proxy_id,b.nickname,b.percent")
+                            ->alias('a')->join('proxy b',' a.proxy_id=b.code ',"LEFT")
+                            ->where(" date_format(`addtime`,'%Y-%m-%d')='".$item['dt']."' and a.proxy_id='".$select_id."' ")
+                            ->group(" a.proxy_id")->select();
+
+                        $child=array_merge($child0,$child);
+                        $item['child'] = $child;
+                        $item["rows"] =count($child)+1;
+                        $totaltax =0;
+                        $mytax =0;
+                        foreach ($child as $key=>$value){
+                            if($value['proxy_id']==$select_id) {
+                                $mytax = $mytax + ($value["total"] * $value["percent"]) / 100;
+                            }
+                            else
+                            {
+                                $proxy = session("proxy");
+                                $mypercent =$proxy['percent']-$value["percent"];
+                                $mytax = $mytax + ($value["total"] * $mypercent / 100);
+                                $totaltax =$totaltax+($value["total"]*$value["percent"])/100;
+                            }
+                        }
+                        $item["mytax"] =$mytax;
+                        $item["ttax"] =$totaltax;
+
+                    });
+            }
+            else{
+//按月
+//                $listdata = $PlayerOrder
+//                    ->field(" date_format(`addtime`,'%Y-%m') dt,sum(total_tax) as totaltax")
+//                    ->where($where)
+//                    ->whereor($strwhere)
+//                    ->group("date_format(`addtime`,'%Y-%m')  ")
+//                    ->order("dt desc")
+//                    ->paginate(20)
+//                    ->each(function ($item, $key) {
+//                        $select_id = session("proxy_id");
+//                        $child = Db::name("playerorder")
+//                            ->field("date_format(`addtime`,'%Y-%m') as cdate,sum(total_tax) as total, a.proxy_id,b.nickname,b.percent")
+//                            ->alias('a')->join('proxy b',' a.proxy_id=b.code ',"LEFT")
+//                            ->where(" date_format(`addtime`,'%Y-%m')='".$item['dt']."' and a.parent_id='".$select_id."' ")
+//                            ->group(" a.proxy_id")->select();
+//
+//
+//                        $child0 = Db::name("playerorder")
+//                            ->field("date_format(`addtime`,'%Y-%m') as cdate,sum(total_tax) as total, a.proxy_id,b.nickname,b.percent")
+//                            ->alias('a')->join('proxy b',' a.proxy_id=b.code ',"LEFT")
+//                            ->where(" date_format(`addtime`,'%Y-%m')='".$item['dt']."' and a.proxy_id='".$select_id."' ")
+//                            ->group(" a.proxy_id")->select();
+//
+//                        $child=array_merge($child0,$child);
+//                        $item['child'] = $child;
+//                        $item["rows"] =count($child)+1;
+//                        $totaltax =0;
+//                        $mytax =0;
+//                        foreach ($child as $key=>$value){
+//                            $totaltax =$totaltax+($value["total"]*$value["percent"])/100;
+//                            if($value['proxy_id']==$select_id) {
+//                                $mytax = $mytax + ($value["total"] * $value["percent"]) / 100;
+//                            }
+//                            else
+//                            {
+//                                $proxy = session("proxy");
+//                                $mypercent =$proxy['percent']-$value["percent"];
+//                                $mytax = $mytax + ($value["total"] * $mypercent / 100);
+//                            }
+//                        }
+//                        $item["mytax"] =$mytax;
+//                        $item["ttax"] =$totaltax;
+//
+//                    });
+
+                //按周
+                $listdata = $PlayerOrder
+                    ->field(" week as dt,sum(total_tax) as totaltax")
+                    ->where($where)
+                    ->whereor($strwhere)
+                    ->group("week")
+                    ->order("week desc")
+                    ->paginate(20)
+                    ->each(function ($item, $key) {
+                        $select_id = session("proxy_id");
+                        $child = Db::name("playerorder")
+                            ->field("week as cdate,sum(total_tax) as total, a.weekstart,a.weekend, a.proxy_id,b.nickname,b.percent")
+                            ->alias('a')->join('proxy b',' a.proxy_id=b.code ',"LEFT")
+                            ->where(" week='".$item['dt']."' and a.parent_id='".$select_id."' ")
+                            ->group(" a.proxy_id")->select();
+
+
+                        $child0 = Db::name("playerorder")
+                            ->field("week as cdate,sum(total_tax) as total, a.weekstart,a.weekend, a.proxy_id,b.nickname,b.percent")
+                            ->alias('a')->join('proxy b',' a.proxy_id=b.code ',"LEFT")
+                            ->where(" week='".$item['dt']."' and a.proxy_id='".$select_id."' ")
+                            ->group(" a.proxy_id")->select();
+
+                        $child=array_merge($child0,$child);
+                        $item['child'] = $child;
+                        $item["rows"] =count($child)+1;
+                        $totaltax =0;
+                        $mytax =0;
+                        foreach ($child as $key=>$value){
+                            $totaltax =$totaltax+($value["total"]*$value["percent"])/100;
+                            if($value['proxy_id']==$select_id) {
+                                $mytax = $mytax + ($value["total"] * $value["percent"]) / 100;
+                            }
+                            else
+                            {
+                                $proxy = session("proxy");
+                                $mypercent =$proxy['percent']-$value["percent"];
+                                $mytax = $mytax + ($value["total"] * $mypercent / 100);
+                            }
+                        }
+                        $item["mytax"] =$mytax;
+                        $item["ttax"] =$totaltax;
+
+                    });
+
+
+                foreach ($listdata as &$v) {
+                    $weekInfo = getWeekDate(date('Y'), $v['dt']);
+                    $v['dt'] = $weekInfo[0]." ~ ".$weekInfo[1];
+                }
+                unset($v);
+
+            }
+
+           // print_r($listdata);
+
+
+            $this->assign("agentid", $agentid);
+            $this->assign("starttime", $starttime);
+            $this->assign("endtime", $endtime);
+            $this->assign("proxy",$proxy);
+            $this->assign('list', $listdata);
+            $this->assign("month",$month);
+
+            return $this->fetch('distribute/incomeSum');
+        }
+
+
+
+        /*
+         * 收入明细
+         */
+        public function incomeDetail(){
+            $gamerId = input("gamerId");
+            $gameType = input("gameType");
+            $startime =input("startTime");
+            $endTime =input("endTime");
+
+            $proxy_id = session("proxy_id");
+            $proxy = session("proxy");
+
+
+           $where= array();
+           $strwhere ="a.parent_id='".$proxy_id."'";
+            if(!empty($gamerId)){
+                $where["a.userid"] = $gamerId;
+                $strwhere.= " and a.userid=".$gamerId;
+            }
+
+            if(!empty($gameType)){
+                $where["a.gameid"] = $gameType;
+                $strwhere.= " and a.gameid=".$gameType;
+            }
+
+            $where["a.proxy_id"]=$proxy_id;
+            if (!empty($startime)) {
+                if (!empty($endTime)) {
+                    $where['a.addtime'] = array(array('gt', $startime), array('lt', str_replace('-','/',$endTime)));
+                    $strwhere.=" and a.addtime>'".str_replace('-','/',$startime).
+                        "' and a.addtime<='".str_replace('-','/',$endTime)."'";
+                } else {
+                    $where['a.addtime'] = array('gt', str_replace('-','/',$startime));
+                    $strwhere.=" and a.addtime>'".str_replace('-','/',$startime)."'";
+                }
+            }
+
+            $list = Db::name("playerorder")->alias('a')
+                ->field("a.proxy_id,a.userid,a.gameid,a.game,a.total_tax,b.percent,a.createtime")
+                ->join(" proxy b "," a.proxy_id=b.code","LEFT")
+                ->where($where)
+                ->whereor($strwhere)->order("a.createtime desc")
+                ->paginate();
+
+            $this->assign("list",$list);
+            $this->assign("gamerid",$gamerId);
+            $this->assign("proxy",$proxy);
+            $this->assign("starttime",$startime);
+            $this->assign("endTime",$endTime);
+            $this->assign("gameType",$gameType);
+            $this->assign("gametypeList", config('gametype'));
+            return $this->fetch('distribute/incomedetail');
+        }
+
+
+
+        public function playerDetail(){
+
+            $gamerId = input("gamerId");
+            $startime =input("startTime");
+            $endTime =input("endTime");
+
+            $proxy_id = session("proxy_id");
+            $proxy = session("proxy");
+
+            $startime1 = $startime." 00:00:00";
+            $endTime1 = $endTime." 23:59:59";
+            $where= array();
+            $strwhere ="a.parent_id='".$proxy_id."'";
+            if(!empty($gamerId)){
+                $where["a.userid"] = $gamerId;
+                $strwhere.= " and a.userid='{$gamerId}'";
+            }
+
+//            if(!empty($gameType)){
+//                $where["a.gameid"] = $gameType;
+//                $strwhere.= " and a.gameid=".$gameType;
+//            }
+
+            $where["a.proxy_id"]=$proxy_id;
+            if (!empty($startime1)) {
+                $startime1 = str_replace("-","/",$startime1);
+                $endTime1 = str_replace("-","/",$endTime1);
+                if (!empty($endTime)) {
+                    $where['a.regtime'] = array(array('gt', $startime1), array('lt', $endTime1));
+                    $strwhere.=" and a.regtime>'".$startime1."' and a.regtime<'".$endTime1."'";
+                } else {
+                    $where['a.regtime'] = array('gt', $startime1);
+                    $strwhere.=" and a.regtime>'".$startime1."'";
+                }
+            }
+
+            $list = Db::name("player")->alias('a')
+                ->field(" a.proxy_id,a.userid,a.proxy_name,a.nickname,a.ismobile,a.regtime,a.addtime")
+                ->join(" proxy b "," a.proxy_id=b.code","LEFT")
+                ->where($where)
+                ->whereor($strwhere)->order("a.regtime desc")
+                ->paginate('15');
+
+            $this->assign("list",$list);
+            $this->assign("gamerid",$gamerId);
+            $this->assign("proxy",$proxy);
+            $this->assign("starttime",$startime);
+            $this->assign("endTime",$endTime);
+            return $this->fetch();
+        }
+
+
+
+
+    public function OrderDetail(){
+
+        $gamerId = input("gamerId");
+        $startime =input("startTime");
+        $endTime =input("endTime");
+
+        $proxy_id = session("proxy_id");
+        $proxy = session("proxy");
+
+        $startime1 = $startime." 00:00:00";
+        $endTime1 = $endTime." 23:59:59";
+        $where= array();
+        $strwhere ="a.parent_id='".$proxy_id."'";
+        if(!empty($gamerId)){
+            $where["a.userid"] = $gamerId;
+            $strwhere.= " and a.userid='{$gamerId}'";
+        }
+
+//            if(!empty($gameType)){
+//                $where["a.gameid"] = $gameType;
+//                $strwhere.= " and a.gameid=".$gameType;
+//            }
+
+        $where["a.proxy_id"]=$proxy_id;
+        if (!empty($startime1)) {
+            $startime1 = str_replace("-","/",$startime1);
+            $endTime1 = str_replace("-","/",$endTime1);
+            if (!empty($endTime)) {
+                $where['a.createtime'] = array(array('gt', $startime1), array('lt', $endTime1));
+                $strwhere.=" and a.createtime>'".$startime1."' and a.createtime<'".$endTime1."'";
+            } else {
+                $where['a.createtime'] = array('gt', $startime1);
+                $strwhere.=" and a.createtime>'".$startime1."'";
+            }
+        }
+
+        $list = Db::name("playerorder")->alias('a')
+            ->field(" a.proxy_id,a.userid,b.nickname,a.game,a.total_tax,a.createtime,a.addtime")
+            ->join(" proxy b "," a.proxy_id=b.code","LEFT")
+            ->where($where)
+            ->whereor($strwhere)->order("a.createtime desc")
+            ->paginate('15');
+
+        $this->assign("list",$list);
+        $this->assign("gamerid",$gamerId);
+        $this->assign("proxy",$proxy);
+        $this->assign("starttime",$startime);
+        $this->assign("endTime",$endTime);
+        return $this->fetch();
+    }
+
+
+
+}

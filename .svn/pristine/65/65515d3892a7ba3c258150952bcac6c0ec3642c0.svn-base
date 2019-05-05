@@ -1,0 +1,178 @@
+{extend name="common/base" /}
+
+{block name="title"}每日玩家输赢{/block}
+{block name="css"}{/block}
+{block name="content"}
+<div class="layui-row layui-col-space30">
+
+    <div class="layui-col-md3 layui-col-lg3 layui-col-xs12 layui-col-sm6 ">
+        <div class="layui-card">
+            <div class="layui-card-header">
+                总充值
+                <span class="layui-badge layui-bg-blue layuiadmin-badge">总充值</span>
+            </div>
+            <div class="layui-card-body layuiadmin-card-list">
+                <p class="layuiadmin-big-font" id="charge">0</p>
+            </div>
+        </div>
+    </div>
+    <div class="layui-col-md3 layui-col-lg3 layui-col-xs12 layui-col-sm6 ">
+        <div class="layui-card">
+            <div class="layui-card-header">
+                总兑换
+                <span class="layui-badge layui-bg-gray layuiadmin-badge">总兑换</span>
+            </div>
+            <div class="layui-card-body layuiadmin-card-list">
+                <p class="layuiadmin-big-font" id="exchange">0</p>
+            </div>
+        </div>
+    </div>
+    <div class="layui-col-md3 layui-col-lg3 layui-col-xs12 layui-col-sm6 ">
+        <div class="layui-card">
+            <div class="layui-card-header">
+                直属玩家输赢
+                <span class="layui-badge layui-bg-red layuiadmin-badge">直属玩家</span>
+            </div>
+            <div class="layui-card-body layuiadmin-card-list">
+                <p class="layuiadmin-big-font" id="win1">0</p>
+            </div>
+        </div>
+    </div>
+    <div class="layui-col-md3 layui-col-lg3 layui-col-xs12 layui-col-sm6 ">
+        <div class="layui-card">
+            <div class="layui-card-header">
+                总游戏输赢
+                <span class="layui-badge layui-bg-blue layuiadmin-badge">总游戏输赢</span>
+            </div>
+            <div class="layui-card-body layuiadmin-card-list">
+                <p class="layuiadmin-big-font" id="win2">0</p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="layui-card" style="margin-top: 20px">
+    <div class="layui-card-header layuiadmin-card-header-auto">
+        <form class="layui-form" lay-filter="component-form-group">
+            <div class="layui-form-item">
+
+                <div class="layui-inline">
+                    <label class="layui-form-label">玩家ID</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="playerId" name="playerId" placeholder="请输入玩家ID"  autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">手机号</label>
+                    <div class="layui-input-inline">
+                        <input type="tel" id="phone" name='phone' placeholder="请输入手机号"  autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">日期</label>
+                    <div class="layui-input-inline" style="width: 100px;">
+                        <input type="text" name="startTime" id="LAY-component-form-group-date" placeholder="日期" autocomplete="off" class="layui-input">
+                    </div>
+
+                </div>
+                <div class="layui-inline">
+                    <div class="layui-input-inline">
+                        <a class="layui-btn" id="search_log" data-type="reload">搜索</a>
+                        <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+
+    <div class="layui-card-body">
+
+        <div id="alllist">
+            <table id="loglist" lay-filter="loglist" class="layui-table">
+                <thead>
+                <tr>
+                    <th>玩家编号</th>
+                    <th>手机号</th>
+                    <th>充值总额</th>
+                    <th>兑换总额</th>
+                    <th>游戏输赢（所有游戏）</th>
+                </tr>
+                </thead>
+                <tbody id="loglistbd">
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{/block}
+{block name="script"}
+<script>
+    layui.config({
+        base: '/src/layuiadmin/' //静态资源所在路径
+    }).extend({
+        index: 'lib/index' //主入口模块
+    }).use(['index', 'table', 'layer', 'element', 'laydate', 'form', 'jquery'], function() {
+        var element = layui.element
+            ,layer = layui.layer
+            ,laydate = layui.laydate
+            ,table = layui.table
+            ,$ = layui.$
+            ,form = layui.form;
+
+        var main = {
+            init : function() {
+                laydate.render({
+                    elem: '#LAY-component-form-group-date'
+                    ,format:'yyyy-MM-dd'
+                });
+                $('#search_log').on('click', function(e) {
+                    e.preventDefault();
+                    main.playerlog();
+                })
+            },
+            playerlog : function() {
+                var playerid = $('#playerId').val();
+                var mobile = $('#phone').val();
+                var date = $('#LAY-component-form-group-date').val();
+                $.ajax({
+                    type:'post',
+                    url:"{:url('playergame/playerlog')}",
+                    data:{
+                        'loginid' : playerid,
+                        'mobile' : mobile,
+                        'date' : date,
+                    },
+                    dataType:'json',
+                    success: function(res) {
+                        if (res.code === 0 ) {
+                            $('#loglistbd').html('');
+                            var charge = res.data.totalCharge ? res.data.totalCharge : 0;
+                            var exchange = res.data.totalExchange ? res.data.totalExchange : 0;
+                            var win1 = res.data.totalUserWin ? res.data.totalUserWin : 0;
+                            var win2 = res.data.totalWin ? res.data.totalWin : 0;
+
+                            $('#charge').html(charge);
+                            $('#exchange').html(exchange);
+                            $('#win1').html(win1);
+                            $('#win2').html(win2);
+                            var content = '';
+                            for (var i=0;i<res.data.userGameWinList.length;i++) {
+                                content+="<tr><td>"+res.data.userGameWinList[i].roleId+"</td><td>"+res.data.userGameWinList[i].mobile+"</td><td>"+res.data.userGameWinList[i].totalCharge+"</td><td>"+res.data.userGameWinList[i].totalExchange+"</td><td>"+res.data.userGameWinList[i].totalWin+"</td></tr>";
+                            }
+                            $('#loglistbd').html(content);
+                            table.render();
+                        } else {
+                            layer.msg(res.msg);
+                        }
+                    }
+                });
+            }
+        };
+
+        main.init();
+        main.playerlog();
+    });
+</script>
+{/block}
