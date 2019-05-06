@@ -19,11 +19,9 @@ class Test extends Controller {
 
     public function test()
     {
-        $a = 555.09988;
-        var_dump(floor($a*100)/100);
-//        $data = getTax('WZ0000032', 10000);
-//        var_dump($data);
-//        die;
+        $data = getTax('WZ0000032', 10000);
+        var_dump($data);
+        die;
     }
     public function index(){
 

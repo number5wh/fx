@@ -63,7 +63,6 @@ class  Company extends Controller
     }
 
 
-    //直属玩家账单
     public function getBillList()
     {
         $proxylist = Db::name("proxy")->where("islock", "0")->select();
@@ -358,67 +357,6 @@ class  Company extends Controller
             }
         }
 
-    }
-
-    //获取所有玩家数据
-    public function getAllPlayerList()
-    {
-        $company = new \app\manage\model\Company();
-        $ret     = $ret = $company->getAllPlayerList();
-        if ($ret->data == null) {
-            //Log::write($ret->message,"DEBUG");
-            echo " no data!! \r\n";
-        } else {
-            $retdata = $ret->data;
-            if ($retdata != null) {
-
-                foreach ($retdata as $key => $value) {
-                    $where = array(
-                        "userid"    => $value->userid,
-                        "accountid" => $value->accountid,
-                    );
-                    $playernum = Db::name("thirdplayerall")->where($where)->count();
-
-                    $obj = object_to_array($value);
-                    //$obj['proxy_id'] = $v['code'];
-                    if ($playernum == 0) {
-                        //插入
-                        Db::name('thirdplayerall')->insert($obj);
-                        $data = array(
-                            "parent_id"  => '',
-                            "proxy_id"   => $value->parentid,
-                            "proxy_name" => '',
-                            "userid"     => $value->userid,
-                            "accountid"  => $value->accountid,
-                            "nickname"   => $value->nickname,
-                            "ismobile"   => $value->ismobile,
-                            "regtime"    => $value->regtime,
-                            "addtime"    => date("Y-m-d H:i:s")
-                        );
-
-                        $ret = Db::name("playerall")->insert($data);
-                    } else {
-                        //更新
-                        Db::name('thirdplayerall')->where($where)->update($obj);
-                        $data = array(
-                            "parent_id"  => '',
-                            "proxy_id"   => $value->parentid,
-                            "proxy_name" => '',
-                            "userid"     => $value->userid,
-                            "accountid"  => $value->accountid,
-                            "nickname"   => $value->nickname,
-                            "ismobile"   => $value->ismobile,
-                            "regtime"    => $value->regtime,
-                            "addtime"    => date("Y-m-d H:i:s")
-                        );
-
-                        $ret = Db::name("playerall")->where($where)->update($data);
-                        save_log('apidata/getallplayer', "update:".$value->userid);
-                    }
-                    // sleep(1000);
-                }
-            }
-        }
     }
 
 

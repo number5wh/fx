@@ -144,19 +144,24 @@ class Index extends Base {
         $proxy_id = session("proxy_id");
         $proxy = session("proxy");
         $data = ['code' => 0, 'msg' => '', 'data' => []];
-        //昨日收益
-        $today = strtotime(date('Y-m-d 00:00:00'));
-        $yesterday = $today - 24*3600;
-
-        $yesterdaytt = Db::name("incomelog")
-            ->where(      [
-                'proxy_id' => session('proxy_id'),
-                'typeid'   => config('incomelog.income'),
-                'createtime' => [['egt', $yesterday], ['lt', $today]]
-            ])
-            ->sum('changmoney');
+        $todaytotal = Db::name("playerorder")
+            ->alias("a")
+            ->join("proxy b","a.proxy_id=b.code","LEFT")
+            ->where("a.proxy_id='".session("proxy_id")."' and datediff(`createtime`,NOW())=-1 ")
+            ->whereor("a.parent_id='".session("proxy_id")."' and datediff(`createtime`,NOW())=-1 ")
+            ->select();
+        $todaytt = 0;
+        foreach($todaytotal as $key=>$v){
+            if($v["code"]==$proxy_id){
+                $todaytt += $v["total_tax"] * $v["percent"]/100;
+            }
+            else
+            {
+                $todaytt += $v["total_tax"] * ($proxy["percent"]-$v["percent"])/100;
+            }
+        }
         //$todaytt = 700;
-        $where = ['income' => ['elt', $yesterdaytt]];
+        $where = ['income' => ['elt', $todaytt]];
         //获取可领取的奖励
         $reward = Db::name("dayreward")->where($where)->order("income desc")->limit(1)->find();
         if (!$reward) {
@@ -176,7 +181,7 @@ class Index extends Base {
             $data['msg']  = '今日已经领取过红包了哦';
             return $data;
         }
-        $data['data'] = ['total' =>floor($yesterdaytt/100)*100,'reward' => $reward ];
+        $data['data'] = ['total' =>$todaytt,'reward' => $reward ];
         return $data;
     }
 
