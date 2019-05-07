@@ -386,16 +386,9 @@ class Proxy extends Base
                     $qrcode2 = '/public/upload/Qrcode/proxy_' . $proxy_code .$template['template_code']. '.png';
 
 
-
                     $template = array("proxy_id" => $proxy_code, "config_name" => $cfgname, "template_code" => $template['template_code'],
                         "template_name" => $template['template_name'], "qrcode" => $qrcode2, "image_url" => $qrcode2,
                         "down_url" => $template['distribute_url'] . urlencode(compile($proxy_code)), "descript" => '');
-
-
-                    if (config('useshorturl') === true) {
-                        $template['down_url'] = file_get_contents(config('shorturl').$proxy_code) ? file_get_contents(config('shorturl').$proxy_code) : '';
-                    }
-
                     $status = Db::name("user_template")->insert($template);
                 } else {
                     //return $this->msg(0, "模板不存在", null);

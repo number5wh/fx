@@ -284,9 +284,5 @@ return [
 
     //推广玩家分成
     'spreadrate' => 30,
-    'spreadkey'  => 'zRIPkDoM5hzrxohBWd',
-
-    //微信二维码短地址
-    'shorturl' => 'http://wx.sacomg.com/api.php?proxyid=',
-    'useshorturl' => true
+    'spreadkey'  => 'zRIPkDoM5hzrxohBWd'
 ];
