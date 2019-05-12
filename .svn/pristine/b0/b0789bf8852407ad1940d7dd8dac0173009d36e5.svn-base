@@ -10,7 +10,6 @@ use think\model;
 use think\Paginator;
 use think\log;
 use app\admin\model\Sms;
-use think\Request;
 
 
 class Proxy extends Base
@@ -371,16 +370,14 @@ class Proxy extends Base
 
             $usertemp = new \app\admin\model\UserTemplate();
             $usertemp->Qrcode($proxy_code);
-            $qrcode = './public/upload/Qrcode/' . $proxy_code . '.png';
-            $tagetimg = $qrcode;
-            thrum($tagetimg, 230,230, $tagetimg);
+            $qrcode = '/public/upload/Qrcode/' . $proxy_code . '.png';
 
             foreach($arrTemplate as $k=>$template){
                 if (!empty($template)) {
                     $cfgname = $username . $template['template_code'];
 
 
-                    // str_replace("/public/","./",$qrcode);
+                    $tagetimg = "." . $qrcode;// str_replace("/public/","./",$qrcode);
                     $bigimg = "." . $template["template_image"];//str_replace("/public/","./",$template["template_image"]);
 
                     $qrcode_url = "./public/upload/Qrcode/proxy_" . $proxy_code .$template['template_code']. '.png';
@@ -392,7 +389,7 @@ class Proxy extends Base
 
                     $template = array("proxy_id" => $proxy_code, "config_name" => $cfgname, "template_code" => $template['template_code'],
                         "template_name" => $template['template_name'], "qrcode" => $qrcode2, "image_url" => $qrcode2,
-                        "down_url" => $template['distribute_url'] . $proxy_code, "descript" => '');
+                        "down_url" => $template['distribute_url'] . urlencode(compile($proxy_code)), "descript" => '');
 
 
                     if (config('useshorturl') === true) {
@@ -705,70 +702,6 @@ class Proxy extends Base
         }
     }
 
-
-    /**
-     * 代理上下级关系查询
-     */
-    public function proxyLevel()
-    {
-        $adminid = session("proxy_id");
-        if ($adminid != '1') {
-            exit;
-        }
-
-
-        if (Request::instance()->isAjax()) {
-            $proxyId = input('proxy_id');
-            $nickname = input('nickname');
-            $type = intval(input('type'));
-            $page = intval(input('page'));
-            $limit = intval(input('limit'));
-            $data = ['code' => 0, 'msg' => '', 'data' => [], 'count' => 0];
-            if (!$proxyId  && !$nickname) {
-                $data['code'] = 1;
-                $data['msg']  = '请输入正确的参数';
-                return json($data);
-            }
-            $idList=[];
-//            if ($nickname) {
-//                $idList = Db::name('proxy')->field('code')->where(['nickname' => ['like', '%'.$nickname.'%']])->select();
-//                //$idList = Db::name('proxy')->field('code')->where(['nickname' => $nickname])->select();
-//                $idList = array_column($idList, 'code');
-//            }
-            $where = [];
-            if ($type == 1) {//查上级
-//                if ($idList) {
-//                    $where['code'] =  ['in', $idList];
-//                }
-                if ($proxyId) {
-                    $where['code'] = $proxyId;
-                }
-                $pidArr = Db::name('proxy')->field('parent_id')->where($where)->select();
-                $pidArr = array_column($pidArr, 'parent_id');
-                $count = Db::name('proxy')->where(['code' => ['in', $pidArr]])->count();
-                $res = Db::name('proxy')->where(['code' => ['in', $pidArr]])->page($page, $limit)->select();
-                $data['count'] = $count;
-                $data['data'] = $res;
-            } else {//查下级
-//                if ($idList) {
-//                    $where['parent_id'] =  ['in', $idList];
-//                }
-                if ($proxyId) {
-                    $where['parent_id'] = $proxyId;
-                }
-                $pidArr = Db::name('proxy')->field('code')->where($where)->select();
-                $pidArr = array_column($pidArr, 'code');
-                $count = Db::name('proxy')->where(['code' => ['in', $pidArr]])->count();
-                $res = Db::name('proxy')->where(['code' => ['in', $pidArr]])->page($page, $limit)->select();
-                $data['count'] = $count;
-                $data['data'] = $res;
-            }
-            return json($data);
-        } else {
-            return $this->fetch();
-        }
-
-    }
 
 
 

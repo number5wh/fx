@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="/src/layuiadmin/style/admin.css" media="all">
 </head>
 <body class="layui-layout-body">
+  
   <div id="LAY_app">
     <div class="layui-layout layui-layout-admin">
       <div class="layui-header">
@@ -113,11 +114,6 @@
                   <a lay-href="{:url('distribute/playerDetail')}">玩家明细</a>
                 </dd>
 
-                {if $proxy['code'] == '1'}
-                <dd>
-                  <a lay-href="{:url('proxy/proxyLevel')}">代理上下级关系</a>
-                </dd>
-                {/if}
               </dl>
             </li>
             <li data-name="detail" class="layui-nav-item">
@@ -220,7 +216,7 @@
       <!-- 主体内容 -->
       <div class="layui-body" id="LAY_app_body">
         <div class="layadmin-tabsbody-item layui-show">
-          <iframe src="{:url('index/main')}" id="iframe" frameborder="0" class="layadmin-iframe"></iframe>
+          <iframe src="{:url('index/main')}" frameborder="0" class="layadmin-iframe"></iframe>
         </div>
       </div>
       
@@ -228,12 +224,6 @@
       <div class="layadmin-body-shade" layadmin-event="shade"></div>
     </div>
   </div>
-
-  <ul class="layui-fixbar" style="bottom: 25%;right: 50px">
-    <li class="layui-icon" lay-type="bar1" style="background-color:#393D49" onclick="window.open('https://sv85.saleprovide.com/chat/Hotline/channel.jsp?cid=5013747&cnfid=4084&j=5189283528&s=1')">
-    </li>
-    <li class="layui-icon layui-fixbar-top" id="totop" lay-type="top" style="display: list-item;background-color:#393D49"></li>
-  </ul>
 
   <script src="/src/layuiadmin/layui/layui.js"></script>
   <script src="__JS__/jquery.min.js?v=2.1.4"></script>
@@ -243,23 +233,14 @@
     base: '/src/layuiadmin/' //静态资源所在路径
   }).extend({
     index: 'lib/index' //主入口模块
-  }).use(['index', 'jquery', 'util'], function() {
+  }).use(['index', 'jquery'], function() {
     var $ = layui.$;
-    var util = layui.util;
-      util.fixbar();
-
     $('#layout').on('click',function () {
       cookie.clear();
       location.href = "{:url('login/logout')}";
-    });
-      $('#totop').on('click',function () {
-          console.log(123);
-          console.log($('.layadmin-iframe')[0].contentWindow.window);
-
-
-          $('.layui-show').find('.layadmin-iframe')[0].contentWindow.window.scrollTo(0,0);
-      });
+    })
   });
+
   </script>
 
 </body>

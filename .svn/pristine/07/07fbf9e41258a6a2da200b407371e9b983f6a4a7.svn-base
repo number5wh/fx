@@ -180,7 +180,6 @@ class Index extends Base {
         return $data;
     }
 
-
     //领取提示
     public function getRewardPre()
     {

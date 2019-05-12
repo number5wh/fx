@@ -289,7 +289,7 @@
                 table.render({
                     elem: '#proxylist'
                     , url: "{:url('proxy/getIndex')}" //数据接口
-                    , where: {type:1}
+                    , where: {}
                     , page: true //开启分页
                     , cols: [cols]
                     // ,done: function(res, curr, count){

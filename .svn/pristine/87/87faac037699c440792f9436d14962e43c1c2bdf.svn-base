@@ -96,7 +96,7 @@ class Template extends Base
                     "qrcode" => $qrcode_url,
                     "image_url" => $qrcode_url,
                     "descript" => date('Y-m-d H:i:s').'生成',
-                    "down_url" => $template['distribute_url'] . $proxy_id
+                    "down_url" => $template['distribute_url'] . urlencode(compile($proxy_id))
                 );
                 //使用微信地址
                 if (config('useshorturl') === true) {

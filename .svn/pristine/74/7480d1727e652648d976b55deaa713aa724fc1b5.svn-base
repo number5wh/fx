@@ -105,131 +105,131 @@ class Distribute extends Base
     /*
      * 收入统计
      */
-//    public function incomeSum()
-//    {
-//
-//        $agentid   = input("agentId");
-//        $starttime = input("startTime");
-//        $endtime   = input("endTime");
-//        $month     = input("month");
-//
-//
-//        $where    = array();
-//        $strwhere = " 1=1 ";
-//        if (!empty($agentid)) {
-//            $where['proxy_id'] = $agentid;
-//            $strwhere          .= " and proxy_id='" . $agentid . "'";
-//        }
-//
-//
-//        if (!empty($starttime)) {
-//            if (!empty($endtime)) {
-//                $where['addtime'] = array(array('gt', $starttime), array('lt', $endtime));
-//                $strwhere         .= " and addtime>'" . $starttime . "' and addtime<='" . $endtime . "'";
-//            } else {
-//                $where['addtime'] = array('gt', $starttime);
-//                $strwhere         .= " and addtime>'" . $starttime . "'";
-//            }
-//        }
-//
-//        $PlayerOrder = Model("PlayerOrder");
-//        if (empty($month)) {
-//            $listdata = $PlayerOrder
-//                ->field(" date_format(`addtime`,'%Y-%m-%d') dt,sum(total_tax) as totaltax")
-//                ->where($where)
-//                ->whereor($strwhere)
-//                ->group("date_format(`addtime`,'%Y-%m-%d')  ")
-//                ->order("dt desc")
-//                ->paginate()
-//                ->each(function ($item, $key) {
-//                    $select_id = session("proxy_id");
-//                    $child     = Db::name("playerorder")
-//                        ->field("date_format(`addtime`,'%Y-%m-%d') as cdate,sum(total_tax) as total, a.proxy_id,b.nickname,b.percent")
-//                        ->alias('a')->join('proxy b', ' a.proxy_id=b.code ', "LEFT")
-//                        ->where(" date_format(`addtime`,'%Y-%m-%d')='" . $item['dt'] . "' and a.parent_id='" . $select_id . "' ")
-//                        ->group(" a.proxy_id")->select();
-//
-//
-//                    $child0 = Db::name("playerorder")
-//                        ->field("date_format(`addtime`,'%Y-%m-%d') as cdate,sum(total_tax) as total, a.proxy_id,b.nickname,b.percent")
-//                        ->alias('a')->join('proxy b', ' a.proxy_id=b.code ', "LEFT")
-//                        ->where(" date_format(`addtime`,'%Y-%m-%d')='" . $item['dt'] . "' and a.proxy_id='" . $select_id . "' ")
-//                        ->group(" a.proxy_id")->select();
-//
-//                    $child         = array_merge($child0, $child);
-//                    $item['child'] = $child;
-//                    $item["rows"]  = count($child) + 1;
-//                    $totaltax      = 0;
-//                    $mytax         = 0;
-//                    foreach ($child as $key => $value) {
-//                        $totaltax = $totaltax + ($value["total"] * $value["percent"]) / 100;
-//                        if ($value['proxy_id'] == $select_id) {
-//                            $mytax = $mytax + ($value["total"] * $value["percent"]) / 100;
-//                        } else {
-//                            $proxy     = session("proxy");
-//                            $mypercent = $proxy['percent'] - $value["percent"];
-//                            $mytax     = $mytax + ($value["total"] * $mypercent / 100);
-//                        }
-//                    }
-//                    $item["mytax"] = $mytax;
-//                    $item["ttax"]  = $totaltax;
-//
-//                });
-//        } else {
-//
-//            $listdata = $PlayerOrder
-//                ->field(" date_format(`addtime`,'%Y-%m') dt,sum(total_tax) as totaltax")
-//                ->where($where)
-//                ->whereor($strwhere)
-//                ->group("date_format(`addtime`,'%Y-%m')  ")
-//                ->order("dt desc")
-//                ->paginate()
-//                ->each(function ($item, $key) {
-//                    $child = Db::name("playerorder")
-//                        ->field("date_format(`addtime`,'%Y-%m') as cdate,sum(total_tax) as total, a.proxy_id,b.nickname,b.percent")
-//                        ->alias('a')->join('proxy b', ' a.proxy_id=b.code ', "LEFT")
-//                        ->where(" date_format(`addtime`,'%Y-%m')='" . $item['dt'] . "'")
-//                        ->group(" a.proxy_id")->select();
-//
-//
-//                    $child0 = Db::name("playerorder")
-//                        ->field("date_format(`addtime`,'%Y-%m') as cdate,sum(total_tax) as total, a.proxy_id,b.nickname,b.percent")
-//                        ->alias('a')->join('proxy b', ' a.proxy_id=b.code ', "LEFT")
-//                        ->where(" date_format(`addtime`,'%Y-%m')='" . $item['dt'] . "'")
-//                        ->group(" a.proxy_id")->select();
-//
-//                    $child         = array_merge($child0, $child);
-//                    $item['child'] = $child;
-//                    $item["rows"]  = count($child) + 1;
-//                    $totaltax      = 0;
-//                    $mytax         = 0;
-//                    foreach ($child as $key => $value) {
-//                        $totaltax = $totaltax + ($value["total"] * $value["percent"]) / 100;
-//                        if ($value['proxy_id'] == 0) {// $select_id) {
-//                            $mytax = $mytax + ($value["total"] * $value["percent"]) / 100;
-//                        } else {
-//                            $proxy     = session("proxy");
-//                            $mypercent = $proxy['percent'] - $value["percent"];
-//                            $mytax     = $mytax + ($value["total"] * $mypercent / 100);
-//                        }
-//                    }
-//                    $item["mytax"] = $mytax;
-//                    $item["ttax"]  = $totaltax;
-//
-//                });
-//
-//
-//        }
-//
-//        // print_r($listdata);
-//
-//
-//        $this->assign("agentid", $agentid);
-//        $this->assign("starttime", $starttime);
-//        $this->assign("endtime", $endtime);
-//        $this->assign('list', $listdata);
-//        return $this->fetch('distribute/incomeSum');
-//    }
+    public function incomeSum()
+    {
+
+        $agentid   = input("agentId");
+        $starttime = input("startTime");
+        $endtime   = input("endTime");
+        $month     = input("month");
+
+
+        $where    = array();
+        $strwhere = " 1=1 ";
+        if (!empty($agentid)) {
+            $where['proxy_id'] = $agentid;
+            $strwhere          .= " and proxy_id='" . $agentid . "'";
+        }
+
+
+        if (!empty($starttime)) {
+            if (!empty($endtime)) {
+                $where['addtime'] = array(array('gt', $starttime), array('lt', $endtime));
+                $strwhere         .= " and addtime>'" . $starttime . "' and addtime<='" . $endtime . "'";
+            } else {
+                $where['addtime'] = array('gt', $starttime);
+                $strwhere         .= " and addtime>'" . $starttime . "'";
+            }
+        }
+
+        $PlayerOrder = Model("PlayerOrder");
+        if (empty($month)) {
+            $listdata = $PlayerOrder
+                ->field(" date_format(`addtime`,'%Y-%m-%d') dt,sum(total_tax) as totaltax")
+                ->where($where)
+                ->whereor($strwhere)
+                ->group("date_format(`addtime`,'%Y-%m-%d')  ")
+                ->order("dt desc")
+                ->paginate()
+                ->each(function ($item, $key) {
+                    $select_id = session("proxy_id");
+                    $child     = Db::name("playerorder")
+                        ->field("date_format(`addtime`,'%Y-%m-%d') as cdate,sum(total_tax) as total, a.proxy_id,b.nickname,b.percent")
+                        ->alias('a')->join('proxy b', ' a.proxy_id=b.code ', "LEFT")
+                        ->where(" date_format(`addtime`,'%Y-%m-%d')='" . $item['dt'] . "' and a.parent_id='" . $select_id . "' ")
+                        ->group(" a.proxy_id")->select();
+
+
+                    $child0 = Db::name("playerorder")
+                        ->field("date_format(`addtime`,'%Y-%m-%d') as cdate,sum(total_tax) as total, a.proxy_id,b.nickname,b.percent")
+                        ->alias('a')->join('proxy b', ' a.proxy_id=b.code ', "LEFT")
+                        ->where(" date_format(`addtime`,'%Y-%m-%d')='" . $item['dt'] . "' and a.proxy_id='" . $select_id . "' ")
+                        ->group(" a.proxy_id")->select();
+
+                    $child         = array_merge($child0, $child);
+                    $item['child'] = $child;
+                    $item["rows"]  = count($child) + 1;
+                    $totaltax      = 0;
+                    $mytax         = 0;
+                    foreach ($child as $key => $value) {
+                        $totaltax = $totaltax + ($value["total"] * $value["percent"]) / 100;
+                        if ($value['proxy_id'] == $select_id) {
+                            $mytax = $mytax + ($value["total"] * $value["percent"]) / 100;
+                        } else {
+                            $proxy     = session("proxy");
+                            $mypercent = $proxy['percent'] - $value["percent"];
+                            $mytax     = $mytax + ($value["total"] * $mypercent / 100);
+                        }
+                    }
+                    $item["mytax"] = $mytax;
+                    $item["ttax"]  = $totaltax;
+
+                });
+        } else {
+
+            $listdata = $PlayerOrder
+                ->field(" date_format(`addtime`,'%Y-%m') dt,sum(total_tax) as totaltax")
+                ->where($where)
+                ->whereor($strwhere)
+                ->group("date_format(`addtime`,'%Y-%m')  ")
+                ->order("dt desc")
+                ->paginate()
+                ->each(function ($item, $key) {
+                    $child = Db::name("playerorder")
+                        ->field("date_format(`addtime`,'%Y-%m') as cdate,sum(total_tax) as total, a.proxy_id,b.nickname,b.percent")
+                        ->alias('a')->join('proxy b', ' a.proxy_id=b.code ', "LEFT")
+                        ->where(" date_format(`addtime`,'%Y-%m')='" . $item['dt'] . "'")
+                        ->group(" a.proxy_id")->select();
+
+
+                    $child0 = Db::name("playerorder")
+                        ->field("date_format(`addtime`,'%Y-%m') as cdate,sum(total_tax) as total, a.proxy_id,b.nickname,b.percent")
+                        ->alias('a')->join('proxy b', ' a.proxy_id=b.code ', "LEFT")
+                        ->where(" date_format(`addtime`,'%Y-%m')='" . $item['dt'] . "'")
+                        ->group(" a.proxy_id")->select();
+
+                    $child         = array_merge($child0, $child);
+                    $item['child'] = $child;
+                    $item["rows"]  = count($child) + 1;
+                    $totaltax      = 0;
+                    $mytax         = 0;
+                    foreach ($child as $key => $value) {
+                        $totaltax = $totaltax + ($value["total"] * $value["percent"]) / 100;
+                        if ($value['proxy_id'] == 0) {// $select_id) {
+                            $mytax = $mytax + ($value["total"] * $value["percent"]) / 100;
+                        } else {
+                            $proxy     = session("proxy");
+                            $mypercent = $proxy['percent'] - $value["percent"];
+                            $mytax     = $mytax + ($value["total"] * $mypercent / 100);
+                        }
+                    }
+                    $item["mytax"] = $mytax;
+                    $item["ttax"]  = $totaltax;
+
+                });
+
+
+        }
+
+        // print_r($listdata);
+
+
+        $this->assign("agentid", $agentid);
+        $this->assign("starttime", $starttime);
+        $this->assign("endtime", $endtime);
+        $this->assign('list', $listdata);
+        return $this->fetch('distribute/incomeSum');
+    }
 
 
     /*

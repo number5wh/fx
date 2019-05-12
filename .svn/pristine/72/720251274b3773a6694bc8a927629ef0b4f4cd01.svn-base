@@ -164,7 +164,6 @@ class  Company extends Controller
         }
         $proxylist = Db::name("proxy")->where("islock", "0")->select();
         $weekInfo  = getWeekDate(date('Y'), date('W'));
-        save_log('apidata/getBillList', "start");
         foreach ($proxylist as $k => $v) {
             $proxy_id = $v["code"];
             $company  = new \app\manage\model\Company();
@@ -589,7 +588,6 @@ class  Company extends Controller
                 $totaltax = Db::name("incomelog")
                     ->where([
                         'proxy_id' => $t,
-                        'typeid' => ['in', [0,4]],
                         'addtime'=>['like', $date.'%']
                     ])
                     ->sum("totaltax");

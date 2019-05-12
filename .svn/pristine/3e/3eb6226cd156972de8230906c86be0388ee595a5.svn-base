@@ -1,0 +1,46 @@
+{extend name="common/base" /}
+
+{block name="title"}详情{/block}
+{block name="css"}{/block}
+{block name="content"}
+<div class="layui-card">
+    <div class="layui-card-body">
+        <div id="alllist">
+            <table id="proxylist" lay-filter="proxylist" class="layui-table">
+                <tr><th>代理ID</th><th>{$detail.agentId}</th></tr>
+                <tr><th>总充值</th><th>{$detail.recharge}</th></tr>
+                <tr><th>总兑换金额</th><th>{$detail.extractSum}</th></tr>
+                <tr><th>税收</th><th>{$detail.revenue}</th></tr>
+                <tr><th>总收入</th><th>{$detail.income}</th></tr>
+                <tr><th>总注册量</th><th>{$detail.reg}</th></tr>
+                <tr><th>总提现金额</th><th>{$detail.withdrawDeposit}</th></tr>
+                <tr><th>收益比例(现在/最高)</th><th>{$detail.royaltyRate}%/{$detail.maxRoyaltyRate}%</th></tr>
+                <tr><th>账户余额</th><th>{$detail.money}</th></tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+{/block}
+{block name="script"}
+<script type="text/html" id="msg-bar">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+</script>
+<script>
+    layui.config({
+        base: '/src/layuiadmin/' //静态资源所在路径
+    }).extend({
+        index: 'lib/index' //主入口模块
+
+    }).use(['index', 'table', 'layer', 'element', 'laydate', 'form', 'jquery'], function() {
+            var element = layui.element
+            ,layer = layui.layer
+            ,laydate = layui.laydate
+                ,table = layui.table
+                ,$ = layui.$
+                ,pattern = new RegExp("^[a-zA-Z][a-zA-Z0-9_]{5,25}")
+            ,form = layui.form;
+
+    });
+</script>
+{/block}

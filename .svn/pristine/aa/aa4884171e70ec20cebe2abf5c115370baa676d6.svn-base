@@ -164,7 +164,6 @@ class  Company extends Controller
         }
         $proxylist = Db::name("proxy")->where("islock", "0")->select();
         $weekInfo  = getWeekDate(date('Y'), date('W'));
-        save_log('apidata/getBillList', "start");
         foreach ($proxylist as $k => $v) {
             $proxy_id = $v["code"];
             $company  = new \app\manage\model\Company();
@@ -546,10 +545,9 @@ class  Company extends Controller
         }
 
         $date = date('Y-m-d');
-//        $date = '2019-05-09';
+        //$date = '2019-05-08';
         $day = date('Ymd');
-//        $day = '20190509';
-        $month = date('Ym');
+        //$day = '20190508';
         $proxylist = Db::name("proxy")->where('islock', 0)->select();
         foreach ($proxylist as $proxy) {
             //查询团队列表(下级+自己)  先统计直属代理
@@ -558,7 +556,7 @@ class  Company extends Controller
             if ($team) {
                 $teamList = array_column($team, 'proxy_id');
             }
-            array_unshift($teamList, $proxy['code']);
+            $teamList[] = $proxy['code'];
 
             foreach ($teamList as $t) {
                 //注册人数
@@ -589,7 +587,6 @@ class  Company extends Controller
                 $totaltax = Db::name("incomelog")
                     ->where([
                         'proxy_id' => $t,
-                        'typeid' => ['in', [0,4]],
                         'addtime'=>['like', $date.'%']
                     ])
                     ->sum("totaltax");
@@ -609,7 +606,6 @@ class  Company extends Controller
                     ];
                     $data = [
                         'day' => $day,
-                        'month' => $month,
                         'proxy_id' => $t,
                         'parent_id' => $proxy['code'],
                         'regnum' => $regnum,
@@ -624,7 +620,7 @@ class  Company extends Controller
                     if (!$find) {
                         Db::name('spreadsum')->insert($data);
                     } else {
-                        Db::name('spreadsum')->where(['id' => $find['id']])->update($data);
+                        Db::name('spreadsum')->where($where)->update($data);
                     }
                 }
             }

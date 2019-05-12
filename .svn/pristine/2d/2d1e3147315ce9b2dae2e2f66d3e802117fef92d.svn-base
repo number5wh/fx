@@ -120,19 +120,18 @@ class Distribute extends Base
             $strwhere          .= " and parent_id='" . $proxy["code"] . "'";
         }
 
+        if (!empty($starttime)) {
+            if (!empty($endtime)) {
+                $where['addtime'] = array(array('egt', $starttime), array('elt', $endtime));
+                $strwhere         .= " and addtime>='" . $starttime . "' and addtime<='" . $endtime . "'";
+            } else {
+                $where['addtime'] = array('egt', $starttime);
+                $strwhere         .= " and addtime>='" . $starttime . "'";
+            }
+        }
 
         $PlayerOrder = Model("PlayerOrder");
         if (empty($month)) {
-
-            if (!empty($starttime)) {
-                if (!empty($endtime)) {
-                    $where['addtime'] = array(array('egt', $starttime), array('elt', $endtime));
-                    $strwhere         .= " and addtime>='" . $starttime . "' and addtime<='" . $endtime . "'";
-                } else {
-                    $where['addtime'] = array('egt', $starttime);
-                    $strwhere         .= " and addtime>='" . $starttime . "'";
-                }
-            }
             $listdata = $PlayerOrder
                 ->field(" date_format(`addtime`,'%Y-%m-%d') dt,sum(total_tax) as totaltax")
                 ->where($where)
@@ -219,7 +218,6 @@ class Distribute extends Base
 //                        $item["ttax"] =$totaltax;
 //
 //                    });
-
 
             //按周
             $listdata = $PlayerOrder
@@ -447,4 +445,6 @@ class Distribute extends Base
         $this->assign("endTime", $endTime);
         return $this->fetch();
     }
+
+
 }

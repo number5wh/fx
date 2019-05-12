@@ -26,7 +26,6 @@
         <div class="search-proxy" style="margin-bottom: 10px;">
 <!--            <button class="layui-btn" data-type="reload" id="downcode">下载二维码</button>-->
             <button class="layui-btn layui-btn-danger" id="resetcode" data-type="reload">重新生成</button>
-            <a class="layui-btn" target="_blank" href="https://sv85.saleprovide.com/chat/Hotline/channel.jsp?cid=5013747&cnfid=4084&j=5189283528&s=1" data-type="reload">申请不死二维码</a>
         </div>
         <h5 style="color: red">提示：
             请复制列表中推广宣传地址或二维码分享他人！</h5>
