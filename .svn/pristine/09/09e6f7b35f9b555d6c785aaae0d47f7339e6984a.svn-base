@@ -1,0 +1,8 @@
+var ua = navigator.userAgent.toLowerCase();
+
+var screenwidth = window.screen.width;
+if(!/iphone|ipad|ipod/.test(ua)){
+    $('#iosiframe').attr("scrolling","auto");
+}else{
+    $('#iosiframe').width(screenwidth + 'px');
+}
