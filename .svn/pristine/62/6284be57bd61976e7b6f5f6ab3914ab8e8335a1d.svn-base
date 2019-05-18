@@ -243,35 +243,23 @@ class Index extends Base {
     //获取红包明细
     public function rewardList()
     {
-        $proxy_id = session("proxy_id");
         if (Request::instance()->isAjax()) {
             $page  = intval(input('page')) > 0 ? intval(input('page')) : 1;
             $limit = intval(input('limit')) > 0 ? intval(input('limit')) : 15;
-            $proxy = input('proxy_id') ? trim(input('proxy_id')) : '';
-            if ($proxy_id == 1) {//admin
-                $where = [
-                    'a.typeid'   => config('incomelog.day_reward')
-                ];
-                if ($proxy) {
-                    $where['a.proxy_id'] = $proxy;
-                }
-            } else {//其他人
-                $where = [
-                    'a.proxy_id' => $proxy_id,
-                    'a.typeid'   => config('incomelog.day_reward')
-                ];
-            }
-
-            $count = Db::name('incomelog')->alias('a')->where($where)->count();
+            $proxy_id = session("proxy_id");
+            $count = Db::name('incomelog')->where([
+                    'proxy_id' => $proxy_id,
+                    'typeid'   => config('incomelog.day_reward')
+                ])->count();
             $list     = Db::name('incomelog')
-                ->alias('a')
-                ->join('proxy b', 'a.proxy_id=b.code', 'left')
-                ->field('a.id,a.proxy_id,a.createtime,a.changmoney,a.descript,b.username,b.nickname')
-                ->where($where)
-                ->order('a.createtime desc')
+                ->field('id,proxy_id,createtime,changmoney,descript')
+                ->where([
+                    'proxy_id' => $proxy_id,
+                    'typeid'   => config('incomelog.day_reward')
+                ])
+                ->order('createtime desc')
                 ->page($page, $limit)
                 ->select();
-          
             foreach ($list as &$v) {
                 $v['createtime'] = date('Y-m-d H:i:s', $v['createtime']);
             }
@@ -279,7 +267,6 @@ class Index extends Base {
             $data = ['code' => 0,'msg'=>'','data' => $list, 'count' => $count];
             return json($data);
         } else {
-            $this->assign('proxyid', $proxy_id);
             return $this->fetch();
         }
     }

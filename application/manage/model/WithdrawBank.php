@@ -1,0 +1,86 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: admin
+ * Date: 2018/8/22
+ * Time: 22:14
+ */
+namespace app\manage\model;
+use think\Model;
+
+class WithdrawBank extends Model{
+    //新增银行卡接口
+    private $_key1 = 'TMINI04A1167';
+    private $_key2 = 'TMINI04A0948';
+    private $_company = 'longfei';
+    private $_url = 'https://www.tly-transfer.com/sfisapi/';
+    public function addCard($cardNum, $name, $bank)
+    {
+        $data = [];
+        $data['module'] = 'bankcard';
+        $data['method'] = 'api_add_member_card';
+        $data['company_name'] = $this->_company;
+        $data['payload'] = [
+            'card_number' => $cardNum,
+            'real_name' => $name,
+
+        ];
+    }
+
+    //新加订单
+    public function addOrder($cardNum, $amount, $name, $ordernumber)
+    {
+        $data = [];
+        $data['module'] = 'order';
+        $data['method'] = 'api_add_order';
+        $data['company_name'] = $this->_company;
+        $data['payload'] = [
+            'card_number' => $cardNum,
+            'amount' => $amount,
+            'trans_mode' => 'out_trans',
+            'real_name' => $name,
+            'order_number' => $this->_company.$ordernumber
+        ];
+        $strData = '';
+        foreach ($data as $k => $v) {
+            $strData .= $k.'='.$v.'&';
+        }
+        $strData = rtrim($strData, '&');
+        var_dump($strData);
+        die;
+        //$data = json_encode($data, JSON_UNESCAPED_UNICODE);
+        $sign = base64_encode(hash_hmac('sha256', $strData, $this->_key2,true));
+        $headers = [
+
+            'TLYHMAC:'. $sign,
+            'content_type:'. "content-type", "application/json"
+        ];
+
+//        var_dump(http_build_query($data));
+//        die;
+        //curl请求
+        $res = $this->curlpost($data, $headers);
+        var_dump($res);
+        die;
+    }
+
+    //发送请求操作仅供参考,不为最佳实践
+    public function curlpost($params, $header)
+    {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $this->_url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+        //curl_setopt($ch, CURLOPT_HEADER, 1);
+        curl_setopt($ch, CURLOPT_HTTPHEADER,$header);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);//如果不加验证,就设false,商户自行处理
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+
+        $output = curl_exec($ch);
+        curl_close($ch);
+        return  $output;
+    }
+
+}

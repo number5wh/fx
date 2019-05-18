@@ -119,9 +119,9 @@
                 </div>
 
 
-                <!--<div class="layui-form-mid layui-word-aux" >-->
-                    <!--<h5 style="color: red">提现手续费：提现总额的2%,最低为3元。</h5>-->
-                <!--</div>-->
+                <div class="layui-form-mid layui-word-aux" >
+                    <h5 style="color: red">提现手续费：提现总额的2%,最低为3元。</h5>
+                </div>
 
             </div>
 

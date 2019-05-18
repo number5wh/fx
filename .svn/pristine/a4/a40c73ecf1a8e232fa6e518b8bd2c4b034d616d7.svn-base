@@ -94,7 +94,7 @@ class Settle extends Base
         $checkpass = md5($proxy["settle_salt"] . $password);
         //print($proxy['check_pass']);
         if ($proxy['check_pass'] != $checkpass) {
-            return $this->showmsg(0, "结算密码不正确，请重输！", '', false, null);
+            return $this->showmsg(0, "验证码密码不正确，请重输！", '', false, null);
         }
 
 //        $sms = new \app\admin\model\Sms();

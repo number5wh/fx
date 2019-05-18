@@ -96,41 +96,41 @@
 
 
 
-            {if condition="$proxy.check_pass neq ''"}
-            <!--<div class="layui-form-item">-->
-                <!--<label class="layui-form-label">手机号</label>-->
-                <!--<div class="layui-input-inline">-->
-                    <!--<input type="text" class="layui-input disabled phoneNumForFind" id="phoneNum"-->
-                           <!--value="{$proxy.bind_mobile}" disabled lay-verify="required" />-->
-                <!--</div>-->
-                <!--<div class="layui-input-inline">-->
-                    <!--<button class="layui-btn sendCode" type="button" id="sendit" value='{$proxy.bind_mobile}'>获取验证码</button>-->
-                <!--</div>-->
-
-            <!--</div>-->
-            <!--<div class="layui-form-item">-->
-                <!--<label class="layui-form-label">验证码</label>-->
-                <!--<div class="layui-input-inline">-->
-                    <!--<input type="text" id="code" name="code"-->
-                           <!--placeholder="请输入验证码..." lay-verify="required" autocomplete="off" class="layui-input">-->
-                    <!--&lt;!&ndash;<input type="hidden" id="type" lay-verify="required"/>&ndash;&gt;-->
-                    <!--&lt;!&ndash;<input type="hidden" id="codeMsg" name="codeMsg" lay-verify="required"/>&ndash;&gt;-->
-                <!--</div>-->
-
-            <!--</div>-->
-
+            {if condition="$proxy.bind_mobile eq ''"}
             <div class="layui-form-item">
-                <div class="layui-input-block">
-                    <button class="layui-btn" id="sure" lay-submit lay-filter="safeset-changeMobile">保存修改</button>
-                </div>
+            <div class="layui-inline">
+                <a type="button" class="layui-btn"
+                   href="bindmobile">请先绑定手机号</a>
+            </div>
             </div>
             {/if}
 
-            {if condition="$proxy.bind_mobile eq ''"}
-            <div class="layui-form-item" >
-                <div class="layui-input-block" >
-                    <a type="button" class="layui-btn"
-                       href="bindmobile">请先绑定手机号</a>
+            {if condition="$proxy.check_pass neq ''"}
+            <div class="layui-form-item">
+                <label class="layui-form-label">手机号</label>
+                <div class="layui-input-inline">
+                    <input type="text" class="layui-input disabled phoneNumForFind" id="phoneNum"
+                           value="{$proxy.bind_mobile}" disabled lay-verify="required" />
+                </div>
+                <div class="layui-input-inline">
+                    <button class="layui-btn sendCode" type="button" id="sendit" value='{$proxy.bind_mobile}'>获取验证码</button>
+                </div>
+
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">验证码</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="code" name="code"
+                           placeholder="请输入验证码..." lay-verify="required" autocomplete="off" class="layui-input">
+                    <!--<input type="hidden" id="type" lay-verify="required"/>-->
+                    <!--<input type="hidden" id="codeMsg" name="codeMsg" lay-verify="required"/>-->
+                </div>
+
+            </div>
+
+            <div class="layui-form-item">
+                <div class="layui-input-inline" style="text-align: center">
+                    <button class="layui-btn" id="sure" lay-submit lay-filter="safeset-changeMobile">保存修改</button>
                 </div>
             </div>
             {/if}
@@ -343,14 +343,14 @@
                 }
             }
 
-//            if ($('#code').val() === '') {
-//                layer.msg('验证码不能为空')
-//                return false
-//            }
-//            if ($('#code').val().length < 4) {
-//                layer.msg('验证码不正确' )
-//                return false
-//            }
+            if ($('#code').val() === '') {
+                layer.msg('验证码不能为空')
+                return false
+            }
+            if ($('#code').val().length < 4) {
+                layer.msg('验证码不正确' )
+                return false
+            }
 
             $.ajax({
                 url: isAlibind ? "{:url('Settle/updateSettlementAccount')}":"{:url('Settle/updateSettlementBank')}",

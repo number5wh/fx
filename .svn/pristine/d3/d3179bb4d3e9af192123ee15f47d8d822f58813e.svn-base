@@ -112,9 +112,6 @@
                 <dd>
                   <a lay-href="{:url('distribute/playerDetail')}">玩家明细</a>
                 </dd>
-                <dd>
-                  <a lay-href="{:url('index/rewardList')}">红包奖励明细</a>
-                </dd>
 
                 {if $proxy['code'] == '1'}
                 <dd>
