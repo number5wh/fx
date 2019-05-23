@@ -28,124 +28,40 @@
     </div>
     <div class="layui-col-md3 layui-col-lg3 layui-col-xs12 layui-col-sm6 ">
         <div class="layui-card">
-            <div class="layui-card-header">
-                历史总收益
-                <span class="layui-badge layui-bg-green layuiadmin-badge">历史</span>
-            </div>
-            <div class="layui-card-body layuiadmin-card-list">
-                <p class="layuiadmin-big-font">{$historyin|number_format=2}</p>
-            </div>
+        <div class="layui-card-header">
+            总税收
+            <span class="layui-badge layui-bg-blue layuiadmin-badge">全部</span>
         </div>
-    </div>
-    <div class="layui-col-md3 layui-col-lg3 layui-col-xs12 layui-col-sm6 ">
-        <div class="layui-card">
-            <div class="layui-card-header">
-                昨日总收益
-                <span class="layui-badge layui-bg-cyan layuiadmin-badge">昨日</span>
-            </div>
-            <div class="layui-card-body layuiadmin-card-list">
-                <p class="layuiadmin-big-font">{$zrsy|number_format=2}  <a style="float: right" type="button" class="layui-btn {if condition='($getreward == 0)'} layui-btn-danger {else /} layui-btn-disabled {/if}" id="getreward"><i class="layui-icon layui-icon-rmb"></i>
-                    {if condition='($getreward == 0)'} 领取红包 {elseif  condition='($getreward == 1)' /} 未达标 {else /}红包已领取{/if}</a></p>
-            </div>
+        <div class="layui-card-body layuiadmin-card-list">
+            <p class="layuiadmin-big-font">{$totaltax|number_format=2}</p>
         </div>
-    </div>
-
-
-    <div class="layui-col-md3 layui-col-lg3 layui-col-xs12 layui-col-sm6 ">
-        <div class="layui-card">
-            <div class="layui-card-header">
-                直营总税收
-                <span class="layui-badge layui-bg-blue layuiadmin-badge">直营</span>
-            </div>
-            <div class="layui-card-body layuiadmin-card-list">
-                <p class="layuiadmin-big-font">{$selftax|number_format=2}</p>
-            </div>
-        </div>
-    </div>
-    <div class="layui-col-md3 layui-col-lg3 layui-col-xs12 layui-col-sm6 ">
-        <div class="layui-card">
-            <div class="layui-card-header">
-                直营总收益
-                <span class="layui-badge layui-bg-blue layuiadmin-badge">直营</span>
-            </div>
-            <div class="layui-card-body layuiadmin-card-list">
-                <p class="layuiadmin-big-font">{$selfmoney|number_format=2}</p>
-            </div>
         </div>
     </div>
 
     <div class="layui-col-md3 layui-col-lg3 layui-col-xs12 layui-col-sm6 ">
         <div class="layui-card">
             <div class="layui-card-header">
-                直营今日税收
-                <span class="layui-badge layui-bg-blue layuiadmin-badge">直营</span>
-            </div>
-            <div class="layui-card-body layuiadmin-card-list">
-                <p class="layuiadmin-big-font">{$selftodaytax|number_format=2}</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="layui-col-md3 layui-col-lg3 layui-col-xs12 layui-col-sm6 ">
-        <div class="layui-card">
-            <div class="layui-card-header">
-                直营今日收益
-                <span class="layui-badge layui-bg-red layuiadmin-badge">直营</span>
-            </div>
-            <div class="layui-card-body layuiadmin-card-list">
-                <p class="layuiadmin-big-font">{$selftodaymoney|number_format=2}</p>
-            </div>
-        </div>
-    </div>
-
-
-
-    <div class="layui-col-md3 layui-col-lg3 layui-col-xs12 layui-col-sm6 ">
-        <div class="layui-card">
-            <div class="layui-card-header">
-                代理总税收
-                <span class="layui-badge layui-bg-blue layuiadmin-badge">代理</span>
-            </div>
-            <div class="layui-card-body layuiadmin-card-list">
-                <p class="layuiadmin-big-font">{$totaltax|number_format=2}</p>
-            </div>
-        </div>
-    </div>
-    <div class="layui-col-md3 layui-col-lg3 layui-col-xs12 layui-col-sm6 ">
-        <div class="layui-card">
-            <div class="layui-card-header">
-                代理总收益
-                <span class="layui-badge layui-bg-blue layuiadmin-badge">代理</span>
+                总收益
+                <span class="layui-badge layui-bg-blue layuiadmin-badge">全部</span>
             </div>
             <div class="layui-card-body layuiadmin-card-list">
                 <p class="layuiadmin-big-font">{$alltt|number_format=2}</p>
             </div>
         </div>
     </div>
-    <div class="layui-col-md3 layui-col-lg3 layui-col-xs12 layui-col-sm6 ">
-        <div class="layui-card">
-            <div class="layui-card-header">
-                代理今日税收
-                <span class="layui-badge layui-bg-green layuiadmin-badge">代理</span>
-            </div>
-            <div class="layui-card-body layuiadmin-card-list">
-                <p class="layuiadmin-big-font">{$alltodaytax|number_format=2}</p>
-            </div>
-        </div>
-    </div>
+
 
     <div class="layui-col-md3 layui-col-lg3 layui-col-xs12 layui-col-sm6 ">
         <div class="layui-card">
             <div class="layui-card-header">
-                代理今日收益
-                <span class="layui-badge layui-bg-green layuiadmin-badge">代理</span>
+                今日税收
+                <span class="layui-badge layui-bg-cyan layuiadmin-badge">今日</span>
             </div>
             <div class="layui-card-body layuiadmin-card-list">
-                <p class="layuiadmin-big-font">{$alltodaymoney|number_format=2}</p>
+                <p class="layuiadmin-big-font">{$todaytax|number_format=2}</p>
             </div>
         </div>
     </div>
-
 
     {volist name="list" id="vo"}
     <div class="layui-col-md12 layui-col-lg12 layui-col-xs12 layui-col-sm12 ">
