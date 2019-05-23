@@ -120,7 +120,7 @@ class WithdrawBank extends Model{
         Db::startTrans();
         if (strtoupper($data['status']) == 'SUCCESS') {//成功
 
-            Db::name('checklog')->where(['orderid' => $myorderId])->update(['status' => 4, 'info'=>'提现成功','descript' => $orderInfo['proxy_id'].'于'.date('Y-m-d H:i:s'.'提现成功,金额'.$data['amount'].'元')]);
+            Db::name('checklog')->where(['orderid' => $myorderId])->update(['status' => 4, 'info'=>'提现成功','descript' => $orderInfo['proxy_id'].'于'.date('Y-m-d H:i:s'.'提现成功,金额'.$data['amount'])]);
             Db::name('withdrawbank')->insert([
                 'proxy_id' => $orderInfo['proxy_id'],
                 'card_number' => $data['card_number'],
@@ -140,7 +140,7 @@ class WithdrawBank extends Model{
             //状态更新
             Db::name('checklog')->where(['orderid' => $myorderId])->update(['status' => 3, 'descript' => '银行处理未通过']);
             //金额回退
-            Db::name('proxy')->where("code",$orderInfo['proxy_id'])->update(['balance' =>Db::raw('balance+'.$orderInfo['amount'])]);
+            Db::name('proxy')->where("code",$orderInfo['proxy_id'])->update(['balance' =>Db::raw('balance+'.$data['amount'])]);
             //incomelog
             $data1= array(
                 "typeid"=>2,

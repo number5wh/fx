@@ -75,7 +75,7 @@
                     </div>
                 </div>
             <div class="layui-form-item">
-            <label class="layui-form-label">银行卡地区</label>
+            <label class="layui-form-label">选择地区</label>
             <div class="layui-input-inline">
                 <select id="province" name="province" lay-filter="province">
                     <option value="">请选择省</option>
@@ -135,6 +135,15 @@
             <div class="layui-form-item">
                 <div class="layui-input-block">
                     <button class="layui-btn" id="sure" lay-submit lay-filter="safeset-changeMobile">保存修改</button>
+                </div>
+            </div>
+            {/if}
+
+            {if condition="$proxy.bind_mobile eq ''"}
+            <div class="layui-form-item" >
+                <div class="layui-input-block" >
+                    <a type="button" class="layui-btn"
+                       href="bindmobile">请先绑定手机号</a>
                 </div>
             </div>
             {/if}

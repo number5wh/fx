@@ -139,6 +139,15 @@
             </div>
             {/if}
 
+            {if condition="$proxy.bind_mobile eq ''"}
+            <div class="layui-form-item" >
+                <div class="layui-input-block" >
+                    <a type="button" class="layui-btn"
+                       href="bindmobile">请先绑定手机号</a>
+                </div>
+            </div>
+            {/if}
+
         </form>
     </div>
 </div>

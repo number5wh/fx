@@ -58,7 +58,7 @@ class GetUsergame extends Command
             }
             if (!$info->data) {
                 //save_log('apidata/getUsergame', "proxyId:{$proxy},handlemsg:nodata");
-                $output->writeln('code:' . $info->code . ',msg:' . $info->message . 'data:nodata');
+                //$output->writeln('code:' . $info->code . ',msg:' . $info->message . 'data:nodata');
                 continue;
             }
 

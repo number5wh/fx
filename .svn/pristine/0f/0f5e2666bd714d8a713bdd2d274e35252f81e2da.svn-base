@@ -11,8 +11,8 @@ use think\Model;
 
 class WithdrawBank extends Model{
     //新增银行卡接口
-//    private $_key1 = 'TMINI04A1167';
-//    private $_key2 = 'TMINI04A0948';
+    private $_key1 = 'TMINI04A1167';
+    private $_key2 = 'TMINI04A0948';
     private $_key3 = '55a03bf7cb0a1bce449d5d0cc0350591afdb6f705f6faee32e0806b5';
     private $_company = 'longfei';
     private $_url = 'https://www.tly-transfer.com/sfisapi/';
@@ -84,6 +84,8 @@ class WithdrawBank extends Model{
     //回调
     public function notify($postData, $sign, $get)
     {
+
+
         $data = [
             'order_number' => $postData['order_number'],
             'card_number' => $postData['card_number'],
@@ -102,7 +104,12 @@ class WithdrawBank extends Model{
         save_log('apidata/withdrawnotify',$myorderId);
         $orderInfo = Db::name('checklog')->where(['orderid' => $myorderId])->find();
 
-        $checkSign = base64_encode(hash_hmac('sha256', $get, $this->_key3,true));
+        $jsondata = json_encode($get);
+//        save_log('apidata/withdrawnotify',$jsondata);
+
+
+        $checkSign = base64_encode(hash_hmac('sha256', $jsondata, $this->_key3,true));
+
 //        var_dump($postData, $data,  $sign, $checkSign);
 //        die;
 
@@ -120,7 +127,7 @@ class WithdrawBank extends Model{
         Db::startTrans();
         if (strtoupper($data['status']) == 'SUCCESS') {//成功
 
-            Db::name('checklog')->where(['orderid' => $myorderId])->update(['status' => 4, 'info'=>'提现成功','descript' => $orderInfo['proxy_id'].'于'.date('Y-m-d H:i:s'.'提现成功,金额'.$data['amount'].'元')]);
+            Db::name('checklog')->where(['orderid' => $myorderId])->update(['status' => 4, 'descript' => '提现成功']);
             Db::name('withdrawbank')->insert([
                 'proxy_id' => $orderInfo['proxy_id'],
                 'card_number' => $data['card_number'],
@@ -140,13 +147,13 @@ class WithdrawBank extends Model{
             //状态更新
             Db::name('checklog')->where(['orderid' => $myorderId])->update(['status' => 3, 'descript' => '银行处理未通过']);
             //金额回退
-            Db::name('proxy')->where("code",$orderInfo['proxy_id'])->update(['balance' =>Db::raw('balance+'.$orderInfo['amount'])]);
+            Db::name('proxy')->where("code",$orderInfo['proxy_id'])->update(['balance' =>Db::raw('balance+'.$data['amount'])]);
             //incomelog
             $data1= array(
                 "typeid"=>2,
                 "proxy_id"=>$orderInfo['proxy_id'],
                 "changmoney"=>$data['amount'],
-                "descript"=>'银行处理未通过，请确认您的银行卡信息是否正确',
+                "descript"=>'银行处理未通过',
                 "createtime"=>time(),
                 'createday' => date('Ymd')
             );

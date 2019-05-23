@@ -286,7 +286,7 @@ class Settle extends Base
         $bankinfo = Db::name("bankinfo")->where('proxy_id', $proxy_id)->find();
         if ($type == 2) {
             if (!$bankinfo['bank'] || !$bankinfo['name']|| !$bankinfo['cardaccount']|| !$bankinfo['province']|| !$bankinfo['city']) {
-                return $this->msg(0, "请点击结算账户更新银行卡信息及其省份信息", '', null);
+                return $this->msg(0, "请先更新银行卡信息及其省份信息", '', null);
             }
             $data['bank']        = $bankinfo['bank'];
             $data['name']        = $bankinfo['name'];
@@ -294,14 +294,11 @@ class Settle extends Base
             $data['province'] = $bankinfo['province'];
             $data['city'] = $bankinfo['city'];
 
+
+
         } else if ($type == 1) {
-            if (!$bankinfo['alipay'] || !$bankinfo['alipay_name']) {
-                return $this->msg(0, "请先绑定支付宝账户", '', null);
-            }
             $data['alipay']      = $bankinfo['alipay'];
             $data['alipay_name'] = $bankinfo['alipay_name'];
-        } else {
-            return $this->msg(0, "提现方式有误！", '', null);
         }
 
         $data['descript']   = $proxy['nickname'] . ",id" . $proxy['code'] . '于' . date('Y-m-d H:i:s') . '提现金额' . $money . '元';
