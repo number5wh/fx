@@ -9,7 +9,7 @@ use think\session;
 class Distribute extends Base
 {
     /**
-     * 推广统计(税收统计)
+     * 推广统计
      */
     public function index()
     {
@@ -62,22 +62,22 @@ class Distribute extends Base
         } else {
             $list = Db::name('spreadsum')
                 ->alias('a')
-                ->field('a.week time, a.weekstart,a.weekend,a.parent_id,sum(a.paynum) paynum, sum(a.bindnum) bindnum,sum(a.regnum) regnum,sum(a.totaltax) totaltax,sum(a.checknum) checknum,b.nickname')
+                ->field('a.month time,a.parent_id,sum(a.paynum) paynum, sum(a.bindnum) bindnum,sum(a.regnum) regnum,sum(a.totaltax) totaltax,sum(a.checknum) checknum,b.nickname')
                 ->join('proxy b',' a.parent_id=b.code ',"LEFT")
                 ->where($where)
-                ->order('a.week desc')
-                ->group('a.week, a.parent_id,a.weekstart,a.weekend')
+                ->order('a.month desc')
+                ->group('a.month, a.parent_id')
                 ->paginate(10)
                 ->each(function ($item, $key) {
                     $children = Db::name('spreadsum')
                         ->alias('c')
-                        ->field('c.week time,c.proxy_id,c.weekstart,c.weekend,sum(c.paynum) paynum,sum(c.bindnum) bindnum,sum(c.regnum) regnum,sum(c.totaltax) totaltax,sum(c.checknum) checknum,d.nickname')
+                        ->field('c.month time,c.proxy_id,sum(c.paynum) paynum,sum(c.bindnum) bindnum,sum(c.regnum) regnum,sum(c.totaltax) totaltax,sum(c.checknum) checknum,d.nickname')
                         ->join('proxy d',' c.proxy_id=d.code ',"LEFT")
                         ->where([
-                            'c.week' => $item['time'],
+                            'c.month' => $item['time'],
                             'c.parent_id' => $item['parent_id']
                         ])
-                        ->group('c.week,c.proxy_id,c.weekstart,c.weekend')
+                        ->group('c.month,c.proxy_id')
                         ->select();
 
                     $item['children'] = $children;

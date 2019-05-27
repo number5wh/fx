@@ -1,0 +1,93 @@
+{extend name="common/base" /}
+
+{block name="title"}直属玩家充值奖励设置{/block}
+{block name="content"}
+
+<div class="layui-card layui-form" lay-filter="component-form-element">
+    <div class="layui-card-header">直属玩家充值奖励设置</div>
+    <div class="layui-card-body layui-row layui-col-space10">
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">开启配置</label>
+            <div class="layui-input-inline">
+                <input type="checkbox" id="open" name="open" lay-filter="open" lay-skin="switch" lay-text="开启|关闭" {if $open == 1}checked{/if}>
+            </div>
+        </div>
+
+        <form class="layui-form" action="{:url('proxyupgrade/setBack')}" method="post">
+            <div class="layui-form-item">
+                <label class="layui-form-label">玩家充值奖励比率：</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="back" name="back" lay-verify="required|number" value="{$rateData['back_rate']}" placeholder="可设置一级代理最高比例" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label"></label>
+                <div class="layui-input-inline">
+                    <button type="submit" class="layui-btn" lay-submit="" lay-filter="setBack">确认修改</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+{/block}
+
+{block name="script"}
+<script src="__JS__/iosfit.js"></script>
+<script>
+
+    layui.use(['layer','table','form','jquery'],function () {
+        var layer = layui.layer
+            , form = layui.form
+            , table = layui.table
+            , $ = layui.$;
+        //用户表格初始化
+
+        form.on('submit(setBack)', function(data) {
+            var back = $.trim(data.field.back);
+            $.ajax({
+                type:'post',
+                url:data.form.action,
+                data:{
+                    'back' : back,
+                },
+                dataType:'json',
+                success: function(res) {
+                    if (res.code === 0) {
+                        layer.msg(res.msg,{icon:6});
+                    } else {
+                        layer.msg(res.msg, {icon:5});
+                    }
+                }
+            });
+            return false;
+        });
+
+        var main = {
+            setSwitch : function() {
+                form.on('switch(open)', function(data){
+                    var selected = data.elem.checked === true ? 1 : 0; //开关是否开启，true或者false
+                    //设置开关
+                    $.ajax({
+                        url: "{:url('proxyupgrade/setOpenBack')}",
+                        type: 'post',
+                        data:{'open':selected},
+                        success: function (response) {
+                            if (response.code === 0) {
+                                layer.msg(response.msg,{icon: 6});
+                            }
+                        }
+
+                    })
+
+                });
+            }
+        };
+        main.setSwitch();
+    });
+
+</script>
+{/block}
+

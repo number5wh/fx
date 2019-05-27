@@ -325,6 +325,8 @@ class Proxy extends Base
         }
 
 
+
+
         $salt = strtolower(generateSalt());
 
         $data = array(
@@ -349,7 +351,7 @@ class Proxy extends Base
         $ret = Db::name("proxy")->insertGetId($data);
 
         if ($ret) {
-            $proxy_code = sprintf("MT%06d", $ret);
+            $proxy_code = sprintf("WZ%07d", $ret);
             Db::name("proxy")->where('id',$ret)->update(["code"=>$proxy_code]);
 
             //新增代理等级关系

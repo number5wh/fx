@@ -34,11 +34,10 @@
 
                 <div class="layui-inline">
                     <div class="layui-input-inline">
-                        <!--<input type="checkbox" id="inlineCheckbox3" name="month" lay-skin="primary" title="按月" checked="">-->
-                        <input type="checkbox" id="inlineCheckbox3" name="month" {if condition="$month eq 'on'"}checked="true"{/if} lay-skin="switch" lay-text="按周|不按周">
+                        <input type="checkbox" id="inlineCheckbox3" name="month" {if condition="$month eq 'on'"}checked="true"{/if} lay-skin="primary" title="按月">
+                        <!--<input type="checkbox" id="inlineCheckbox3" name="month" value="1" style="height: auto"  lay-skin="switch" lay-text="按月|不按月">-->
                     </div>
                 </div>
-
                 <div class="layui-inline" style="text-align: center">
                     <button class="layui-btn" type="submit" id="search_tg">搜索</button>
                     <button type="reset" class="layui-btn layui-btn-primary">重置</button>
@@ -71,7 +70,7 @@
 
                 <tr>
 
-                    <td rowspan="{$vo.rows}">{if isset($vo['weekstart'])}{$vo.weekstart}~{$vo.weekend} {else /}{$vo.time}{/if}</td>
+                    <td rowspan="{$vo.rows}">{$vo.time}</td>
                     <td rowspan="{$vo.rows}">{$vo.nickname}</td>
                     <td rowspan="{$vo.rows}">{$vo.parent_id}</td>
                     <!--<td rowspan="{$vo.rows}">{$proxy['grade']}</td>-->
