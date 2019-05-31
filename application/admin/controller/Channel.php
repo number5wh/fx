@@ -12,11 +12,20 @@ use think\log;
 use app\admin\model\Sms;
 use think\Request;
 
-
-class Proxy extends Base
+/**
+ * 渠道管理
+ */
+class Channel extends Base
 {
     protected $rateData = [];
 
+    public function _initialize()
+    {
+        parent::_initialize();
+        if (session('proxy')['code'] != '1') {
+            exit('您没有权限');
+        }
+    }
     public function __construct()
     {
         parent::__construct();
@@ -31,11 +40,7 @@ class Proxy extends Base
             $percent = $this->rateData['general_rate'];
             $info = '可设最大值为：'.$percent;
             $isadmin=1;
-
         } else {
-            //可开同级
-            //$percent = $proxy['percent'] >= $this->rateData['level1_rate'] ? $this->rateData['level1_rate'] : ($proxy['percent']);
-            //不可开同级
             $percent = $proxy['percent'] > $this->rateData['level1_rate'] ? $this->rateData['level1_rate'] : ($proxy['percent'] - 1);
             $info = '可设最大值为：'.$percent;
         }
@@ -43,57 +48,25 @@ class Proxy extends Base
         $this->assign('info', $info);
         $this->assign('percent', $percent);
         $this->assign('isadmin', $isadmin);
-        $this->assign('proxytype', $proxy['type']);
         return $this->fetch();
     }
 
+    //渠道列表
     public function getIndex()
     {
-        $status = input("status");
         $agentid = input("agentId");
-        $phone = input("phone");
-        $regstart = input("startTime");
-        $regend = input("endTime");
-        $proxy = session("proxy");
-        $minmoney = input("minMoney");
-        $maxmoney = input("maxMoney");
         $nickname = input("nickName");
         $username = input("account");
         $page  = intval(input('page')) > 0 ? intval(input('page')) : 1;
         $limit = intval(input('limit')) > 0 ? intval(input('limit')) : 10;
 
+        $proxy = session("proxy");
         $where = array();
         $where["parent_id"] =  $proxy["code"];
-        $where['type']     = 0;//普通代理
-        if (!empty($status)) {
-            $where["islock"] = $status;
-        } else {
-            $status = "";
-        }
-
+        $where['type']     = 2;//渠道
 
         if (!empty($agentid)) {
             $where['code'] = $agentid;
-        }
-
-        if (!empty($phone)) {
-            $where['bind_mobile'] = $phone;
-        }
-
-        if (!empty($regstart)) {
-            if (!empty($regend)) {
-                $where['regtime'] = array(array('gt', $regstart), array('lt', $regend));
-            } else {
-                $where['regtime'] = array('gt', $regstart);
-            }
-        }
-
-        if (!empty($minmoney)) {
-            if (!empty($maxmoney)) {
-                $where['balance'] = array(array('gt', $minmoney), array('lt', $maxmoney));
-            } else {
-                $where['balance'] = array('gt', $minmoney);
-            }
         }
 
         if (!empty($nickname)) {
@@ -113,134 +86,48 @@ class Proxy extends Base
         $today = strtotime(date('Y-m-d 00:00:00'));
         $yesterday = $today - 24*3600;
         foreach ($list as &$item) {
-            //直营税收
-            $selfget = Db::name("incomelog")
+            //获取渠道的代理团队
+            $proxyList = Db::name('teamlevel')->where(['parent_id' => $item['code']])->field('proxy_id')->select();
+            $proxyList = array_column($proxyList, 'proxy_id');
+            array_unshift($proxyList, $item['code']);
+
+            //渠道总充值（玩家）
+            $recharge = Db::name('paytime')
+                ->where([
+                    'proxy_id' => ['in', $proxyList],
+                    'typeid' => 0
+                ])
+                ->sum('totalfee');
+
+            //渠道总转出 （玩家）
+            $withdraw = Db::name('paytime')
+                ->where([
+                    'proxy_id' => ['in', $proxyList],
+                    'typeid' => 1
+                ])
+                ->sum('totalfee');
+            //渠道盈利
+            $profit = $recharge - $withdraw;
+
+            //渠道总税收
+            $alltax = Db::name("incomelog")
                 ->where([
                     'proxy_id' => $item['code'],
-                    'typeid'   => ['in', [0,4]],
-                    'fxtype'   => 1, //自己的玩家收入
+                    'typeid'   => ['in', [0,4]]
                 ])->sum('totaltax');
-            //团队税收
-            $teamget = Db::name("incomelog")
-                ->where([
-                    'proxy_id' => $item['code'],
-                    'typeid'   => ['in', [0,4]],
-                    'fxtype'   => 2 //下级团队的
-                ])->sum('totaltax');
-            //历史总收入
+
+            //总收入
             $allget = Db::name("incomelog")
                 ->where([
                     'proxy_id' => $item['code'],
                     'typeid'   => ['in', [0,4]],
                 ])->sum('changmoney');
-            //昨日总收入
-            $yesterdaytt = Db::name("incomelog")
-                ->where(      [
-                    'proxy_id' => $item['code'],
-                    'typeid'   => ['in', [0,4]],
-                    'createtime' => [['egt', $yesterday], ['lt', $today]]
-                ])
-                ->sum('changmoney');
-            //总充值
-            $recharge = Db::name('paytime')
-                ->where([
-                    'proxy_id' => $item['code']
-                ])
-                ->sum('totalfee');
-            $item['yesterday'] = floor($yesterdaytt*100)/100;
-            $item['selfget'] = floor($selfget*100)/100;
-            $item['teamget'] = floor($teamget*100)/100;
+
+            $item['alltax'] = floor($alltax*100)/100;
             $item['allget'] = floor($allget*100)/100;
             $item['recharge'] = floor($recharge*100)/100;
-
-//            if ($item["bind_mobile"] == '')
-//                $item["bind_mobile"] = "否";
-//            else
-//                $item["bind_mobile"] = "是";
-//
-//            if ($item["lock"] == '1')
-//                $item["lock"] = "是";
-//            else
-//                $item["lock"] = "否";
-        }
-
-        unset($item);
-        return json(['code' => 0, 'count' => $count, 'data' => $list]);
-    }
-
-    //获取子代理
-    public function getChildren()
-    {
-        $agentid = input("code");
-        $proxy = session("proxy");
-        $isadmin = $proxy['code'] == 1 ? 1 :0;
-        $info = Db::name('proxy')->where('code', $agentid)->field('nickname')->find();
-
-        $this->assign('isadmin', $isadmin);
-        $this->assign('agentId', $agentid);
-        $this->assign('nickname', $info['nickname']);
-        $this->assign('proxytype', $proxy['type']);
-        return $this->fetch();
-    }
-
-    public function getChildrenList()
-    {
-        $agentid = input("code");
-        $page  = intval(input('page')) > 0 ? intval(input('page')) : 1;
-        $limit = intval(input('limit')) > 0 ? intval(input('limit')) : 10;
-
-        $where = array();
-        $where["parent_id"] =  $agentid;
-        $where['type']     = 0;//普通代理
-        //print_r($where);
-
-        //查询满足要求的总的记录数
-        $count = Db::table('proxy')->where($where)->count();
-
-        $field = "id,code,percent,type,bind_mobile,lock,balance,historyin,username,nickname,regtime,last_login,descript";
-        $list = Db::table('proxy')->field($field)->where($where)->order('id desc ')->page($page, $limit)->select();
-        $today = strtotime(date('Y-m-d 00:00:00'));
-        $yesterday = $today - 24*3600;
-        foreach ($list as &$item) {
-            //直营税收
-            $selfget = Db::name("incomelog")
-                ->where([
-                    'proxy_id' => $item['code'],
-                    'typeid'   => ['in', [0,4]],
-                    'fxtype'   => 1, //自己的玩家收入
-                ])->sum('totaltax');
-            //团队税收
-            $teamget = Db::name("incomelog")
-                ->where([
-                    'proxy_id' => $item['code'],
-                    'typeid'   => ['in', [0,4]],
-                    'fxtype'   => 2 //下级团队的
-                ])->sum('totaltax');
-            //历史总收入
-            $allget = Db::name("incomelog")
-                ->where([
-                    'proxy_id' => $item['code'],
-                    'typeid'   => ['in', [0,4]],
-                ])->sum('changmoney');
-            //昨日总收入
-            $yesterdaytt = Db::name("incomelog")
-                ->where(      [
-                    'proxy_id' => $item['code'],
-                    'typeid'   => ['in', [0,4]],
-                    'createtime' => [['egt', $yesterday], ['lt', $today]]
-                ])
-                ->sum('changmoney');
-            //总充值
-            $recharge = Db::name('paytime')
-                ->where([
-                    'proxy_id' => $item['code']
-                ])
-                ->sum('totalfee');
-            $item['yesterday'] = floor($yesterdaytt*100)/100;
-            $item['selfget'] = floor($selfget*100)/100;
-            $item['teamget'] = floor($teamget*100)/100;
-            $item['allget'] = floor($allget*100)/100;
-            $item['recharge'] = floor($recharge*100)/100;
+            $item['withdraw'] = floor($withdraw*100)/100;
+            $item['profit'] = floor($profit*100)/100;
         }
 
         unset($item);
@@ -270,11 +157,11 @@ class Proxy extends Base
         }
         $proxyInfo = Db::name("proxy")->where("code", $code)->find();
         if (!$proxyInfo) {
-            return $this->showmsg(0, "找不到该代理信息", '', '', null);
+            return $this->showmsg(0, "找不到该渠道信息", '', '', null);
         }
         //判断当前代理是否是编辑人下级
         if ($proxyInfo['parent_id'] != $proxy['code']) {
-            return $this->showmsg(0, "无权限修改此代理信息", '', '', null);
+            return $this->showmsg(0, "无权限修改此渠道信息", '', '', null);
         }
 
         $canset = 0; //能否设置比例
@@ -312,11 +199,11 @@ class Proxy extends Base
         }
         $proxyInfo = Db::name("proxy")->where("code", $code)->find();
         if (!$proxyInfo) {
-            return $this->showmsg(0, "找不到该代理信息", '', '', null);
+            return $this->showmsg(0, "找不到该渠道信息", '', '', null);
         }
         //判断当前代理是否是编辑人下级
         if ($proxyInfo['parent_id'] != $proxy['code']) {
-            return $this->showmsg(0, "无权限修改此代理信息", '', '', null);
+            return $this->showmsg(0, "无权限修改此渠道信息", '', '', null);
         }
         //昵称
         $data = Db::name("proxy")->where("nickname", $nickname)->find();
@@ -379,7 +266,7 @@ class Proxy extends Base
 
         $proxy = session("proxy");
 //        $type  = input("type") ? intval(input("type")) : 0;
-        $type  =  0;
+        $type  =  2;//渠道
         $username = input("accountForReg");
         $passord = input("passwordForReg");
         $nickname = input("nickNameForReg");
@@ -390,7 +277,7 @@ class Proxy extends Base
         }
 
 
-        if ($username == '' || $passord == '' || $nickname == '' || $percent == '' || !in_array($type, [0,1])) {
+        if ($username == '' || $passord == '' || $nickname == '' || $percent == '') {
             return $this->showmsg(0, "参数为空", '', '', null);
         }
         if ($passord && strlen($passord) <6) {

@@ -1,0 +1,82 @@
+{extend name="common/base" /}
+
+{block name="title"}代理信息{/block}
+{block name="css"}{/block}
+{block name="content"}
+<div class="layui-card">
+    <div class="layui-card-body">
+        <blockquote class="layui-elem-quote layui-quote-nm">
+            代理Id：<span style="color: red">{$agentId}({$nickname})</span>的下级代理信息&nbsp;
+            <button  class="layui-btn layui-btn-sm layui-btn-radius" onclick="window.history.back()">返回</button>
+        </blockquote>
+    </div>
+</div>
+<div class="layui-card">
+    <div class="layui-card-header layuiadmin-card-header-auto">
+    </div>
+
+    <div class="layui-card-body">
+        <div id="alllist">
+            <table id="proxylist" lay-filter="proxylist"></table>
+        </div>
+    </div>
+</div>
+
+
+{/block}
+{block name="script"}
+<script src="__JS__/iosfit.js"></script>
+<script>
+    layui.config({
+        base: '/src/layuiadmin/' //静态资源所在路径
+    }).extend({
+        index: 'lib/index' //主入口模块
+
+    }).use(['index', 'table', 'layer', 'element', 'laydate', 'form', 'jquery'], function () {
+        var element = layui.element
+            , table = layui.table
+            , $ = layui.$
+            , form = layui.form;
+        var init = function () {
+            renderData();
+        };
+        var renderData = function () {
+            var cols = [ //表头
+                {field: 'code', title: '代理ID', width: 130}
+                , {field: 'nickname', title: '昵称', width: 150}
+                , {field: 'username', title: '代理账号', width: 150}
+                , {field: 'percent', title: '提成比例%', width: 120}
+                , {field: 'selfget', title: '直营总税收', sort: true, width: 150}
+                , {field: 'teamget', title: '团队总税收', sort: true, width: 150}
+                , {field: 'recharge', title: '总充值', sort: true, width: 150}
+                , {field: 'yesterday', title: '昨日收益', sort: true, width: 150}
+                , {field: 'historyin', title: '历史总收入', sort: true, width: 150}
+                , {field: 'last_login', title: '最后登录', width: 160}
+                , {field: 'descript', title: '备注', width: 200}
+            ];
+            if ({$isadmin} == 1 || {$proxytype} == 2) {
+                cols.splice(0, 1, {field: 'code', title: '代理ID', width: 130, event: 'getChildren'})
+            }
+            table.render({
+                elem: '#proxylist'
+                , url: "{:url('proxy/getChildrenList')}" //数据接口
+                , where: {code: "{$agentId}"}
+                , page: true //开启分页
+                , cols: [cols]
+            });
+        };
+
+        //编辑
+        table.on('tool(proxylist)', function (obj) {
+            var data = obj.data //获得当前行数据
+                , layEvent = obj.event; //获得 lay-event 对应的值
+            tr = obj.tr; //获得当前行 tr 的DOM对象
+            if (layEvent === 'getChildren') { //获取子代理
+                window.location.href = "{:url('proxy/getChildren')}?code="+data.code;
+            }
+        });
+
+        init();
+    });
+</script>
+{/block}

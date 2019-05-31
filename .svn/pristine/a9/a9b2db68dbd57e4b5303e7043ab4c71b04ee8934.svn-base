@@ -1,6 +1,6 @@
 {extend name="common/base" /}
 
-{block name="title"}代理管理{/block}
+{block name="title"}渠道管理{/block}
 {block name="css"}{/block}
 {block name="content"}
 <div class="layui-card">
@@ -9,20 +9,20 @@
             <div class="layui-form-item">
 
                 <div class="layui-inline">
-                    <label class="layui-form-label">代理ID</label>
+                    <label class="layui-form-label">渠道ID</label>
                     <div class="layui-input-inline">
-                        <input type="text" id="agentId" name="agentId" placeholder="请输入代理ID"  autocomplete="off" class="layui-input">
+                        <input type="text" id="agentId" name="agentId" placeholder="请输入渠道ID"  autocomplete="off" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-inline">
                     <label class="layui-form-label">昵称</label>
                     <div class="layui-input-inline">
                         <input type="text" id="nickName" name='nickName'
-                               placeholder="请输入代理昵称"  autocomplete="off" class="layui-input">
+                               placeholder="请输入渠道昵称"  autocomplete="off" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-inline">
-                    <label class="layui-form-label">代理账号</label>
+                    <label class="layui-form-label">渠道账号</label>
                     <div class="layui-input-inline">
                         <input type="text" id="account" name='account'
                                 placeholder="请输入账号" autocomplete="off" class="layui-input">
@@ -40,7 +40,7 @@
 
     <div class="layui-card-body">
         <div  style="margin-bottom: 10px;">
-            <a class="layui-btn" data-type="reload" id="add_proxy">新增代理</a>
+            <a class="layui-btn" data-type="reload" id="add_proxy">新增渠道</a>
         </div>
         <div id="alllist">
             <table id="proxylist" lay-filter="proxylist"></table>
@@ -50,22 +50,22 @@
 
 <div class="layui-row" id="popAdd" style="display:none;">
     <div class="layui-col-md12">
-        <form class="layui-form" action="{:url('proxy/addProxy')}" method="post" id="addProxy" style="margin-top:20px;margin-right: 20px;" >
+        <form class="layui-form" action="{:url('channel/addProxy')}" method="post" id="addProxy" style="margin-top:20px;margin-right: 20px;" >
             <div class="layui-form-item">
-                <label class="layui-form-label">代理账号：</label>
+                <label class="layui-form-label">渠道账号：</label>
                 <div class="layui-input-inline">
                     <input style="width: 60%;float: left" type="text" id="accountForReg" name='accountForReg' placeholder="请输入账号" lay-verify="required" autocomplete="off" class="layui-input">
                     <a style="width: 35%;float: right" id="check" class="layui-btn" >检查</a>
                 </div>
             </div>
             <div class="layui-form-item">
-                <label class="layui-form-label">代理密码：</label>
+                <label class="layui-form-label">渠道密码：</label>
                 <div class="layui-input-inline">
                     <input type="password" id="passwordForReg" name='passwordForReg' lay-verify="required" placeholder="请输入密码" autocomplete="off" class="layui-input">
                 </div>
             </div>
             <div class="layui-form-item">
-                <label class="layui-form-label">代理昵称：</label>
+                <label class="layui-form-label">渠道昵称：</label>
                 <div class="layui-input-inline">
                     <input type="text" id="nickNameForReg" name="nickNameForReg" lay-verify="required" placeholder="请输入昵称" autocomplete="off" class="layui-input">
                 </div>
@@ -84,19 +84,7 @@
                     </div>
                 </div>
             </div>
-            {if $isadmin == 1}
-            <!--<div class="layui-form-item">-->
-            <!--<div class="layui-inline">-->
-                <!--<label class="layui-form-label">代理类型</label>-->
-                <!--<div class="layui-input-inline">-->
-                    <!--<select name="type" id="type">-->
-                        <!--<option value="0">分销</option>-->
-                        <!--<option value="1">分成</option>-->
-                    <!--</select>-->
-                <!--</div>-->
-            <!--</div>-->
-            <!--</div>-->
-            {/if}
+
             <div class="layui-form-item layui-form-text">
                 <label class="layui-form-label">备注：</label>
                 <div class="layui-input-inline">
@@ -117,23 +105,23 @@
 
 <div class="layui-row" id="popEdit" style="display:none;">
     <div class="layui-col-md12">
-        <form class="layui-form" action="{:url('proxy/editProxy')}" method="post" id="editProxy" style="margin-top:20px;margin-right: 20px;" >
+        <form class="layui-form" action="{:url('channel/editProxy')}" method="post" id="editProxy" style="margin-top:20px;margin-right: 20px;" >
             <div class="layui-form-item">
-                <label class="layui-form-label">代理账号：</label>
+                <label class="layui-form-label">渠道账号：</label>
                 <div class="layui-input-inline">
                     <input type="text" id="proxy_code" name='proxy_code' readonly  autocomplete="off" class="layui-input layui-disabled">
                 </div>
             </div>
             {if $isadmin == 1}
             <div class="layui-form-item">
-                <label class="layui-form-label">代理密码：</label>
+                <label class="layui-form-label">渠道密码：</label>
                 <div class="layui-input-inline">
                     <input type="password" id="proxy_password" name='proxy_password' lay-verify="" placeholder="请输入密码,留空原密码不变" autocomplete="off" class="layui-input">
                 </div>
             </div>
             {/if}
             <div class="layui-form-item">
-                <label class="layui-form-label">代理昵称：</label>
+                <label class="layui-form-label">渠道昵称：</label>
                 <div class="layui-input-inline">
                     <input type="text" id="proxy_nickname" name="proxy_nickname" lay-verify="required" placeholder="请输入昵称" autocomplete="off" class="layui-input">
                 </div>
@@ -229,47 +217,28 @@
                     , {field: 'nickname', title: '昵称', width:100}
                     , {field: 'username', title: '代理账号', width:120}
                     , {field: 'percent', title: '提成比例%', width:120}
-//                    , {field: 'bind_mobile', title: '绑定手机号', width:120}
-//                    , {field: 'balance', title: '账户余额', sort:true, width:120}
-                    , {field: 'selfget', title: '直营总税收', sort:true, width:150}
-                    , {field: 'teamget', title: '团队总税收', sort:true, width:150}
-                    , {field: 'recharge', title: '总充值', sort:true, width:150}
-                    , {field: 'yesterday', title: '昨日收益', sort:true, width:150}
-                    , {field: 'historyin', title: '历史总收入', sort:true, width:150}
+                    , {field: 'recharge', title: '渠道总充值', sort:true, width:150}
+                    , {field: 'withdraw', title: '渠道总转出', sort:true, width:150}
+                    , {field: 'profit', title: '渠道盈利', sort:true, width:150}
+                    , {field: 'historyin', title: '总收入', sort:true, width:150}
+                    , {field: 'alltax', title: '总税收', sort:true, width:150}
                     , {field: 'last_login', title: '最后登录', width:160}
-//                    , {field: 'regtime', title: '注册时间', width:160}
                     , {field: 'descript', title: '备注', width:200}
                     , {fixed: 'right', title:'更多', align:'center', toolbar: '#msg-bar'}
                 ];
-                if ({$isadmin} == 1 || {$proxytype} == 2) {
-                    cols.splice(0,1,{field: 'code', title: '代理ID', width:130, event:'getChildren'})
-                }
                 table.render({
                     elem: '#proxylist'
-                    , url: "{:url('proxy/getIndex')}" //数据接口
-                    , where: {type:1}
+                    , url: "{:url('channel/getIndex')}" //数据接口
                     , page: true //开启分页
                     , cols: [cols]
-//                     ,done: function(res, curr, count){
-//                         if ({$isadmin} == 1 || {$proxytype} == 2) {
-//                             //管理员或渠道代理可点击代理ID看子代理
-//                             $("[data-field='code']").attr('onclick','searchChildren("'+$(this).find('div.layui-table-cell').html()+'")');
-//                         }
-//                     }
                 });
             };
 
         //搜索
         var search = function() {
-            var status = $.trim($('#status option:selected').val());
             var agentId = $.trim($('#agentId').val());
-            var phone = $.trim($('#phone').val());
-            var minMoney = $.trim($('#minMoney').val());
-            var maxMoney = $.trim($('#maxMoney').val());
             var nickName = $.trim($('#nickName').val());
             var account = $.trim($('#account').val());
-            var startTime = $.trim($('#LAY-component-form-group-date').val());
-            var endTime = $.trim($('#LAY-component-form-group-date2').val());
 
             //执行重载
             table.reload('proxylist', {
@@ -277,15 +246,9 @@
                     curr: 1 //重新从第 1 页开始
                 },
                 where: {
-                    'status':status,
                     'agentId':agentId,
-                    'phone':phone,
-                    'minMoney':minMoney,
-                    'maxMoney':maxMoney,
                     'nickName':nickName,
                     'account':account,
-                    'startTime':startTime,
-                    'endTime':endTime,
                 }
             });
         };
@@ -299,7 +262,7 @@
                 return false;
             }
             $.ajax({
-                url: "{:url('proxy/checkexist')}",
+                url: "{:url('channel/checkexist')}",
                 data: {
                     account: $('#accountForReg').val()
                 }, success: function (data) {
@@ -340,7 +303,7 @@
                     if (res.code === 1) {
                         layer.msg(res.msg,{icon:1});
                         window.setTimeout(function() {
-                            window.location.href = "{:url('proxy/index')}";
+                            window.location.href = "{:url('channel/index')}";
                         },1000)
                     } else {
                         layer.msg(res.msg, {icon:2});
@@ -368,7 +331,7 @@
                 $('#proxy_password').val('');
                 $.ajax({
                     type: 'post',
-                    url: "{:url('proxy/editProxyInfo')}",
+                    url: "{:url('channel/editProxyInfo')}",
                     data: {
                         'code': $.trim(data.code),
                     },
@@ -399,48 +362,6 @@
                         }
                     }
                 });
-            } else if (layEvent === 'getChildren') { //获取子代理
-
-                window.location.href = "{:url('proxy/getChildren')}?code="+data.code;
-//                $.ajax({
-//                    type: 'post',
-//                    url: "{:url('proxy/getChildren')}",
-//                    data: {
-//                        'code': $.trim(data.code),
-//                    },
-//                    dataType: 'json',
-//                    success: function (res) {
-//
-//                    }
-//                });
-//                var cols = [ //表头
-//                    {field: 'code', title: '代理ID', width:130}
-//                    , {field: 'nickname', title: '昵称', width:100}
-//                    , {field: 'username', title: '代理账号', width:120}
-//                    , {field: 'percent', title: '提成比例%', width:120}
-////                    , {field: 'bind_mobile', title: '绑定手机号', width:120}
-////                    , {field: 'balance', title: '账户余额', sort:true, width:120}
-//                    , {field: 'selfget', title: '直营总税收', sort:true, width:150}
-//                    , {field: 'teamget', title: '团队总税收', sort:true, width:150}
-//                    , {field: 'recharge', title: '总充值', sort:true, width:150}
-//                    , {field: 'yesterday', title: '昨日收益', sort:true, width:150}
-//                    , {field: 'historyin', title: '历史总收入', sort:true, width:150}
-//                    , {field: 'last_login', title: '最后登录', width:160}
-////                    , {field: 'regtime', title: '注册时间', width:160}
-//                    , {field: 'descript', title: '备注', width:200}
-//                    , {fixed: 'right', title:'更多', align:'center', toolbar: '#msg-bar'}
-//                ];
-//                if ({$isadmin} == 1 || {$proxytype} == 2) {
-//                    cols.splice(0,1,{field: 'code', title: '代理ID', width:130, event:'getChildren'})
-//                }
-//                table.render({
-//                    elem: '#proxylist'
-//                    , url: "{:url('proxy/getChildren')}" //数据接口
-//                    , where: {agentId:data.code}
-//                    , page: true //开启分页
-//                    , cols: [cols]
-//                });
-
             }
         });
 
@@ -452,7 +373,7 @@
                 ,proxy_comment = $.trim(data.field.proxy_comment);
 
             $.ajax({
-                url: "{:url('proxy/editProxy')}",
+                url: "{:url('channel/editProxy')}",
                 type: 'post',
                 data: {
                     'proxy_code':proxy_code,
@@ -465,7 +386,7 @@
                     if (response.code !== 0) {
                         layer.msg(response.msg,{icon:1});
                         window.setTimeout(function() {
-                            window.location.href = "{:url('proxy/index')}";
+                            window.location.href = "{:url('channel/index')}";
                         },1000)
 
                     } else {

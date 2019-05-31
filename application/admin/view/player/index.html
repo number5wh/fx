@@ -1,0 +1,131 @@
+{extend name="common/base" /}
+
+{block name="title"}人人代管理{/block}
+{block name="css"}{/block}
+{block name="content"}
+
+<div class="layui-col-md12 layui-col-lg12 layui-col-xs12 layui-col-sm12 ">
+    <div class="layui-card">
+        <div class="layui-card-header">
+            人人代贡献总收入
+            <span class="layui-badge layui-bg-blue layuiadmin-badge">收入</span>
+        </div>
+        <div class="layui-card-body layuiadmin-card-list">
+            <p class="layuiadmin-big-font" style="color: red">{$income}元</p>
+
+        </div>
+    </div>
+</div>
+
+<div class="layui-card">
+    <div class="layui-card-body">人人代税收查询仅查询前一日(包括)之前的数据</div>
+</div>
+
+<div class="layui-card">
+    <div class="layui-card-header layuiadmin-card-header-auto">
+        <form class="layui-form" lay-filter="component-form-group">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">玩家ID</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="userid" name="userid" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">日期</label>
+                    <div class="layui-input-inline" style="width: 100px;">
+                        <input type="text" name="start" id="LAY-component-form-group-date" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <div class="layui-input-inline">
+                        <a class="layui-btn" id="search" data-type="reload">搜索</a>
+                        <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="layui-card-body">
+        <div id="alllist">
+            <table id="proxylist" lay-filter="proxylist"></table>
+        </div>
+    </div>
+</div>
+
+
+{/block}
+{block name="script"}
+
+<script src="__JS__/iosfit.js"></script>
+<script>
+    layui.config({
+        base: '/src/layuiadmin/' //静态资源所在路径
+    }).extend({
+        index: 'lib/index' //主入口模块
+
+    }).use(['index', 'table', 'layer', 'element', 'laydate', 'form', 'jquery'], function() {
+            var element = layui.element
+            ,layer = layui.layer
+            ,laydate = layui.laydate
+                ,table = layui.table
+                ,$ = layui.$
+            ,form = layui.form;
+
+            var init = function() {
+                form.render(null, 'component-form-group');
+                laydate.render({
+                    elem: '#LAY-component-form-group-date'
+                    ,format:'yyyy-MM-dd'
+                    ,max:-1
+                    ,btns: ['clear', 'confirm']
+                });
+                renderData();
+                $('#search').on('click', function(e) {
+                    e.preventDefault();
+                    search();
+                });
+            };
+
+
+            var renderData = function() {
+                var cols = [ //表头
+                     {field: 'day', title: '时间'}
+                    ,{field: 'userid', title: '玩家编号', width:120}
+                    ,{field: 'nickname', title: '昵称', width:120}
+                    , {field: 'percent', title: '提成比例', width:120}
+                    , {field: 'num', title: '推广人数', width:120}
+                    , {field: 'totaltax', title: '推广总税收', width:150}
+                    , {field: 'daytax', title: '今日税收', width:150}
+                    , {field: 'dayincome', title: '今日收入', width:150}
+                    , {field: 'proxyincome', title: '今日上级收入', width:150}
+                ];
+
+                table.render({
+                    elem: '#proxylist'
+                    , url: "{:url('player/index')}" //数据接口
+                    , page: true //开启分页
+                    , cols: [cols]
+                });
+            };
+
+        //搜索
+        var search = function() {
+            var userid = $.trim($('#userid').val());
+            var startTime = $.trim($('#LAY-component-form-group-date').val());
+
+            //执行重载
+            table.reload('proxylist', {
+                page: {
+                    curr: 1 //重新从第 1 页开始
+                },
+                where: {
+                    'userid':userid,
+                    'start':startTime
+                }
+            });
+        };
+        init();
+    });
+</script>
+{/block}

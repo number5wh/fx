@@ -1,0 +1,137 @@
+{extend name="common/base" /}
+
+{block name="title"}玩家业绩明细{/block}
+{block name="css"}{/block}
+{block name="content"}
+
+
+<div class="layui-card">
+    <div class="layui-card-header layuiadmin-card-header-auto">
+        <form class="layui-form" lay-filter="component-form-group">
+            <div class="layui-form-item">
+                {if $proxyid == 1}
+                <div class="layui-inline">
+                    <label class="layui-form-label">渠道ID</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="channelid" name="channelid" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                {/if}
+                <div class="layui-inline">
+                    <label class="layui-form-label">代理ID</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="proxyid" name="proxyid" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">玩家ID</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="userid" name="userid" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-inline">
+                    <label class="layui-form-label">日期</label>
+                    <div class="layui-input-inline" style="width: 100px;">
+                        <input type="text" name="start" id="LAY-component-form-group-date" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+
+
+            <div class="layui-inline">
+                <div class="layui-input-inline">
+                    <a class="layui-btn" id="search" data-type="reload">搜索</a>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+            </div>
+        </form>
+    </div>
+    <div class="layui-card-body">
+        <div id="alllist">
+            <table id="proxylist" lay-filter="proxylist"></table>
+        </div>
+    </div>
+</div>
+
+
+{/block}
+{block name="script"}
+
+<script src="__JS__/iosfit.js"></script>
+<script>
+    layui.config({
+        base: '/src/layuiadmin/' //静态资源所在路径
+    }).extend({
+        index: 'lib/index' //主入口模块
+
+    }).use(['index', 'table', 'layer', 'element', 'laydate', 'form', 'jquery'], function() {
+            var element = layui.element
+            ,layer = layui.layer
+            ,laydate = layui.laydate
+                ,table = layui.table
+                ,$ = layui.$
+            ,form = layui.form;
+
+            var init = function() {
+                form.render(null, 'component-form-group');
+                laydate.render({
+                    elem: '#LAY-component-form-group-date'
+                    ,format:'yyyy-MM-dd'
+                    ,max:0
+                    ,btns: ['clear', 'confirm']
+                });
+                renderData();
+                $('#search').on('click', function(e) {
+                    e.preventDefault();
+                    search();
+                });
+            };
+
+
+            var renderData = function() {
+                var cols = [ //表头
+                     {field: 'time', title: '时间', width:150}
+                    ,{field: 'userid', title: '玩家ID', width:150}
+                    ,{field: 'nickname', title: '昵称', width:150}
+                    ,{field: 'proxy_id', title: '代理ID', width:150}
+                    ,{field: 'channelid', title: '渠道ID', width:150}
+
+                    , {field: 'recharge', title: '充值', width:150}
+                    , {field: 'withdraw', title: '转出', width:150}
+                    , {field: 'tax', title: '产生税收'}
+                ];
+
+                table.render({
+                    elem: '#proxylist'
+                    , url: "{:url('summary/playerdetail')}" //数据接口
+                    , page: true //开启分页
+                    , cols: [cols]
+                    , done: function(res, curr, count){}
+                });
+            };
+
+        //搜索
+        var search = function() {
+            var proxyid = $.trim($('#proxyid').val());
+            var userid = $.trim($('#userid').val());
+            var channelid = $.trim($('#channelid').val());
+            var startTime = $.trim($('#LAY-component-form-group-date').val());
+
+            //执行重载
+            table.reload('proxylist', {
+                page: {
+                    curr: 1 //重新从第 1 页开始
+                },
+                where: {
+                    'proxyid':proxyid,
+                    'userid':userid,
+                    'channelid':channelid,
+                    'start':startTime
+                }
+            });
+        };
+        init();
+    });
+</script>
+{/block}

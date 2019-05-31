@@ -1,0 +1,147 @@
+{extend name="common/base" /}
+
+{block name="title"}账户变动明细{/block}
+{block name="css"}{/block}
+{block name="content"}
+<div class="layui-card">
+    <div class="layui-card-body">
+        <fieldset class="layui-elem-field">
+            <legend>您的余额</legend>
+            <div class="layui-field-box">
+                <span id="leftmoney" style="color: red">{$leftmoney}元</span>
+            </div>
+        </fieldset>
+    </div>
+</div>
+<div class="layui-card">
+    <div class="layui-card-header layuiadmin-card-header-auto">
+        <form class="layui-form" lay-filter="component-form-group">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">类型</label>
+                    <div class="layui-input-inline">
+                        <select name="type" id="type">
+                            <option value="-1">全部</option>
+                            <option value="0">收入</option>
+                            <option value="1">支出</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">内容</label>
+                    <div class="layui-input-inline">
+                        <select name="detail" id="detail">
+                            <option value="-1">全部</option>
+                            <option value="0">税收收入</option>
+                            <option value="3">玩家推广收入</option>
+                            <option value="1">提现结算</option>
+                            <option value="2">提现退款</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">时间</label>
+                    <div class="layui-input-inline" style="width: 100px;">
+                        <input type="text" name="start" id="LAY-component-form-group-date" autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-form-mid">-</div>
+                    <div class="layui-input-inline" style="width: 100px;">
+                        <input type="text" name="end"  id="LAY-component-form-group-date2" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <div class="layui-input-inline">
+                        <a class="layui-btn" id="search" data-type="reload">搜索</a>
+                        <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+    </div>
+    <div class="layui-card-body">
+        <div id="alllist">
+            <table id="proxylist" lay-filter="proxylist"></table>
+        </div>
+    </div>
+</div>
+
+
+{/block}
+{block name="script"}
+
+<script src="__JS__/iosfit.js"></script>
+<script>
+    layui.config({
+        base: '/src/layuiadmin/' //静态资源所在路径
+    }).extend({
+        index: 'lib/index' //主入口模块
+
+    }).use(['index', 'table', 'layer', 'element', 'laydate', 'form', 'jquery'], function() {
+            var element = layui.element
+            ,layer = layui.layer
+            ,laydate = layui.laydate
+                ,table = layui.table
+                ,$ = layui.$
+            ,form = layui.form;
+
+            var init = function() {
+                form.render(null, 'component-form-group');
+                laydate.render({
+                    elem: '#LAY-component-form-group-date'
+                    ,format:'yyyyMMdd'
+                });
+                laydate.render({
+                    elem: '#LAY-component-form-group-date2'
+                    ,format:'yyyyMMdd'
+                });
+                renderData();
+                $('#search').on('click', function(e) {
+                    e.preventDefault();
+                    search();
+                });
+            };
+
+            var renderData = function() {
+                var cols = [ //表头
+                    {field: 'id', title: '编号', width:120}
+                    ,{field: 'typename', title: '类型', width:120}
+                    , {field: 'detailname', title: '内容', width:120}
+                    , {field: 'money', title: '金额', width:120}
+                    , {field: 'leftmoney', title: '账户余额', width:150}
+                    , {field: 'createtime', title: '时间'}
+                ];
+
+                table.render({
+                    elem: '#proxylist'
+                    , url: "{:url('moneylog/index')}" //数据接口
+                    , where: {type:-1,detail:-1}
+                    , page: true //开启分页
+                    , cols: [cols]
+                });
+            };
+
+        //搜索
+        var search = function() {
+            var detail = $.trim($('#detail option:selected').val());
+            var type = $.trim($('#type option:selected').val());
+            var startTime = $.trim($('#LAY-component-form-group-date').val());
+            var endTime = $.trim($('#LAY-component-form-group-date2').val());
+
+            //执行重载
+            table.reload('proxylist', {
+                page: {
+                    curr: 1 //重新从第 1 页开始
+                },
+                where: {
+                    'type':type,
+                    'detail':detail,
+                    'start':startTime,
+                    'end':endTime,
+                }
+            });
+        };
+        init();
+    });
+</script>
+{/block}
