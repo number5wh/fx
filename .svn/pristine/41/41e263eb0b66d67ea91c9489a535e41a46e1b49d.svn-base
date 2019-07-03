@@ -267,9 +267,19 @@
                     layer.msg('请选择一项进行编辑');
                     return;
                 }
+                console.log(data[0]);
                 data = data[0];
                 switch(obj.event){
                     case 'edit':
+                        // $('#id').val(data[0].id);
+                        // editMessage(data[0].id);
+                        // var index = layer.open({
+                        //     type: 1,
+                        //     title: '修改代理',
+                        //     shadeClose: true,
+                        //     shade: 0.8,
+                        //     content: $('#popEdit')
+                        // });
                         $('#proxy_password').val('');
                         $.ajax({
                             type: 'post',
@@ -307,6 +317,7 @@
                         break;
 
                     case 'bind':
+                        console.log(data);
                         $('#pid').val(data.id);
                         var index = layer.open({
                             type: 1,
@@ -342,10 +353,7 @@
                     var sign = "{$sign}";
                     //console.log("http://www.qmfx98.com/admin/login/apilogin/mchid/"+data.code+"/token/"+);
                     //console.log("http://www.qmfx98.com/admin/login/apilogin/mchid/"+data.code+"/token/"+sign+data.code+data.md5pwd);
-                    var host = window.location.host;
-                    var protocol = window.location.protocol;
-                    var url = protocol + '//' + host + '/admin/login/apilogin/mchid/'+data.code+"/token/"+data.md5token;
-                    window.open(url);
+                    window.open("https://spread.qmfx98.com/admin/login/apilogin/mchid/"+data.code+"/token/"+data.md5token);
                 }
             });
         }

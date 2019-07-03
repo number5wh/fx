@@ -39,12 +39,12 @@ class Proxy extends Base
             //差价2%，并且渠道代理下级最高为80%
             if ($proxy['type'] == 2) {
                 //渠道
-                $percent = $proxy['percent'] - 2 > $this->rateData['qd_level1rate'] ? $this->rateData['qd_level1rate'] : ($proxy['percent'] - 2);
+                $percent = $proxy['percent'] > $this->rateData['qd_level1rate'] ? $this->rateData['qd_level1rate'] : ($proxy['percent'] - 2);
 
             } else {
-                $percent = $proxy['percent'] - 2 > $this->rateData['level1_rate'] ? $this->rateData['level1_rate'] : ($proxy['percent'] - 2);
+                $percent = $proxy['percent'] > $this->rateData['level1_rate'] ? $this->rateData['level1_rate'] : ($proxy['percent'] - 2);
             }
-            $info = '可设最大值为：' . $percent;
+            $info    = '可设最大值为：' . $percent;
         }
 
         $this->assign('info', $info);
@@ -61,6 +61,7 @@ class Proxy extends Base
         $phone    = input("phone");
         $regstart = input("startTime");
         $regend   = input("endTime");
+        $proxy    = session("proxy");
         $minmoney = input("minMoney");
         $maxmoney = input("maxMoney");
         $nickname = input("nickName");
@@ -68,27 +69,9 @@ class Proxy extends Base
         $page     = intval(input('page')) > 0 ? intval(input('page')) : 1;
         $limit    = intval(input('limit')) > 0 ? intval(input('limit')) : 10;
 
-        $proxy    = session("proxy");
-        $where = array();
-        if ($proxy['code'] == 1) { //管理员查全部
-
-        } else {
-            if ($proxy['type'] == 2) {
-                //渠道查渠道的所有下级
-                $subList = Db::table('teamlevel')->where(['parent_id' => $proxy['code']])->select();
-                if ($subList) {
-                    $subListId = array_column($subList, 'proxy_id');
-                } else {
-                    $subListId = [];
-                }
-                $where['code'] = ['in', $subListId];
-            } else {
-                //普通代理
-                $where["parent_id"] = $proxy["code"];
-            }
-        }
-
-        $where['type'] = 0;//普通代理
+        $where              = array();
+        $where["parent_id"] = $proxy["code"];
+        $where['type']      = 0;//普通代理
         if (!empty($status)) {
             $where["islock"] = $status;
         } else {
@@ -295,110 +278,35 @@ class Proxy extends Base
         if (!$proxyInfo) {
             return $this->showmsg(0, "找不到该代理信息", '', '', null);
         }
-
-
-        //判断当前代理是否是编辑人下级(管理员和渠道额外判断)
-        if ($proxy['code'] == 1 ) {
-
-        } else {
-            if ($proxy['type'] == 2) {
-                //获取渠道所有后代
-                $subList = Db::table('teamlevel')->where(['parent_id' => $proxy['code']])->select();
-                if ($subList) {
-                    $subListId = array_column($subList, 'proxy_id');
-                }
-                if (!in_array($code, $subListId)) {
-                    return $this->showmsg(0, "无权限修改此代理信息", '', '', null);
-                }
-            } else {
-                //普通代理
-                if ($proxyInfo['parent_id'] != $proxy['code']) {
-                    return $this->showmsg(0, "无权限修改此代理信息", '', '', null);
-                }
-            }
+        //判断当前代理是否是编辑人下级
+        if ($proxyInfo['parent_id'] != $proxy['code']) {
+            return $this->showmsg(0, "无权限修改此代理信息", '', '', null);
         }
 
-
         $canset = 0; //能否设置比例
-        $info   = '';
-        if ($proxy['code'] == 1) {//管理员
-            $parentProxy = Db::name("proxy")->where("code", $proxyInfo['parent_id'])->find();
-//            if ($parentProxy['type'] == 2) {
-//                //父级是渠道
-//                //渠道下级最高比例
-//                $qdpercent = $this->rateData['qd_level1rate'];
-//                //判断父级的比例
-//                $parentPercent = $parentProxy['percent'];
-//                $percent = $parentPercent - 2 >= $qdpercent ? $qdpercent : $parentPercent - 2;
-//
-//            } else {
-//                if ($parentProxy['code'] == 1) {
-//                    //父级是admin
-//                    $percent = $this->rateData['general_rate'];
-//                } else {
-//
-//                    //父级是普通代理
-//                    $ptpercent = $this->rateData['level1_rate'];
-//                    //判断父级的比例
-//                    $parentPercent = $parentProxy['percent'];
-//                    $percent = $parentPercent - 2 >= $ptpercent ? $ptpercent : $parentPercent - 2;
-//                }
-//            }
-
-            if ($parentProxy['code'] == 1) {
-                //父级是admin
-                $percent = $this->rateData['general_rate'];
-            } else {
-
-                if ($parentProxy['type'] == 2) {
-                    //渠道
-                    $parentPercent = $parentProxy['percent'];
-                    $percent       = $parentPercent - 2;
-//                    $percent = $percent >= $this->rateData['qd_level1rate'] ? $this->rateData['qd_level1rate'] : $percent;
-                } else {
-                    $parentPercent = $parentProxy['percent'];
-                    $percent       = $parentPercent - 2;
-//                    $percent = $percent >= $this->rateData['level1_rate'] ? $this->rateData['level1_rate'] : $percent;
-                }
-
-            }
-
-            $info    = '上级比例为'.$parentProxy['percent'].', 可设最大值为：' . $percent;
+        if ($proxy['grade'] == 1) {//管理员
+            $percent = $this->rateData['general_rate'];
+            $info    = '可设最大值为：' . $percent;
         } else {
             //渠道可开最大值80%  所有的代理差价2%
             if ($proxy['type'] == 2) {
                 //渠道代理
-//                if ($proxyInfo['percent'] >= $this->rateData['qd_level1rate']) {//下级代理是否已超出限定值
-//                    $info = '';
-//                } else {
-//                    $percent = $proxy['percent'] -2  > $this->rateData['qd_level1rate'] ? $this->rateData['qd_level1rate'] : $proxy['percent'] - 2;
-//                    $info    = '可设最大值为：' . $percent;
-//                    $canset  = 1;
-//                }
-                $parentProxy = Db::name("proxy")->where("code", $proxyInfo['parent_id'])->find();
-                $percent = $parentProxy['percent'] - 2;
-                if ($parentProxy['type'] == 2) {
-                    //渠道直属下级可改到80
-//                    $percent = $percent >= $this->rateData['qd_level1rate'] ? $this->rateData['qd_level1rate'] : $percent;
+                if ($proxyInfo['percent'] >= $this->rateData['qd_level1rate']) {//下级代理是否已超出限定值
+                    $info = '';
                 } else {
-                    //其他只能改到60
-//                    $percent = $percent >= $this->rateData['level1_rate'] ? $this->rateData['level1_rate'] : $percent;
+                    $percent = $proxy['percent'] > $this->rateData['qd_level1rate'] ? $this->rateData['qd_level1rate'] : $proxy['percent'] - 2;
+                    $info    = '可设最大值为：' . $percent;
+                    $canset  = 1;
                 }
-
-                $info    = '上级比例为'.$parentProxy['percent'].', 可设最大值为：' . $percent;
-                $canset  = 1;
             } else {
                 //普通代理
-//                if ($proxyInfo['percent'] >= $this->rateData['level1_rate']) {//下级代理是否已超出限定值
-//                    $info = '';
-//                } else {
-//                    $percent = $proxy['percent'] -2  > $this->rateData['level1_rate'] ? $this->rateData['level1_rate'] : $proxy['percent'] - 2;
-//                    $info    = '可设最大值为：' . $percent;
-//                    $canset  = 1;
-//                }
-                $percent = $proxy['percent'] - 2 >= $this->rateData['level1_rate'] ? $this->rateData['level1_rate'] : $proxy['percent'] - 2;
-                $info    = '上级比例为'.$proxy['percent'].', 可设最大值为：' . $percent;
-                $canset  = 1;
+                if ($proxyInfo['percent'] >= $this->rateData['level1_rate']) {//下级代理是否已超出限定值
+                    $info = '';
+                } else {
+                    $percent = $proxy['percent'] > $this->rateData['level1_rate'] ? $this->rateData['level1_rate'] : $proxy['percent'] - 2;
+                    $info    = '可设最大值为：' . $percent;
+                    $canset  = 1;
+                }
             }
 
         }
@@ -412,7 +320,6 @@ class Proxy extends Base
         $code     = input("proxy_code");
         $passord  = input("proxy_password");
         $nickname = input("proxy_nickname");
-        $mobile   = input("mobile");
         $percent  = intval(input("proxy_rate"));
         $remark   = input("proxy_comment");
         $proxy    = session("proxy");
@@ -426,131 +333,65 @@ class Proxy extends Base
         if (!$proxyInfo) {
             return $this->showmsg(0, "找不到该代理信息", '', '', null);
         }
-        //判断当前代理是否是编辑人下级(管理员和渠道额外判断)
-        if ($proxy['code'] == 1 ) {
-
-        } else {
-            if ($proxy['type'] == 2) {
-                //获取渠道所有后代
-                $subList = Db::table('teamlevel')->where(['parent_id' => $proxy['code']])->select();
-                if ($subList) {
-                    $subListId = array_column($subList, 'proxy_id');
-                }
-                if (!in_array($code, $subListId)) {
-                    return $this->showmsg(0, "无权限修改此代理信息", '', '', null);
-                }
-            } else {
-                //普通代理
-                if ($proxyInfo['parent_id'] != $proxy['code']) {
-                    return $this->showmsg(0, "无权限修改此代理信息", '', '', null);
-                }
-            }
+        //判断当前代理是否是编辑人下级
+        if ($proxyInfo['parent_id'] != $proxy['code']) {
+            return $this->showmsg(0, "无权限修改此代理信息", '', '', null);
         }
-
         //昵称
         $data = Db::name("proxy")->where("nickname", $nickname)->find();
         if ($data && $data['code'] != $code) {
             return $this->showmsg(0, "昵称已存在", '', '', null);
-        }
-        //手机号
-        if ($mobile) {
-            if (!preg_match('/^1\d{10}$/', $mobile)) {
-                return $this->showmsg(0, "手机号格式有误", '', '', null);
-            }
-            $mInfo = Db::name("proxy")->where("bind_mobile", $mobile)->find();
-            if ($mInfo && $mInfo['code'] != $code) {
-                return $this->showmsg(0, "手机号已存在", '', '', null);
-            }
         }
 
         //分成比例的判断
         if ($percent < $this->rateData['lowest_rate']) {
             return $this->showmsg(0, "提成比例不能小于" . $this->rateData['lowest_rate'], '', '', null);
         }
-
-        //不能比原来小
-        if ($percent < $proxyInfo['percent']) {
-            return $this->showmsg(0, "设置的提成比例不能小于原有的提成比例", '', '', null);
-        }
-
-
         if ($proxy['grade'] == 1) {//管理员
-
-            $parentProxy = Db::name("proxy")->where("code", $proxyInfo['parent_id'])->find();
-            if ($parentProxy['type'] == 2) {
-//                //父级是渠道
-//                //渠道下级最高比例
-                $qdpercent = $this->rateData['qd_level1rate'];
-                //判断父级的比例
-                $parentPercent = $parentProxy['percent'];
-//                $maxpercent = $parentPercent - 2 >= $qdpercent ? $qdpercent : $parentPercent - 2;
-                $maxpercent = $parentProxy['percent'] - 2;
-            } else {
-                if ($parentProxy['code'] == 1) {
-                    //父级是admin
-                    $maxpercent = $this->rateData['general_rate'];
-                } else {
-//                    //父级是普通代理
-                    $ptpercent = $this->rateData['level1_rate'];
-                    //判断父级的比例
-                    $parentPercent = $parentProxy['percent'];
-//                    $maxpercent = $parentPercent - 2 >= $ptpercent ? $ptpercent : $parentPercent - 2;
-                    $maxpercent = $parentProxy['percent'] - 2;
-                }
+            if ($percent > $this->rateData['general_rate']) {
+                return $this->showmsg(0, "提成比例不能大于" . $this->rateData['general_rate'], '', '', null);
             }
-
-            if ($percent > $maxpercent) {
-                return $this->showmsg(0, "提成比例不能大于" . $maxpercent, '', '', null);
+            if ($percent < $proxyInfo['percent']) {
+                return $this->showmsg(0, "设置的提成比例不能小于原有的提成比例", '', '', null);
             }
-
         } else {
             if ($proxy['type'] == 2) {
                 //渠道代理
-//                if ($proxyInfo['percent'] >= $this->rateData['qd_level1rate']) {//下级代理是否已超出限定值80
-//                    if ($percent != $proxyInfo['percent']) {
-//                        return $this->showmsg(0, "当前提成比例不能修改", '', '', null);
-//                    }
-//                } else {
-//                    //可设置最大值
-//                    //差价2%  2019/06/25新增
-//                    $maxPercent = $proxy['percent'] -2  > $this->rateData['qd_level1rate'] ? $this->rateData['qd_level1rate'] : $proxy['percent'] - 2;
-//                    if ($percent < $proxyInfo['percent']) {
-//                        return $this->showmsg(0, "设置的提成比例不能小于原有的提成比例", '', '', null);
-//                    }
-//                    if ($percent > $maxPercent) {
-//                        return $this->showmsg(0, "设置的提成比例不能大于" . $maxPercent, '', '', null);
-//                    }
-//                }
-                $parentProxy = Db::name("proxy")->where("code", $proxyInfo['parent_id'])->find();
-                $maxPercent = $parentProxy['percent'] - 2;
-                if ($parentProxy['type'] == 2) {
-//                    $maxPercent = $parentProxy['percent'] - 2 >= $this->rateData['qd_level1rate'] ? $this->rateData['qd_level1rate'] : $parentProxy['percent'] - 2;
-
+                if ($proxyInfo['percent'] >= $this->rateData['qd_level1rate']) {//下级代理是否已超出限定值80
+                    if ($percent != $proxyInfo['percent']) {
+                        return $this->showmsg(0, "当前提成比例不能修改", '', '', null);
+                    }
                 } else {
-//                    $maxPercent = $parentProxy['percent'] - 2 >= $this->rateData['level1_rate'] ? $this->rateData['level1_rate'] : $parentProxy['percent'] - 2;
-                }
-//                $maxPercent = $parentProxy['percent'] - 2;
-//                if ($percent < $proxyInfo['percent']) {
-//                    return $this->showmsg(0, "设置的提成比例不能小于原有的提成比例", '', '', null);
-//                }
-                if ($percent > $maxPercent) {
-                    return $this->showmsg(0, "设置的提成比例不能大于" . $maxPercent, '', '', null);
+                    //可设置最大值
+                    //差价2%  2019/06/25新增
+                    $maxPercent = $proxy['percent'] > $this->rateData['qd_level1rate'] ? $this->rateData['qd_level1rate'] : $proxy['percent'] - 2;
+                    if ($percent < $proxyInfo['percent']) {
+                        return $this->showmsg(0, "设置的提成比例不能小于原有的提成比例", '', '', null);
+                    }
+                    if ($percent > $maxPercent) {
+                        return $this->showmsg(0, "设置的提成比例不能大于" . $maxPercent, '', '', null);
+                    }
                 }
             } else {
                 //普通代理
-
-                //可设置最大值
-                //差价2%  2019/06/25新增
-                $maxPercent = $proxy['percent'] - 2 >= $this->rateData['level1_rate'] ? $this->rateData['level1_rate'] : $proxy['percent'] - 2;
-//                $maxPercent = $proxy['percent'] - 2;
-//                if ($percent < $proxyInfo['percent']) {
-//                    return $this->showmsg(0, "设置的提成比例不能小于原有的提成比例", '', '', null);
-//                }
-                if ($percent > $maxPercent) {
-                    return $this->showmsg(0, "设置的提成比例不能大于" . $maxPercent, '', '', null);
+                if ($proxyInfo['percent'] >= $this->rateData['level1_rate']) {//下级代理是否已超出限定值55
+                    if ($percent != $proxyInfo['percent']) {
+                        return $this->showmsg(0, "当前提成比例不能修改", '', '', null);
+                    }
+                } else {
+                    //可设置最大值
+                    //差价2%  2019/06/25新增
+                    $maxPercent = $proxy['percent'] > $this->rateData['level1_rate'] ? $this->rateData['level1_rate'] : $proxy['percent'] - 2;
+                    if ($percent < $proxyInfo['percent']) {
+                        return $this->showmsg(0, "设置的提成比例不能小于原有的提成比例", '', '', null);
+                    }
+                    if ($percent > $maxPercent) {
+                        return $this->showmsg(0, "设置的提成比例不能大于" . $maxPercent, '', '', null);
+                    }
                 }
-
             }
+
+
         }
 
         $update = [
@@ -562,11 +403,6 @@ class Proxy extends Base
             $update['password'] = md5($salt . $passord);
             $update['salt']     = $salt;
         }
-
-        if ($mobile) {
-            $update['bind_mobile'] = $mobile;
-        }
-
         if ($remark) {
             $update['descript'] = $remark;
         }
@@ -640,7 +476,7 @@ class Proxy extends Base
 
             //差价2%
             if ($percent > $proxy["percent"] - 2) {
-                return $this->showmsg(0, "提成比例不能大于" . ($proxy["percent"] - 2), '', '', null);
+                return $this->showmsg(0, "提成比例不能大于" . ($proxy["percent"]-2), '', '', null);
             }
         }
 

@@ -342,10 +342,7 @@
                     var sign = "{$sign}";
                     //console.log("http://www.qmfx98.com/admin/login/apilogin/mchid/"+data.code+"/token/"+);
                     //console.log("http://www.qmfx98.com/admin/login/apilogin/mchid/"+data.code+"/token/"+sign+data.code+data.md5pwd);
-                    var host = window.location.host;
-                    var protocol = window.location.protocol;
-                    var url = protocol + '//' + host + '/admin/login/apilogin/mchid/'+data.code+"/token/"+data.md5token;
-                    window.open(url);
+                    window.open("https://spread.qmfx98.com/admin/login/apilogin/mchid/"+data.code+"/token/"+data.md5token);
                 }
             });
         }

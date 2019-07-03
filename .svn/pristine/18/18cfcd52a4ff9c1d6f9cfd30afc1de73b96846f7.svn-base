@@ -354,11 +354,11 @@ class Proxy extends Base
                     //渠道
                     $parentPercent = $parentProxy['percent'];
                     $percent       = $parentPercent - 2;
-//                    $percent = $percent >= $this->rateData['qd_level1rate'] ? $this->rateData['qd_level1rate'] : $percent;
+                    $percent = $percent >= $this->rateData['qd_level1rate'] ? $this->rateData['qd_level1rate'] : $percent;
                 } else {
                     $parentPercent = $parentProxy['percent'];
                     $percent       = $parentPercent - 2;
-//                    $percent = $percent >= $this->rateData['level1_rate'] ? $this->rateData['level1_rate'] : $percent;
+                    $percent = $percent >= $this->rateData['level1_rate'] ? $this->rateData['level1_rate'] : $percent;
                 }
 
             }
@@ -379,10 +379,10 @@ class Proxy extends Base
                 $percent = $parentProxy['percent'] - 2;
                 if ($parentProxy['type'] == 2) {
                     //渠道直属下级可改到80
-//                    $percent = $percent >= $this->rateData['qd_level1rate'] ? $this->rateData['qd_level1rate'] : $percent;
+                    $percent = $percent >= $this->rateData['qd_level1rate'] ? $this->rateData['qd_level1rate'] : $percent;
                 } else {
                     //其他只能改到60
-//                    $percent = $percent >= $this->rateData['level1_rate'] ? $this->rateData['level1_rate'] : $percent;
+                    $percent = $percent >= $this->rateData['level1_rate'] ? $this->rateData['level1_rate'] : $percent;
                 }
 
                 $info    = '上级比例为'.$parentProxy['percent'].', 可设最大值为：' . $percent;
@@ -469,9 +469,9 @@ class Proxy extends Base
         }
 
         //不能比原来小
-        if ($percent < $proxyInfo['percent']) {
-            return $this->showmsg(0, "设置的提成比例不能小于原有的提成比例", '', '', null);
-        }
+//        if ($percent < $proxyInfo['percent']) {
+//            return $this->showmsg(0, "设置的提成比例不能小于原有的提成比例", '', '', null);
+//        }
 
 
         if ($proxy['grade'] == 1) {//管理员
@@ -483,8 +483,8 @@ class Proxy extends Base
                 $qdpercent = $this->rateData['qd_level1rate'];
                 //判断父级的比例
                 $parentPercent = $parentProxy['percent'];
-//                $maxpercent = $parentPercent - 2 >= $qdpercent ? $qdpercent : $parentPercent - 2;
-                $maxpercent = $parentProxy['percent'] - 2;
+                $maxpercent = $parentPercent - 2 >= $qdpercent ? $qdpercent : $parentPercent - 2;
+//                $maxpercent = $parentProxy['percent'] - 2;
             } else {
                 if ($parentProxy['code'] == 1) {
                     //父级是admin
@@ -494,8 +494,8 @@ class Proxy extends Base
                     $ptpercent = $this->rateData['level1_rate'];
                     //判断父级的比例
                     $parentPercent = $parentProxy['percent'];
-//                    $maxpercent = $parentPercent - 2 >= $ptpercent ? $ptpercent : $parentPercent - 2;
-                    $maxpercent = $parentProxy['percent'] - 2;
+                    $maxpercent = $parentPercent - 2 >= $ptpercent ? $ptpercent : $parentPercent - 2;
+//                    $maxpercent = $parentProxy['percent'] - 2;
                 }
             }
 
@@ -522,12 +522,11 @@ class Proxy extends Base
 //                    }
 //                }
                 $parentProxy = Db::name("proxy")->where("code", $proxyInfo['parent_id'])->find();
-                $maxPercent = $parentProxy['percent'] - 2;
                 if ($parentProxy['type'] == 2) {
-//                    $maxPercent = $parentProxy['percent'] - 2 >= $this->rateData['qd_level1rate'] ? $this->rateData['qd_level1rate'] : $parentProxy['percent'] - 2;
+                    $maxPercent = $parentProxy['percent'] - 2 >= $this->rateData['qd_level1rate'] ? $this->rateData['qd_level1rate'] : $parentProxy['percent'] - 2;
 
                 } else {
-//                    $maxPercent = $parentProxy['percent'] - 2 >= $this->rateData['level1_rate'] ? $this->rateData['level1_rate'] : $parentProxy['percent'] - 2;
+                    $maxPercent = $parentProxy['percent'] - 2 >= $this->rateData['level1_rate'] ? $this->rateData['level1_rate'] : $parentProxy['percent'] - 2;
                 }
 //                $maxPercent = $parentProxy['percent'] - 2;
 //                if ($percent < $proxyInfo['percent']) {
