@@ -146,31 +146,9 @@
         </div>
     </div>
 
-    <div class="layui-col-md12 layui-col-lg12 layui-col-xs12 layui-col-sm12 ">
-        <div class="layui-card">
-            <div class="layui-card-body layuiadmin-card-list" style="text-align: center">
-                <fieldset class="layui-elem-field" style="height: 100px;background-color: #ffffff;">
-                    <legend>领取红包</legend>
-                    <div class="layui-field-box">
-                        <div>
-                            <button class="layui-btn layui-btn-lg {if $return==0 }layui-btn-danger{else /}layui-btn-disabled {/if}" id="getreward">
-                                {if $return==0}
-                                领取红包奖励
-                                {elseif $return==1 /}
-                                昨日收益未达标
-                                {else /}
-                                今日已领取
-                                {/if}
-                            </button>
-                        </div>
-                    </div>
-                </fieldset>
-            </div>
-        </div>
+    <div style="text-align: center">
+        <button class="layui-btn layui-btn-lg layui-btn-danger" id="getreward">领取红包奖励</button>
     </div>
-
-
-
 
 
     {volist name="list" id="vo"}

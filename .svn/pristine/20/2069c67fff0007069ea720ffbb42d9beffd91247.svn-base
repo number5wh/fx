@@ -212,8 +212,6 @@ class Index extends Base {
 //                }
 //            }
 
-            $return = $this->handleReward();
-
             $this->assign('regtotal',$regtotal);
             $this->assign('regtoday',$regtoday);
             $this->assign("regzt",$regyestday);
@@ -233,7 +231,6 @@ class Index extends Base {
 
             $this->assign("alltodaymoney",$alltodaymoney);
             $this->assign('selftodaymoney',$selftodaymoney);
-            $this->assign('return', $return['code']);
 
 //            $this->assign('getreward', $getReward);
 
