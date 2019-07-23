@@ -1,0 +1,62 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: admin
+ * Date: 2018/8/22
+ * Time: 22:14
+ */
+namespace app\admin\model;
+use think\Model;
+
+class UserTemplate extends Model{
+
+  public  function Qrcode($param, $url = '') {
+      //加载第三方类库
+      vendor('phpqrcode.phpqrcode');
+      if (config('useshorturl') === true) {
+//          $url = config('shorturl').$param ? config('shorturl').$param : '';
+          $errorCorrectionLevel = "Q"; // 容错级别：L、M、Q、H
+          $matrixPointSize = "7"; // 点的大小：1到10
+      } else {
+          $url=config("DistributeUrl").$param;
+          $errorCorrectionLevel = "Q"; // 容错级别：L、M、Q、H
+          $matrixPointSize = "6"; // 点的大小：1到10
+      }
+
+      $size=4;    //图片大小
+
+      //实例化
+      $qr = new \QRcode();
+      //会清除缓冲区的内容，并将缓冲区关闭，但不会输出内容。
+      //ob_end_clean();
+      $output = './public/upload/Qrcode/'.$param.'.png';
+
+     $qr::png($url, $output, $errorCorrectionLevel, $matrixPointSize);
+  }
+
+
+    public function getShortUrl($proxycode)
+    {
+        $url = config('shorturl').$proxycode;
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (compatible; MSIE 5.01; Windows NT 5.0)');
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+        curl_setopt($ch, CURLOPT_AUTOREFERER, 1);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $tmpInfo = curl_exec($ch);
+        if (curl_errno($ch)) {
+            $tmpInfo = [];
+        }
+        $tmpInfo = json_decode($tmpInfo,true);
+        if (!isset($tmpInfo['ae_url'])) {
+            $tmpInfo = [];
+        }
+        return $tmpInfo['ae_url'];
+  }
+
+
+}

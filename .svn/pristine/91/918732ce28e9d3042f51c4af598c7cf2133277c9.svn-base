@@ -1,0 +1,199 @@
+{extend name="common/base" /}
+
+{block name="title"}推广统计{/block}
+{block name="css"}
+<link href="__CSS__/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+<!--<link href="__CSS__/font-awesome.min.css?v=4.4.0" rel="stylesheet">-->
+<!--<link href="__CSS__/datepicker3.css" rel="stylesheet"/>-->
+<!--<link href="__CSS__/animate.css" rel="stylesheet">-->
+<!--<link href="__CSS__/style.css?v=4.1.0" rel="stylesheet">-->
+<link href="__CSS__/bootstrap-table.css" type="text/css" rel="stylesheet">
+{/block}
+{block name="content"}
+<div class="layui-row layui-col-space15">
+<div class="layui-col-md12 layui-col-lg12 layui-col-xs12 layui-col-sm12">
+    <div class="layui-card">
+        <div class="layui-card-header ">
+            汇总统计(时间：{if !empty($regstart)} {$regstart} - {if !empty($regend)}{$regend}{else /}至今{/if} {else /} 无限制 {/if})
+            <span class="layui-badge layui-bg-blue layuiadmin-badge">统计</span>
+        </div>
+        <div class="layui-card-body layuiadmin-card-list">
+        <div class="layadmin-backlog" lay-anim="" lay-indicator="inside" lay-arrow="none"
+             style="width: 100%; height: auto;">
+            <div carousel-item="">
+                <ul class="layui-row layui-col-space10 layui-this">
+                    <li class="layui-col-xs4">
+                        <a href="javascript:;" class="layadmin-backlog-body">
+                            <h3>个人收益</h3>
+                            <p>
+                                <cite>{$sumdata.totalin}元</cite></p>
+                        </a>
+                    </li>
+                    <li class="layui-col-xs4">
+                        <a href="javascript:;" class="layadmin-backlog-body">
+                            <h3>税收</h3>
+                            <p>
+                                <cite>{$sumdata.totaltax}元</cite></p>
+                        </a>
+                    </li>
+                    <li class="layui-col-xs4">
+                        <a href="javascript:;" class="layadmin-backlog-body">
+                            <h3>注册玩家</h3>
+                            <p>
+                                <cite>{$sumdata.regnum}</cite></p>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    </div>
+</div>
+
+<div class="layui-col-md12 layui-col-lg12 layui-col-xs12 layui-col-sm12">
+<div class="layui-card">
+    <div class="layui-card-header layuiadmin-card-header-auto">
+        <form class="layui-form" action="{:url('distribute/index')}" id="myForm" method="post">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">代理ID</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="agentId" name="agentId" value="{$agentid}" placeholder="请输入代理ID"  autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-inline">
+                    <label class="layui-form-label">时间</label>
+                    <div class="layui-input-inline" style="width: 100px;">
+                        <input type="text" name="startTime" value="{$regstart}" id="LAY-component-form-group-date" autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-form-mid">-</div>
+                    <div class="layui-input-inline" style="width: 100px;">
+                        <input type="text" name="endTime" value="{$regend}" id="LAY-component-form-group-date2" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-inline">
+                    <div class="layui-input-inline">
+                        <!--<input type="checkbox" id="inlineCheckbox3" name="month" lay-skin="primary" title="按月" checked="">-->
+                        <input type="checkbox" id="inlineCheckbox3" name="month" {if condition="$month eq 'on'"}checked="true"{/if} lay-skin="switch" lay-text="按周|不按周">
+                    </div>
+                </div>
+
+                <div class="layui-inline" style="text-align: center">
+                    <button class="layui-btn" type="submit" id="search_tg">搜索</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="layui-card-body">
+        <h5>推广统计 &nbsp;<small style="color: red">(注：推广数据更新间隔5分钟)</small></h5>
+
+        <table id="tglist" lay-filter="tglist">
+            <thead id="hlist">
+            <tr>
+            <th >时间</th>
+            <th>代理名称</th>
+            <th >代理ID</th>
+            <!--<th >代理级别</th>-->
+
+            <th >注册人数</th>
+            <!--<th >绑定手机</th>-->
+            <!--<th >充值总次数</th>-->
+            <!--<th >提现总次数</th>-->
+            <th >产生税收</th>
+            <th >盈利金额</th>
+            </tr>
+
+            </thead>
+            <tbody id="plist">
+            {volist name="list" id="vo"}
+
+                <tr>
+
+                    <td>{if isset($vo['weekstart'])}{$vo.weekstart}~{$vo.weekend} {else /}{$vo.time}{/if}</td>
+                    <td>{$vo.nickname}</td>
+                    <td>{$vo.proxy_id}</td>
+                    <td>{$vo.regnum}</td>
+                    <td>{$vo.totaltax}</td>
+                    <td>{$vo.getmoney}</td>
+                </tr>
+            {/volist}
+            </tbody>
+            <tfoot>
+            <div >
+                <td id="pageTd" rowspan="5">
+                    <nav aria-label="Page navigation ">
+                        {$list->render()}
+                    </nav>
+                </td>
+            </div>
+            </tfoot>
+        </table>
+        <input type="hidden" name="pageNum" id="pageNum"/>
+        <input type="hidden" name="pageSize" id="pageSize" value="20"/>
+    </div>
+</div>
+</div>
+</div>
+
+{/block}
+{block name="script"}
+<script src="__JS__/jquery.min.js?v=2.1.4"></script>
+<script src="__JS__/bootstrap.min.js?v=3.3.6"></script>
+<script src="__JS__/bootstrap-datepicker.js"></script>
+<script src="__JS__/bootstrap-table.js"></script>
+<!-- 自定义js -->
+<script src="__JS__/content.js?v=1.0.0"></script>
+<script src="__JS__/common.js?v=1.0"></script>
+<script src="__JS__/iosfit.js"></script>
+<script>
+    layui.config({
+        base: '/src/layuiadmin/' //静态资源所在路径
+    }).extend({
+        index: 'lib/index' //主入口模块
+
+    }).use(['index', 'table', 'layer', 'element', 'laydate', 'form', 'jquery'], function() {
+        var laydate=layui.laydate;
+        laydate.render({
+            elem: '#LAY-component-form-group-date'
+            ,format:'yyyyMMdd'
+        });
+        laydate.render({
+            elem: '#LAY-component-form-group-date2'
+            ,format:'yyyyMMdd'
+        });
+    });
+    $(document).ready(function () {
+
+        $('#pageTd').attr('colspan', 11)
+
+    });
+
+    function checkWidth() {
+        var windowsize = $(window).width();
+        try {
+            if (windowsize >= 440) {
+                $('table').bootstrapTable({
+                    cardView: false
+                });
+                $('table').bootstrapTable('resetView');
+
+            }
+            else {
+                $('table').bootstrapTable({
+                    cardView: true,
+                    columns: {
+                        field: 'member_id',
+                        sortable: true
+                    }
+                });
+                $('table').bootstrapTable('resetView');
+            }
+        } catch (err) {
+
+        }
+    }
+</script>
+{/block}
